@@ -1,0 +1,76 @@
+{
+  "id": "R-PSV-01",
+  "version": 1,
+  "category": "Relief",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Pojistná zařízení a set pressure",
+    "en": "Relief devices and set pressure"
+  },
+  "inputs": [
+    {
+      "key": "design.mawp_min",
+      "label": {
+        "cs": "Nejnižší MAWP",
+        "en": "Lowest MAWP"
+      }
+    },
+    {
+      "key": "design.psv_max_set_pressure",
+      "label": {
+        "cs": "Nejvyšší set pressure",
+        "en": "Highest set pressure"
+      }
+    },
+    {
+      "key": "design.psv_on_all_trapped_sections",
+      "label": {
+        "cs": "Pojistka na každém uzavíratelném úseku",
+        "en": "Relief on every trapped section"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.psv_on_all_trapped_sections"
+        }
+      },
+      {
+        "op": "lte",
+        "left": {
+          "input": "design.psv_max_set_pressure"
+        },
+        "right": {
+          "input": "design.mawp_min"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Některý uzavíratelný úsek, kde může uvíznout kapalina, nemá pojistné zařízení, nebo je set pressure vyšší než MAWP.",
+    "en": "A section that can trap liquid has no relief device, or a set pressure exceeds MAWP."
+  },
+  "remediation": {
+    "cs": "Doplnit pojistky na všechny uzavíratelné úseky a upravit set pressure na ≤ MAWP.",
+    "en": "Add relief devices to all trapped sections and set pressures ≤ MAWP."
+  },
+  "source": {
+    "document": "PED 2014/68/EU / ASME B31.3 (kandidát) + interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

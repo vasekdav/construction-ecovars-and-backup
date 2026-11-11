@@ -1,0 +1,153 @@
+{
+  "id": "R-SD-01",
+  "version": 1,
+  "category": "Safety distances",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Bezpečné vzdálenosti tanku a vaporizeru",
+    "en": "Safety distances of tank and vaporizer"
+  },
+  "inputs": [
+    {
+      "key": "layout.dist_boundary",
+      "label": {
+        "cs": "Vzdálenost od hranice pozemku",
+        "en": "Distance to site boundary"
+      }
+    },
+    {
+      "key": "layout.dist_buildings",
+      "label": {
+        "cs": "Vzdálenost od budov",
+        "en": "Distance to buildings"
+      }
+    },
+    {
+      "key": "layout.dist_ignition_sources",
+      "label": {
+        "cs": "Vzdálenost od zdrojů zapálení",
+        "en": "Distance to ignition sources"
+      }
+    },
+    {
+      "key": "layout.dist_public_roads",
+      "label": {
+        "cs": "Vzdálenost od veřejných komunikací",
+        "en": "Distance to public roads"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "key": "min_dist_buildings",
+      "label": {
+        "cs": "Min. vzdálenost od budov",
+        "en": "Min. distance to buildings"
+      },
+      "dimension": "length",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    },
+    {
+      "key": "min_dist_public_roads",
+      "label": {
+        "cs": "Min. vzdálenost od veřejných komunikací",
+        "en": "Min. distance to public roads"
+      },
+      "dimension": "length",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    },
+    {
+      "key": "min_dist_boundary",
+      "label": {
+        "cs": "Min. vzdálenost od hranice pozemku",
+        "en": "Min. distance to site boundary"
+      },
+      "dimension": "length",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    },
+    {
+      "key": "min_dist_ignition_sources",
+      "label": {
+        "cs": "Min. vzdálenost od zdrojů zapálení",
+        "en": "Min. distance to ignition sources"
+      },
+      "dimension": "length",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    }
+  ],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "gte",
+        "left": {
+          "input": "layout.dist_buildings"
+        },
+        "right": {
+          "param": "min_dist_buildings"
+        }
+      },
+      {
+        "op": "gte",
+        "left": {
+          "input": "layout.dist_public_roads"
+        },
+        "right": {
+          "param": "min_dist_public_roads"
+        }
+      },
+      {
+        "op": "gte",
+        "left": {
+          "input": "layout.dist_boundary"
+        },
+        "right": {
+          "param": "min_dist_boundary"
+        }
+      },
+      {
+        "op": "gte",
+        "left": {
+          "input": "layout.dist_ignition_sources"
+        },
+        "right": {
+          "param": "min_dist_ignition_sources"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Vzdálenost tanku a vaporizeru od budov, veřejných komunikací, hranice pozemku nebo zdrojů zapálení je menší než hodnota z tabulky bezpečných vzdáleností.",
+    "en": "Distance of tank and vaporizer to buildings, public roads, site boundary or ignition sources is below the safety distance table."
+  },
+  "remediation": {
+    "cs": "Upravit umístění v layoutu nebo doložit vyhodnocení bezpečných vzdáleností.",
+    "en": "Relocate in the layout or provide a safety distance assessment."
+  },
+  "source": {
+    "document": "EIGA Doc 75 + interní standard (tabulka bezpečných vzdáleností)",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "9"
+  ]
+}

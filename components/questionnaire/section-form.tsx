@@ -164,6 +164,7 @@ export function QuestionnaireSectionForm({
   locale,
   readOnly,
   action,
+  hidden = {},
 }: {
   projectId: string;
   section: Section;
@@ -172,6 +173,8 @@ export function QuestionnaireSectionForm({
   locale: Locale;
   readOnly: boolean;
   action: (prev: ActionState, fd: FormData) => Promise<ActionState>;
+  /** Extra hidden fields (e.g. the layout version). */
+  hidden?: Record<string, string>;
 }) {
   const t = useTranslations("questionnaire");
   const [state, formAction, pending] = useActionState(action, null);
@@ -181,6 +184,9 @@ export function QuestionnaireSectionForm({
   return (
     <form action={formAction} className="space-y-5" data-testid={`section-form-${section.id}`}>
       <input type="hidden" name="projectId" value={projectId} />
+      {Object.entries(hidden).map(([k, v]) => (
+        <input key={k} type="hidden" name={k} value={v} />
+      ))}
       <fieldset disabled={readOnly || pending} className="space-y-5">
         {section.questions
           .filter((q) => isVisible(q, { medium, answers: live }))

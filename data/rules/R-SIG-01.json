@@ -1,0 +1,79 @@
+{
+  "id": "R-SIG-01",
+  "version": 1,
+  "category": "Označení",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Značení, oplocení, ochrana proti nárazu",
+    "en": "Signage, fencing, impact protection"
+  },
+  "inputs": [
+    {
+      "key": "layout.fencing_ok",
+      "label": {
+        "cs": "Oplocení",
+        "en": "Fencing"
+      }
+    },
+    {
+      "key": "layout.impact_protection_ok",
+      "label": {
+        "cs": "Ochrana proti nárazu",
+        "en": "Impact protection"
+      }
+    },
+    {
+      "key": "layout.signage_ok",
+      "label": {
+        "cs": "Značení",
+        "en": "Signage"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "layout.signage_ok"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "layout.fencing_ok"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "layout.impact_protection_ok"
+        }
+      }
+    ]
+  },
+  "severity": "WARNING",
+  "message": {
+    "cs": "Značení, oplocení nebo ochrana proti nárazu vozidel neodpovídá požadavkům lokality.",
+    "en": "Signage, fencing or vehicle impact protection does not meet site requirements."
+  },
+  "remediation": {
+    "cs": "Doplnit značení, oplocení a ochranu proti nárazu.",
+    "en": "Add signage, fencing and impact protection."
+  },
+  "source": {
+    "document": "Interní standard + lokální předpisy (kandidát)",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "9"
+  ]
+}

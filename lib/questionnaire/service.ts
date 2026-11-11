@@ -6,15 +6,11 @@ import { writeAudit } from "@/lib/audit";
 import { can, ForbiddenError } from "@/lib/auth/rbac";
 import type { Role } from "@/lib/auth/roles";
 import { getTemplate } from "@/lib/workflow/template";
-import { parseAnswer, type AnswerError, type Answers } from "./answers";
+import type { Answers } from "./answers";
+import { applyRawAnswers, type ApplyError } from "./apply";
 import { completeness, type Completeness } from "./completeness";
 import { buildDesignBasis, type DesignBasis } from "./design-basis";
-import {
-  DEFAULT_QUESTIONNAIRE,
-  findQuestion,
-  getQuestionnaireTemplate,
-  type QuestionnaireTemplate,
-} from "./template";
+import { DEFAULT_QUESTIONNAIRE, getQuestionnaireTemplate, type QuestionnaireTemplate } from "./template";
 
 export interface Actor {
   id: string;
@@ -33,7 +29,7 @@ export class QuestionnaireServiceError extends Error {
 /** Field-level validation errors keyed by question id. */
 export class QuestionnaireValidationError extends Error {
   override name = "QuestionnaireValidationError";
-  constructor(public readonly errors: Record<string, AnswerError | "unknown_question">) {
+  constructor(public readonly errors: Record<string, ApplyError>) {
     super("validation");
   }
 }
@@ -68,10 +64,6 @@ async function assertQuestionnaireStepOpen(tx: DbOrTx, projectId: string): Promi
   if (await questionnaireStepClosed(tx, projectId, true)) throw new QuestionnaireServiceError("STAGE_CLOSED");
 }
 
-function sameValue(a: unknown, b: unknown): boolean {
-  return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
-}
-
 /**
  * Save (part of) the questionnaire. Partial saves are allowed (draft); only
  * the provided questions change. Empty values clear an answer. The Design
@@ -89,24 +81,7 @@ export async function saveAnswers(db: Db, actor: Actor, input: unknown): Promise
       .where(eq(questionnaireResponses.projectId, data.projectId));
     const tpl = existing ? getQuestionnaireTemplate(existing.templateKey, existing.templateVersion) : DEFAULT_QUESTIONNAIRE;
 
-    const errors: Record<string, AnswerError | "unknown_question"> = {};
-    const next: Answers = { ...(existing?.answers ?? {}) };
-    const changes: Record<string, { before: unknown; after: unknown }> = {};
-    for (const [id, raw] of Object.entries(data.answers)) {
-      const q = findQuestion(tpl, id);
-      if (!q) {
-        errors[id] = "unknown_question";
-        continue;
-      }
-      const parsed = parseAnswer(q, raw);
-      if (!parsed.ok) {
-        errors[id] = parsed.error;
-        continue;
-      }
-      if (!sameValue(next[id], parsed.value)) changes[id] = { before: next[id] ?? null, after: parsed.value };
-      if (parsed.value === null) delete next[id];
-      else next[id] = parsed.value;
-    }
+    const { next, changes, errors } = applyRawAnswers(tpl, existing?.answers ?? {}, data.answers);
     if (Object.keys(errors).length) throw new QuestionnaireValidationError(errors);
     if (!Object.keys(changes).length) return { changed: 0 };
 

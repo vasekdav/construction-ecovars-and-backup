@@ -15,6 +15,7 @@ import {
 } from "@/db/schema";
 import { writeAudit } from "@/lib/audit";
 import { questionnaireGateStatus } from "@/lib/questionnaire/status";
+import { evaluateProject, layoutGeometryStatus, verificationStatus } from "@/lib/safety/project";
 import { assertCan, ForbiddenError } from "@/lib/auth/rbac";
 import type { Role } from "@/lib/auth/roles";
 import { unmetDependencies } from "./dependencies";
@@ -130,7 +131,24 @@ export async function loadGateContext(tx: DbOrTx, stage: Stage): Promise<GateCon
     layoutVersions: layouts,
     ownerUserId: stage.ownerUserId,
     questionnaire: await questionnaireGateStatus(tx, stage.projectId),
+    ...(await safetyGateContext(tx, stage)),
   };
+}
+
+/** Rule-engine facts for gate conditions (only computed when the step needs them). */
+async function safetyGateContext(tx: DbOrTx, stage: Stage): Promise<Partial<GateContext>> {
+  const [project] = await tx.select().from(projects).where(eq(projects.id, stage.projectId));
+  if (!project) return {};
+  const def = stageTemplate(getTemplate(project.templateKey, project.templateVersion), stage.key);
+  const types = new Set(def.gate.map((g) => g.type));
+  const out: Partial<GateContext> = {};
+  if (types.has("rulesNoNoGo")) {
+    const evaluation = await evaluateProject(tx, project.id);
+    out.rules = evaluation?.byStage[stage.key] ?? { noGo: [], notEvaluated: [] };
+  }
+  if (types.has("standardsVerified")) out.verification = await verificationStatus(tx, project.medium);
+  if (types.has("layoutGeometryComplete")) out.layoutGeometry = await layoutGeometryStatus(tx, project.id, project.medium);
+  return out;
 }
 
 // ---------------------------------------------------------------- projects

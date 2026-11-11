@@ -27,3 +27,10 @@ Do zodpovězení aplikace pracuje s nejbezpečnějším předpokladem (sloupec �
 | 21 | Obsah dotazníku (otázky, povinnost, fáze počáteční / detailní, výběrové možnosti) je návrh a potřebuje revizi s OAM. | Fáze 2 | Návrh podle SPEC §5. |
 | 22 | Audit log ukládá změněné odpovědi dotazníku (před/po). Je to v pořádku pro reálná data (InfoSec)? | Fáze 2 | Ano pro fiktivní data ve v1. Před reálnými daty znovu posoudit. |
 | 23 | Jak převádět běžící projekty na novou verzi šablony procesu nebo dotazníku? | Fáze 2 | Projekt zůstává na své verzi. Migraci řešit při první změně šablony. |
+| 24 | R-O2-03: limit rychlosti v O₂ potrubí závisí na tlaku a materiálu. Stačí jedna hodnota na médium, nebo je potřeba tabulka (tlak × materiál)? | Fáze 3 | Jedna hodnota na médium; tabulka je rozšíření. |
+| 25 | Má WARNING před uzavřením kroku vyžadovat výslovné posouzení člověkem (potvrzení), nebo stačí zobrazení? | Fáze 3 | WARNING neblokuje, jen se zobrazuje. |
+| 26 | Pravidla layoutu blokují jen krok 9; krok 3 (koncept) vyžaduje jen vyplněné rozměry. Souhlas? | Fáze 3 | Ano (ADR-028). |
+| 27 | Je seznam standardů společný pro všechny projekty, nebo se má pro každý projekt vybírat? | Fáze 3 | Společný, filtrovaný podle média. |
+| 28 | Položky návrhového checklistu (ano/ne) potvrzuje kdokoli s procesní rolí. Mají vybrané položky (např. O₂ cleaning) potvrzovat jen konkrétní role? | Fáze 3 | Zatím kterákoli procesní role, s auditní stopou. |
+| 29 | Override je vázaný na verzi pravidla: nová verze (i pouhá oprava citace) zneplatní overridy ve všech projektech. Je to žádoucí? | Fáze 3 | Ano, konzervativní varianta. |
+| 30 | Je mapování zdrojů na pravidla, kde SPEC normu výslovně neuvádí (označeno „kandidát“), správné? | Fáze 3 | Kandidáti, kapitola TBD-VERIFY; rozhodne Process Safety. |

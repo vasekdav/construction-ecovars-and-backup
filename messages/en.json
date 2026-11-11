@@ -10,7 +10,9 @@
     "users": "Users",
     "audit": "Audit log",
     "logout": "Sign out",
-    "projects": "Projects"
+    "projects": "Projects",
+    "rules": "Rules",
+    "standards": "Standards"
   },
   "login": {
     "title": "Sign in",
@@ -98,7 +100,17 @@
     "NO_LAYOUT_STEP": "This step does not hold a layout.",
     "LAYOUT_EXISTS": "Concept v0 already exists.",
     "INITIAL_INCOMPLETE": "Initial requirements are incomplete.",
-    "ALREADY_DETAILED": "The questionnaire is already in the detailed phase."
+    "ALREADY_DETAILED": "The questionnaire is already in the detailed phase.",
+    "NOT_LATEST_VERSION": "Only the latest version can be verified.",
+    "ALREADY_VERIFIED": "Already verified.",
+    "MISSING_PARAMETERS": "Parameter values are missing (TBD-VERIFY).",
+    "SOURCE_TBD": "The source citation contains TBD-VERIFY.",
+    "REVISION_MISSING": "The standard revision is missing.",
+    "INVALID_UNIT": "Invalid value or unit.",
+    "INVALID_RULE": "Invalid rule definition.",
+    "NOT_NO_GO": "Override is only possible for a NO-GO result.",
+    "ALREADY_OVERRIDDEN": "NO-GO is already overridden.",
+    "NO_LAYOUT_VERSION": "Layout version does not exist."
   },
   "common": {
     "save": "Save",
@@ -145,7 +157,9 @@
     "ownerRoles": "Step owner",
     "step": "Step",
     "task": "task",
-    "fictitious": "Use fictitious data only."
+    "fictitious": "Use fictitious data only.",
+    "safetyReview": "Safety Review",
+    "openRisksLink": "Open Safety Review"
   },
   "medium": {
     "O2": "O₂ (oxygen)",
@@ -259,7 +273,13 @@
       "no_drawing": "drawing link missing",
       "pending_feature": "evaluated from phase {details}; not met until then",
       "questionnaire_initial_phase": "questionnaire is still in the initial phase",
-      "questionnaire_incomplete": "missing mandatory items: {details}"
+      "questionnaire_incomplete": "missing mandatory items: {details}",
+      "unverified_rules": "unverified rules: {details}",
+      "unverified_standards": "unverified standards: {details}",
+      "no_standards": "the standards list is empty",
+      "rules_no_go": "NO-GO: {details}",
+      "rules_not_evaluated": "not evaluated: {details}",
+      "geometry_incomplete": "missing mandatory dimensions: {details}"
     }
   },
   "questionnaire": {
@@ -311,5 +331,98 @@
     "invalid_date": "Invalid date.",
     "below_absolute_zero": "Temperature below absolute zero.",
     "unknown_question": "Unknown question."
+  },
+  "results": {
+    "GO": "GO",
+    "WARNING": "WARNING",
+    "NO-GO": "NO-GO",
+    "NOT_EVALUATED": "NOT EVALUATED",
+    "overridden": "NO-GO (override)"
+  },
+  "safety": {
+    "title": "Safety Review",
+    "summary": "Summary",
+    "filter": "Filter",
+    "all": "All",
+    "rule": "Rule",
+    "category": "Category",
+    "result": "Result",
+    "severity": "On failure",
+    "stages": "Blocks step",
+    "draftLabel": "DRAFT, not a basis for design approval",
+    "verifiedLabel": "VERIFIED",
+    "inputs": "Inputs used",
+    "params": "Parameters",
+    "condition": "Condition",
+    "source": "Source",
+    "version": "Rule version",
+    "remediation": "Recommended remediation",
+    "missingInputs": "Missing inputs: {list}",
+    "missingParams": "Missing parameters (TBD-VERIFY): {list}",
+    "tbd": "TBD-VERIFY",
+    "noValue": "—",
+    "layoutVersion": "Geometry from layout v{version}",
+    "noLayout": "No layout version yet",
+    "override": "Override NO-GO",
+    "overrideReason": "Mandatory justification (min. 10 characters)",
+    "overrideSubmit": "Override NO-GO",
+    "overriddenBy": "Overridden: {name}, {date} – “{reason}”",
+    "revoke": "Revoke override",
+    "revokeReason": "Revocation reason",
+    "snapshot": "Save evaluation snapshot",
+    "snapshots": "Saved snapshots",
+    "noSnapshots": "No snapshot yet.",
+    "inputsLinks": "Inputs for the checks",
+    "designInputs": "Design checklist (P&ID)",
+    "questionnaire": "Customer questionnaire",
+    "layoutGeometry": "Layout geometry (steps 3 and 9)",
+    "sizingPending": "Sizing and autonomy arrive in phase 4; rules R-VAP-02, R-CAP-01 and R-ENV-01 are NOT EVALUATED until then.",
+    "empty": "No rules for this filter."
+  },
+  "design": {
+    "title": "Design checklist (P&ID and equipment)",
+    "description": "Inputs for the P&ID rules (step 4). Filled in by OAM, OPS, ROC, Process Safety and Sizing.",
+    "readOnly": "Read only.",
+    "frozen": "Step 4 is closed; the checklist is frozen."
+  },
+  "geometry": {
+    "title": "Dimensions for rule checks (v{version})",
+    "description": "Geometric inputs for this layout version. Rules use the latest version.",
+    "missing": "Missing mandatory dimensions: {count}",
+    "none": "Create a layout version first."
+  },
+  "rulesAdmin": {
+    "title": "Rules",
+    "description": "Rules are data. Every change creates a new DRAFT version. Only Process Safety may set VERIFIED, after all parameters and the source citation are filled in.",
+    "id": "ID",
+    "title_": "Title",
+    "media": "Medium",
+    "status": "Status",
+    "version": "Version",
+    "params": "Parameters",
+    "missing": "{count} missing",
+    "edit": "Edit parameters and source",
+    "changeNote": "Change note (required)",
+    "save": "Save as new version (DRAFT)",
+    "verify": "Verify (VERIFIED)",
+    "history": "Version history",
+    "document": "Document",
+    "clause": "Clause",
+    "verifiedBy": "Verified by {name}, {date}",
+    "unit": "unit",
+    "back": "← Rules",
+    "readOnly": "Admin and Process Safety may edit; only Process Safety may verify."
+  },
+  "standardsAdmin": {
+    "title": "Standards (step 5)",
+    "description": "Candidates from SPEC §7.3. Not a final list: Process Safety verifies revision and validity. Editing resets a standard to DRAFT.",
+    "code": "Code",
+    "titleCol": "Title",
+    "revision": "Revision",
+    "media": "Medium",
+    "notes": "Note",
+    "status": "Status",
+    "save": "Save (DRAFT)",
+    "verify": "Verify (VERIFIED)"
   }
 }

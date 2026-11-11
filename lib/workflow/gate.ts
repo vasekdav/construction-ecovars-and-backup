@@ -10,6 +10,12 @@ export interface GateContext {
   ownerUserId: string | null;
   /** Customer questionnaire status of the project (null = not started). */
   questionnaire?: { phase: "INITIAL" | "DETAILED"; missing: number } | null;
+  /** Rule check status of this stage (rules whose `stages` include it). */
+  rules?: { noGo: string[]; notEvaluated: string[] } | null;
+  /** Rules and standards applicable to the project that are not VERIFIED. */
+  verification?: { unverifiedRules: string[]; unverifiedStandards: string[]; standardsCount: number } | null;
+  /** Missing required geometry inputs per layout kind (null = no such layout version). */
+  layoutGeometry?: { concept: number | null; final: number | null } | null;
 }
 
 export type GateFailure =
@@ -24,7 +30,13 @@ export type GateFailure =
   | "no_drawing"
   | "pending_feature"
   | "questionnaire_initial_phase"
-  | "questionnaire_incomplete";
+  | "questionnaire_incomplete"
+  | "unverified_rules"
+  | "unverified_standards"
+  | "no_standards"
+  | "rules_no_go"
+  | "rules_not_evaluated"
+  | "geometry_incomplete";
 
 export interface ConditionResult {
   id: string;
@@ -82,6 +94,26 @@ function evaluateCondition(c: GateCondition, ctx: GateContext): ConditionResult 
       const q = ctx.questionnaire;
       if (!q || q.phase !== "DETAILED") return { ...base, met: false, failure: "questionnaire_initial_phase" };
       if (q.missing > 0) return { ...base, met: false, failure: "questionnaire_incomplete", details: [String(q.missing)] };
+      return { ...base, met: true };
+    }
+    case "standardsVerified": {
+      const v = ctx.verification;
+      if (!v || v.standardsCount === 0) return { ...base, met: false, failure: "no_standards" };
+      if (v.unverifiedStandards.length) return { ...base, met: false, failure: "unverified_standards", details: v.unverifiedStandards };
+      if (v.unverifiedRules.length) return { ...base, met: false, failure: "unverified_rules", details: v.unverifiedRules };
+      return { ...base, met: true };
+    }
+    case "rulesNoNoGo": {
+      const r = ctx.rules;
+      if (!r) return { ...base, met: false, failure: "rules_not_evaluated", details: [] };
+      if (r.noGo.length) return { ...base, met: false, failure: "rules_no_go", details: r.noGo };
+      if (r.notEvaluated.length) return { ...base, met: false, failure: "rules_not_evaluated", details: r.notEvaluated };
+      return { ...base, met: true };
+    }
+    case "layoutGeometryComplete": {
+      const missing = ctx.layoutGeometry?.[c.which] ?? null;
+      if (missing === null) return { ...base, met: false, failure: "no_layout" };
+      if (missing > 0) return { ...base, met: false, failure: "geometry_incomplete", details: [String(missing)] };
       return { ...base, met: true };
     }
     case "pendingFeature":

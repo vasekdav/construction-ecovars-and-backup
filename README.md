@@ -44,6 +44,7 @@ Webová aplikace pro řízení projektů záložních stanic O₂ / N₂ (LOX/LI
 | `npm run typecheck` | TypeScript (strict) |
 | `npm test` | Vitest: unit testy; integrační testy proti Postgresu, pokud je nastaveno `TEST_DATABASE_URL` |
 | `npm run test:coverage` | totéž s pokrytím a prahy |
+| `npm run db:sync-rules` | import nových pravidel z `data/rules` a kandidátních standardů (bezpečné i v produkci, neobsahuje hodnoty parametrů) |
 | `npm run test:e2e` | Playwright; vyžaduje předchozí `npm run build`, migrovanou a naseedovanou DB a proměnné prostředí |
 
 Integrační testy používají vlastní databázi (`TEST_DATABASE_URL`) a migrace na ni aplikují samy.

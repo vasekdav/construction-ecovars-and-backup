@@ -1,5 +1,19 @@
 # Changelog
 
+## Fáze 3: Rule engine + Safety Review (2026-11-11)
+- `lib/rules`: čistý TS rule engine. Podmínky jsou data (AST validovaný přes Zod), vyhodnocení probíhá v tříhodnotové logice. Chybějící parametr dává vždy NEVYHODNOCENO, chybějící vstup NEVYHODNOCENO, pokud výsledek nerozhodnou jiné vstupy. Výsledek nikdy není GO, když něco chybí.
+- 21 startovních pravidel (`data/rules/*.json`) s plnou definicí podle SPEC §7.1: stav DRAFT, parametry bez hodnot (TBD-VERIFY), zdroj podle SPEC (kde SPEC normu výslovně neuvádí, je označena jako „kandidát“), kapitola TBD-VERIFY. Seznam lze rozšiřovat bez změny kódu (`npm run db:sync-rules`).
+- Pro každé pravidlo testy GO, NO-GO/WARNING a NEVYHODNOCENO. Pokrytí `lib/rules` 97–100 %.
+- Vstupy pravidel: DesignBasis (dotazník), geometrie layoutu (k verzi layoutu, pravidla používají nejnovější verzi), návrhový checklist P&ID. Sizing a autonomie přijdou ve fázi 4.
+- Pravidla v DB s verzemi: každá úprava parametrů nebo citace vytvoří novou verzi DRAFT. VERIFIED nastavuje jen Process Safety, a to po doplnění všech parametrů a citace. Parametry mají hodnotu zvlášť pro O₂ a N₂ a jednotku.
+- Standardy (krok 5): kandidáti ze SPEC §7.3, ověření vyžaduje revizi, úprava vrací do stavu DRAFT.
+- Safety Review: banner „Podpora rozhodování…“, souhrn a filtr podle výsledku, detail s použitými vstupy, parametry (TBD-VERIFY), podmínkou, zdrojem a verzí, štítek DRAFT, doporučená náprava.
+- Override NO-GO jen pro Process Safety, s povinným zdůvodněním. Je vázaný na verzi pravidla a otisk vstupů a parametrů, takže při změně vstupů přestane platit. Lze ho zrušit. Vše jde do audit logu.
+- Snapshoty vyhodnocení (RuleEvaluation) pro reprodukovatelnost.
+- Gate: krok 3 vyžaduje kompletní rozměry layoutu v0; kroky 4, 8 a 9 vyžadují vyhodnocená pravidla bez NO-GO (NEVYHODNOCENO také blokuje); krok 5 vyžaduje, aby všechny standardy a pravidla použitá v projektu byly VERIFIED.
+- Dashboard: počty NO-GO / WARNING / NEVYHODNOCENO a banner. Detail kroku s pravidlovou gate má banner a formulář geometrie layoutu. Nové stránky Pravidla a Standardy.
+- Testy: 282 unit a integračních, 12 e2e.
+
 ## Fáze 2: Dotazník + DesignBasis (2026-11-11)
 - `lib/units`: centrální převody jednotek (průtok v Nm³, přetlak a absolutní tlak jako oddělené veličiny, teplota, délka, plocha, objem, čas, hmotnost, podíl). Ukládá se SI hodnota spolu se zadanou hodnotou a jednotkou. Pokrytí testy 100 %.
 - Zákaznický dotazník jako verzovaná JSON šablona (`data/questionnaire/default.json`): 10 sekcí podle SPEC §5, povinné i volitelné položky, dvě fáze (počáteční / detailní požadavky), podmíněné zobrazení podle média (N₂: uzavřené prostory, O₂: hořlaviny) i podle jiné odpovědi.

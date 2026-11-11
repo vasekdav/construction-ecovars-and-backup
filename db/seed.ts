@@ -8,6 +8,10 @@ import { hashPassword } from "../lib/auth/password";
 import { MIN_PASSWORD_LENGTH } from "../lib/auth/password-policy";
 import type { Role } from "../lib/auth/roles";
 import { saveAnswers } from "../lib/questionnaire/service";
+import { loadRuleFiles } from "../lib/rules/catalog";
+import { syncRules } from "../lib/safety/rules-service";
+import { syncStandards, type StandardCandidate } from "../lib/safety/standards-service";
+import standardsJson from "../data/standards/candidates.json";
 import {
   addDocumentLink,
   addTask,
@@ -33,17 +37,23 @@ export const DEMO_USERS: { email: string; name: string; roles: Role[] }[] = [
 async function main() {
   const url = process.env.DATABASE_URL;
   const password = process.env.SEED_DEMO_PASSWORD;
+  const rulesOnly = process.env.SEED_RULES_ONLY === "true";
   if (!url) throw new Error("DATABASE_URL is not set");
-  if (!password || password.length < MIN_PASSWORD_LENGTH) {
+  if (!rulesOnly && (!password || password.length < MIN_PASSWORD_LENGTH)) {
     throw new Error(`SEED_DEMO_PASSWORD must be set (min ${MIN_PASSWORD_LENGTH} characters)`);
   }
-  if (process.env.NODE_ENV === "production" && process.env.ALLOW_DEMO_SEED !== "true") {
+  if (!rulesOnly && process.env.NODE_ENV === "production" && process.env.ALLOW_DEMO_SEED !== "true") {
     throw new Error("Refusing to seed demo users in production (set ALLOW_DEMO_SEED=true to override).");
   }
 
   const { db, close } = createDb(url, { max: 1 });
   try {
-    const passwordHash = await hashPassword(password);
+    // Rules and standard candidates (DRAFT, no parameter values) – safe in every environment.
+    const newRules = await syncRules(db, loadRuleFiles());
+    const newStandards = await syncStandards(db, standardsJson.standards as StandardCandidate[]);
+    console.log(`Rules imported: ${newRules}, standards imported: ${newStandards}`);
+    if (rulesOnly) return;
+    const passwordHash = await hashPassword(password!);
     for (const u of DEMO_USERS) {
       await db.transaction(async (tx) => {
         const [existing] = await tx

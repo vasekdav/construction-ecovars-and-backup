@@ -15,6 +15,8 @@ export async function AppHeader() {
         {user && (
           <nav className="flex flex-1 flex-wrap items-center gap-4 text-sm">
             <Link href="/projects">{t("projects")}</Link>
+            <Link href="/rules">{t("rules")}</Link>
+            <Link href="/standards">{t("standards")}</Link>
             {can(user.roles, "user.manage") && <Link href="/admin/users">{t("users")}</Link>}
             {can(user.roles, "audit.read") && <Link href="/admin/audit">{t("audit")}</Link>}
             <span className="ml-auto opacity-80" data-testid="current-user">

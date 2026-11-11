@@ -97,6 +97,37 @@ describe("evaluateGate", () => {
     expect(one(c, { questionnaire: { phase: "DETAILED", missing: 0 } }).met).toBe(true);
   });
 
+  it("standardsVerified needs standards and no unverified items", () => {
+    const c: GateCondition = { id: "s", type: "standardsVerified", label: L };
+    expect(one(c, {})).toMatchObject({ met: false, failure: "no_standards" });
+    expect(one(c, { verification: { unverifiedRules: [], unverifiedStandards: [], standardsCount: 0 } })).toMatchObject({ failure: "no_standards" });
+    expect(one(c, { verification: { unverifiedRules: ["R-1"], unverifiedStandards: ["EIGA"], standardsCount: 2 } })).toMatchObject({
+      failure: "unverified_standards",
+      details: ["EIGA"],
+    });
+    expect(one(c, { verification: { unverifiedRules: ["R-1"], unverifiedStandards: [], standardsCount: 2 } })).toMatchObject({
+      failure: "unverified_rules",
+      details: ["R-1"],
+    });
+    expect(one(c, { verification: { unverifiedRules: [], unverifiedStandards: [], standardsCount: 2 } }).met).toBe(true);
+  });
+
+  it("rulesNoNoGo blocks on NO-GO and on NEVYHODNOCENO", () => {
+    const c: GateCondition = { id: "r", type: "rulesNoNoGo", label: L };
+    expect(one(c, {})).toMatchObject({ met: false, failure: "rules_not_evaluated" });
+    expect(one(c, { rules: { noGo: ["R-A"], notEvaluated: ["R-B"] } })).toMatchObject({ failure: "rules_no_go", details: ["R-A"] });
+    expect(one(c, { rules: { noGo: [], notEvaluated: ["R-B"] } })).toMatchObject({ failure: "rules_not_evaluated", details: ["R-B"] });
+    expect(one(c, { rules: { noGo: [], notEvaluated: [] } }).met).toBe(true);
+  });
+
+  it("layoutGeometryComplete", () => {
+    const c: GateCondition = { id: "g", type: "layoutGeometryComplete", which: "concept", label: L };
+    expect(one(c, {})).toMatchObject({ met: false, failure: "no_layout" });
+    expect(one(c, { layoutGeometry: { concept: null, final: 0 } })).toMatchObject({ failure: "no_layout" });
+    expect(one(c, { layoutGeometry: { concept: 4, final: null } })).toMatchObject({ failure: "geometry_incomplete", details: ["4"] });
+    expect(one(c, { layoutGeometry: { concept: 0, final: null } }).met).toBe(true);
+  });
+
   it("pendingFeature is never met (safe default until the feature exists)", () => {
     const c: GateCondition = { id: "p", type: "pendingFeature", phase: 3, label: L };
     expect(one(c, {})).toMatchObject({ met: false, failure: "pending_feature", details: ["3"] });

@@ -1,0 +1,48 @@
+{
+  "id": "R-PSV-02",
+  "version": 1,
+  "category": "Relief",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Výstup pojistek a odfuků",
+    "en": "Relief and vent discharge"
+  },
+  "inputs": [
+    {
+      "key": "design.vent_discharge_safe",
+      "label": {
+        "cs": "Výstup pojistek na bezpečné místo",
+        "en": "Relief discharge to a safe location"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "isTrue",
+    "value": {
+      "input": "design.vent_discharge_safe"
+    }
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Výstup pojistek nebo odfuků není vyveden na bezpečné místo (O₂: mimo zdroje zapálení a nasávání vzduchu; N₂: mimo prostory s pobytem osob).",
+    "en": "Relief or vent outlets do not discharge to a safe location."
+  },
+  "remediation": {
+    "cs": "Přeložit výstupy na bezpečné místo.",
+    "en": "Reroute discharges to a safe location."
+  },
+  "source": {
+    "document": "EIGA Doc 04 / Doc 44 (kandidát) + interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

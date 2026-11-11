@@ -32,8 +32,8 @@ Kroky 1–10 a jejich závislosti (`1 → 2 → {4, 5, 7} → 8 → {3, 9} → 6
 ## ADR-010 Vazba pravidlo → krok
 Pole `stages` v datech pravidla určuje, jehož gate NO-GO blokuje. Výchozí návrh (otevřená otázka 9):
 - krok 8: R-CAP-01, R-VAP-02, R-ENV-01
-- kroky 3 a 9: R-SD-01, R-SD-02, R-VAP-03, R-ACC-01, R-ACC-02, R-FIL-01, R-SIG-01
-- krok 4: R-O2-01, R-O2-02, R-O2-03, R-MAT-01, R-VAP-01, R-PSV-01, R-PSV-02, R-CTL-01, R-CTL-02, R-CTL-03, R-MON-01
+- krok 9 (layout): R-SD-01, R-SD-02, R-O2-02, R-VAP-03, R-ACC-01, R-ACC-02, R-FIL-01, R-SIG-01 (upraveno ve fázi 3: krok 3 je koncept a vyžaduje jen vyplněné rozměry, viz ADR-028)
+- krok 4: R-O2-01, R-O2-03, R-MAT-01, R-VAP-01, R-PSV-01, R-PSV-02, R-CTL-01, R-CTL-02, R-CTL-03, R-MON-01
 
 ## ADR-011 Politika `npm audit`
 CI blokuje každou zranitelnost od úrovně moderate v runtime závislostech a od úrovně high ve všech závislostech. K 2026-11-11 jsou známé dvě moderate zranitelnosti, obě jen ve vývojových nástrojích (esbuild v `drizzle-kit`, minimatch v `typescript-eslint`); oprava vyžaduje downgrade. Nejsou součástí produkčního bundle, sledujeme je přes Dependabot.
@@ -73,3 +73,23 @@ Ukládá se SI hodnota spolu se zadanou hodnotou a jednotkou (`Quantity`). Zákl
 
 ## ADR-023 Změna šablony procesu v1
 Gate kroku 7 se změnila z `pendingFeature` na `questionnaireComplete` přímo ve verzi 1 šablony, protože zatím neexistují nasazená data. Každá další změna šablony po nasazení zvýší verzi; běžící projekty zůstanou na své verzi (otevřená otázka 23).
+
+## ADR-024 Sémantika vyhodnocení pravidel
+Logika je tříhodnotová (Kleene: T / F / U). Chybějící **parametr** dává vždy NEVYHODNOCENO, protože neověřená hodnota nesmí produkovat verdikt. Chybějící **vstup** dává NEVYHODNOCENO, pokud výsledek nerozhodnou ostatní vstupy (např. `OR(žádné chladicí věže, vzdálenost ≥ limit)`). `exists` u chybějícího vstupu vrací U. Výsledek je GO, jen když je podmínka prokazatelně splněna.
+
+## ADR-025 Uložení a verzování pravidel
+`data/rules/*.json` je startovní katalog. `npm run db:sync-rules` (součást `db:seed`) vkládá dvojice (id, verze), které v DB ještě nejsou, a existující verze nikdy nemění. Úpravy v UI (parametry, citace) vytvářejí novou verzi ve stavu DRAFT; ověření se nepřenáší. VERIFIED nastavuje jen Process Safety, a to jen u nejnovější verze, se všemi parametry vyplněnými pro všechna platná média a s citací bez TBD-VERIFY. Hodnoty parametrů jsou per médium (O₂ / N₂) jako `Quantity` (SI hodnota + zadaná jednotka).
+
+## ADR-026 Vstupy pravidel
+Jmenné prostory: `db.*` (DesignBasis z dotazníku), `layout.*` (geometrie nejnovější verze layoutu), `design.*` (návrhový checklist P&ID), `sizing.*` a `calc.*` (fáze 4). Geometrie se ukládá k verzi layoutu (`layout_versions.geometry`) a edituje se v kroku 3 (v0) nebo 9 (vN). Checklist vyplňují OAM, OPS, ROC, Process Safety a Sizing a po uzavření kroku 4 se zmrazí. Formuláře používají stejný formát šablon jako dotazník.
+
+## ADR-027 Override a snapshoty
+Override NO-GO smí jen Process Safety, s povinným zdůvodněním (min. 10 znaků). Je vázaný na verzi pravidla a na SHA-256 otisk vstupů a parametrů: když se cokoli, na čem výsledek závisí, změní, override přestane platit a NO-GO znovu blokuje. Override jde zrušit s důvodem. Vše je v audit logu. Snapshot uloží výsledky všech platných pravidel včetně vstupů, parametrů, verzí a informace o overridech (tabulka `rule_evaluations`).
+
+## ADR-028 Gate napojené na pravidla
+- Krok 3: všechny povinné rozměry layoutu v0 vyplněny (`layoutGeometryComplete`).
+- Kroky 4, 8, 9: pravidla mapovaná na krok nemají blokující NO-GO **a ani NEVYHODNOCENO** (`rulesNoNoGo`). NEVYHODNOCENO blokuje, protože jinak by chybějící parametr gate propustil. WARNING neblokuje (otevřená otázka 25).
+- Krok 5: všechny standardy a pravidla platné pro médium projektu jsou VERIFIED a seznam standardů není prázdný (`standardsVerified`).
+
+## ADR-029 Standardy
+Seznam standardů je společný pro všechny projekty a u každého je uvedeno, pro které médium platí. Kandidáti jsou ze SPEC §7.3. Ověření vyžaduje vyplněnou revizi; každá úprava vrací standard do stavu DRAFT.

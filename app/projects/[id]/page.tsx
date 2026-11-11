@@ -12,6 +12,9 @@ import { requirePermission } from "@/lib/auth/session";
 import { asLocale } from "@/lib/i18n-helpers";
 import { canManageStage } from "@/lib/workflow/permissions";
 import { getQuestionnaire } from "@/lib/questionnaire/service";
+import { evaluateProject } from "@/lib/safety/project";
+import { DecisionSupportBanner } from "@/components/decision-support-banner";
+import { ResultBadge } from "@/components/result-badge";
 import { getProjectOverview } from "@/lib/workflow/queries";
 import { appliesToMedium } from "@/lib/workflow/template";
 import { stageEnabledAction } from "../actions";
@@ -24,6 +27,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const data = await getProjectOverview(db, id);
   if (!data) notFound();
   const questionnaire = await getQuestionnaire(db, id);
+  const safety = await evaluateProject(db, id);
   const { project, stages, deadlines, names } = data;
   const locale = asLocale(await getLocale());
   const [t, tMedium, tStatus, tRoles, tQ, format] = await Promise.all([
@@ -54,6 +58,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
         </p>
       </div>
 
+      <DecisionSupportBanner />
+
       <Card>
         <StageTimeline
           projectId={project.id}
@@ -75,10 +81,22 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
       </Card>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card>
+        <Card data-testid="risk-card">
           <CardTitle>{t("openRisks")}</CardTitle>
-          <p className="text-3xl font-semibold text-muted-foreground">—</p>
-          <p className="mt-2 text-xs text-muted-foreground">{t("risksPending")}</p>
+          <div className="flex flex-wrap gap-4">
+            <span className="flex items-center gap-2" data-testid="open-nogo">
+              <ResultBadge result="NO-GO" /> <span className="text-2xl font-semibold">{safety?.counts["NO-GO"] ?? 0}</span>
+            </span>
+            <span className="flex items-center gap-2" data-testid="open-warning">
+              <ResultBadge result="WARNING" /> <span className="text-2xl font-semibold">{safety?.counts.WARNING ?? 0}</span>
+            </span>
+            <span className="flex items-center gap-2">
+              <ResultBadge result="NOT_EVALUATED" /> <span className="text-lg">{safety?.counts.NOT_EVALUATED ?? 0}</span>
+            </span>
+          </div>
+          <Link href={`/projects/${project.id}/safety`} className="mt-3 inline-block text-sm font-medium text-primary underline">
+            {t("openRisksLink")} →
+          </Link>
         </Card>
         <Card>
           <CardTitle>{t("deadlines")}</CardTitle>

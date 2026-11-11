@@ -1,0 +1,349 @@
+import { createHash, randomUUID } from "node:crypto";
+import { and, desc, eq, isNull } from "drizzle-orm";
+import { z } from "zod";
+import type { Db, DbOrTx } from "@/db/client";
+import {
+  designBases,
+  designInputs,
+  layoutVersions,
+  projects,
+  ruleEvaluations,
+  ruleOverrides,
+  stages,
+  type Project,
+} from "@/db/schema";
+import { writeAudit } from "@/lib/audit";
+import { assertCan, can, ForbiddenError } from "@/lib/auth/rbac";
+import { DESIGN_CHECKLIST_FORM, LAYOUT_GEOMETRY_FORM } from "@/lib/forms";
+import type { Answers } from "@/lib/questionnaire/answers";
+import { applyRawAnswers } from "@/lib/questionnaire/apply";
+import { completeness } from "@/lib/questionnaire/completeness";
+import { buildRuleInputs } from "@/lib/rules/inputs";
+import { evaluateRule, evaluationFingerprint, type Rule, type RuleEvaluation, type RuleResult } from "@/lib/rules/rule";
+import { canEditStage } from "@/lib/workflow/permissions";
+import { getTemplate, stageTemplate, type Medium } from "@/lib/workflow/template";
+import { FormValidationError, SafetyServiceError, type Actor } from "./errors";
+import { listCurrentRules } from "./rules-service";
+import { listStandards } from "./standards-service";
+
+// ------------------------------------------------------------------ inputs
+
+/** Sizing / calculation inputs; filled in phase 4 (until then rules depending on them are NEVYHODNOCENO). */
+export type ExtraInputsProvider = (db: DbOrTx, project: Project) => Promise<{
+  sizing: Record<string, number | string | boolean | undefined>;
+  calc: Record<string, number | string | boolean | undefined>;
+}>;
+
+let extraInputs: ExtraInputsProvider = async () => ({ sizing: {}, calc: {} });
+export function setExtraInputsProvider(p: ExtraInputsProvider): void {
+  extraInputs = p;
+}
+
+export async function loadProjectRuleInputs(db: DbOrTx, project: Project) {
+  const [basis] = await db.select().from(designBases).where(eq(designBases.projectId, project.id));
+  const [layout] = await db
+    .select()
+    .from(layoutVersions)
+    .where(eq(layoutVersions.projectId, project.id))
+    .orderBy(desc(layoutVersions.version))
+    .limit(1);
+  const [design] = await db.select().from(designInputs).where(eq(designInputs.projectId, project.id));
+  const extra = await extraInputs(db, project);
+  const inputs = buildRuleInputs({
+    medium: project.medium,
+    designBasis: basis?.data ?? null,
+    layout: layout ? { form: LAYOUT_GEOMETRY_FORM, answers: (layout.geometry as Answers | null) ?? {} } : null,
+    design: design ? { form: DESIGN_CHECKLIST_FORM, answers: design.answers } : null,
+    sizing: extra.sizing,
+    calc: extra.calc,
+  });
+  return { inputs, layoutVersion: layout?.version ?? null };
+}
+
+// ------------------------------------------------------------------ evaluation
+
+export function fingerprintHash(e: Pick<RuleEvaluation, "ruleId" | "ruleVersion" | "inputs" | "params">): string {
+  return createHash("sha256").update(evaluationFingerprint(e)).digest("hex");
+}
+
+export interface ProjectRuleResult extends RuleEvaluation {
+  rule: Rule;
+  fingerprint: string;
+  override: typeof ruleOverrides.$inferSelect | null;
+  /** NO-GO that is not overridden. */
+  blocking: boolean;
+}
+
+export interface ProjectEvaluation {
+  project: Project;
+  medium: Medium;
+  layoutVersion: number | null;
+  inputs: Record<string, number | string | boolean>;
+  results: ProjectRuleResult[];
+  counts: Record<RuleResult, number> & { overridden: number; draft: number };
+  byStage: Record<string, { noGo: string[]; notEvaluated: string[] }>;
+}
+
+export async function evaluateProject(db: DbOrTx, projectId: string): Promise<ProjectEvaluation | null> {
+  const [project] = await db.select().from(projects).where(eq(projects.id, projectId));
+  if (!project) return null;
+  const { inputs, layoutVersion } = await loadProjectRuleInputs(db, project);
+  const current = await listCurrentRules(db);
+  const overrides = await db
+    .select()
+    .from(ruleOverrides)
+    .where(and(eq(ruleOverrides.projectId, projectId), isNull(ruleOverrides.revokedAt)));
+
+  const results: ProjectRuleResult[] = [];
+  for (const { rule } of current) {
+    const e = evaluateRule(rule, project.medium, inputs);
+    if (!e) continue;
+    const fingerprint = fingerprintHash(e);
+    const override =
+      e.result === "NO-GO"
+        ? (overrides.find((o) => o.ruleId === rule.id && o.ruleVersion === rule.version && o.fingerprint === fingerprint) ?? null)
+        : null;
+    results.push({ ...e, rule, fingerprint, override, blocking: e.result === "NO-GO" && !override });
+  }
+
+  const counts: ProjectEvaluation["counts"] = { GO: 0, WARNING: 0, "NO-GO": 0, NOT_EVALUATED: 0, overridden: 0, draft: 0 };
+  const byStage: ProjectEvaluation["byStage"] = {};
+  for (const r of results) {
+    if (r.result === "NO-GO" && r.override) counts.overridden += 1;
+    else counts[r.result] += 1;
+    if (r.status === "DRAFT") counts.draft += 1;
+    for (const s of r.rule.stages) {
+      const b = (byStage[s] ??= { noGo: [], notEvaluated: [] });
+      if (r.blocking) b.noGo.push(r.ruleId);
+      if (r.result === "NOT_EVALUATED") b.notEvaluated.push(r.ruleId);
+    }
+  }
+  return { project, medium: project.medium, layoutVersion, inputs, results, counts, byStage };
+}
+
+/** Rules and standards applicable to the medium that are not VERIFIED (step 5 gate). */
+export async function verificationStatus(db: DbOrTx, medium: Medium) {
+  const current = await listCurrentRules(db);
+  const stds = await listStandards(db);
+  const applicable = stds.filter((s) => s.appliesTo.includes(medium));
+  return {
+    unverifiedRules: current.filter((r) => r.rule.appliesTo.includes(medium) && r.status !== "VERIFIED").map((r) => r.rule.id),
+    unverifiedStandards: applicable.filter((s) => s.status !== "VERIFIED").map((s) => s.code),
+    standardsCount: applicable.length,
+  };
+}
+
+/** Missing required geometry inputs of the concept (v0) and the latest final (v1+) layout. */
+export async function layoutGeometryStatus(db: DbOrTx, projectId: string, medium: Medium) {
+  const rows = await db.select().from(layoutVersions).where(eq(layoutVersions.projectId, projectId)).orderBy(desc(layoutVersions.version));
+  const missing = (geometry: unknown) =>
+    completeness(LAYOUT_GEOMETRY_FORM, { medium, answers: (geometry as Answers | null) ?? {} }, "detailed").missing.length;
+  const concept = rows.find((r) => r.version === 0);
+  const final = rows.find((r) => r.version >= 1);
+  return { concept: concept ? missing(concept.geometry) : null, final: final ? missing(final.geometry) : null };
+}
+
+// ------------------------------------------------------------------ inputs editing
+
+const formInputSchema = z.object({ projectId: z.uuid(), answers: z.record(z.string().max(80), z.unknown()) });
+
+async function stageState(tx: DbOrTx, projectId: string, key: string) {
+  const [s] = await tx
+    .select({ state: stages.state })
+    .from(stages)
+    .where(and(eq(stages.projectId, projectId), eq(stages.key, key)));
+  return s?.state ?? null;
+}
+
+/** Design checklist (inputs of P&ID rules). Frozen once step 4 is closed. */
+export async function saveDesignInputs(db: Db, actor: Actor, input: unknown): Promise<number> {
+  const data = formInputSchema.parse(input);
+  if (!can(actor.roles, "design.write")) throw new ForbiddenError("design.write", data.projectId);
+  return db.transaction(async (tx) => {
+    const [project] = await tx.select().from(projects).where(eq(projects.id, data.projectId)).for("update");
+    if (!project) throw new SafetyServiceError("NOT_FOUND");
+    if ((await stageState(tx, project.id, "4")) === "CLOSED") throw new SafetyServiceError("STAGE_CLOSED");
+    const [existing] = await tx.select().from(designInputs).where(eq(designInputs.projectId, project.id));
+    const { next, changes, errors } = applyRawAnswers(DESIGN_CHECKLIST_FORM, existing?.answers ?? {}, data.answers);
+    if (Object.keys(errors).length) throw new FormValidationError(errors);
+    if (!Object.keys(changes).length) return 0;
+    const now = new Date();
+    await tx
+      .insert(designInputs)
+      .values({
+        projectId: project.id,
+        templateKey: DESIGN_CHECKLIST_FORM.key,
+        templateVersion: DESIGN_CHECKLIST_FORM.version,
+        answers: next,
+        updatedAt: now,
+        updatedBy: actor.id,
+      })
+      .onConflictDoUpdate({ target: designInputs.projectId, set: { answers: next, updatedAt: now, updatedBy: actor.id } });
+    await writeAudit(tx, {
+      actorUserId: actor.id,
+      action: "design.save",
+      entityType: "design_inputs",
+      entityId: project.id,
+      projectId: project.id,
+      after: { changes },
+    });
+    return Object.keys(changes).length;
+  });
+}
+
+/** Geometry of a layout version (v0 → step 3, vN → step 9). Frozen once the step is closed. */
+export async function saveLayoutGeometry(db: Db, actor: Actor, input: unknown): Promise<number> {
+  const data = formInputSchema.extend({ version: z.coerce.number().int().min(0) }).parse(input);
+  return db.transaction(async (tx) => {
+    const [project] = await tx.select().from(projects).where(eq(projects.id, data.projectId)).for("update");
+    if (!project) throw new SafetyServiceError("NOT_FOUND");
+    const [layout] = await tx
+      .select()
+      .from(layoutVersions)
+      .where(and(eq(layoutVersions.projectId, project.id), eq(layoutVersions.version, data.version)));
+    if (!layout) throw new SafetyServiceError("NO_LAYOUT_VERSION");
+    const tpl = getTemplate(project.templateKey, project.templateVersion);
+    const def = tpl.stages.find((s) => s.layout === (data.version === 0 ? "concept" : "final"));
+    if (!def) throw new SafetyServiceError("NO_LAYOUT_VERSION");
+    const state = await stageState(tx, project.id, def.key);
+    if (state === "CLOSED") throw new SafetyServiceError("STAGE_CLOSED");
+    if (!state || !canEditStage(actor.roles, stageTemplate(tpl, def.key), state)) {
+      throw new ForbiddenError(`stage.layout:${def.key}`, project.id);
+    }
+    const { next, changes, errors } = applyRawAnswers(LAYOUT_GEOMETRY_FORM, (layout.geometry as Answers | null) ?? {}, data.answers);
+    if (Object.keys(errors).length) throw new FormValidationError(errors);
+    if (!Object.keys(changes).length) return 0;
+    await tx.update(layoutVersions).set({ geometry: next }).where(eq(layoutVersions.id, layout.id));
+    await writeAudit(tx, {
+      actorUserId: actor.id,
+      action: "layout.geometry",
+      entityType: "layout_version",
+      entityId: `${project.id}:v${layout.version}`,
+      projectId: project.id,
+      after: { version: layout.version, changes },
+    });
+    return Object.keys(changes).length;
+  });
+}
+
+// ------------------------------------------------------------------ overrides and snapshots
+
+/** Manual override of a NO-GO by Process Safety with a mandatory reason (SPEC §7.1). */
+export async function overrideNoGo(db: Db, actor: Actor, input: unknown): Promise<string> {
+  assertCan(actor.roles, "rule.override");
+  const data = z
+    .object({ projectId: z.uuid(), ruleId: z.string().min(1), reason: z.string().trim().min(10).max(2000) })
+    .parse(input);
+  return db.transaction(async (tx) => {
+    await tx.select({ id: projects.id }).from(projects).where(eq(projects.id, data.projectId)).for("update");
+    const evaluation = await evaluateProject(tx, data.projectId);
+    if (!evaluation) throw new SafetyServiceError("NOT_FOUND");
+    const r = evaluation.results.find((x) => x.ruleId === data.ruleId);
+    if (!r) throw new SafetyServiceError("NOT_FOUND");
+    if (r.result !== "NO-GO") throw new SafetyServiceError("NOT_NO_GO");
+    if (r.override) throw new SafetyServiceError("ALREADY_OVERRIDDEN");
+    const [row] = await tx
+      .insert(ruleOverrides)
+      .values({
+        projectId: data.projectId,
+        ruleId: r.ruleId,
+        ruleVersion: r.ruleVersion,
+        fingerprint: r.fingerprint,
+        reason: data.reason,
+        createdBy: actor.id,
+      })
+      .returning({ id: ruleOverrides.id });
+    await writeAudit(tx, {
+      actorUserId: actor.id,
+      action: "rule.override",
+      entityType: "rule",
+      entityId: `${r.ruleId}@${r.ruleVersion}`,
+      projectId: data.projectId,
+      after: { result: "NO-GO", inputs: r.inputs, params: r.params, fingerprint: r.fingerprint },
+      reason: data.reason,
+    });
+    return row!.id;
+  });
+}
+
+export async function revokeOverride(db: Db, actor: Actor, input: unknown): Promise<void> {
+  assertCan(actor.roles, "rule.override");
+  const data = z.object({ overrideId: z.uuid(), reason: z.string().trim().min(1).max(2000) }).parse(input);
+  await db.transaction(async (tx) => {
+    const [o] = await tx.select().from(ruleOverrides).where(eq(ruleOverrides.id, data.overrideId)).for("update");
+    if (!o || o.revokedAt) throw new SafetyServiceError("NOT_FOUND");
+    await tx
+      .update(ruleOverrides)
+      .set({ revokedAt: new Date(), revokedBy: actor.id, revokeReason: data.reason })
+      .where(eq(ruleOverrides.id, o.id));
+    await writeAudit(tx, {
+      actorUserId: actor.id,
+      action: "rule.override_revoke",
+      entityType: "rule",
+      entityId: `${o.ruleId}@${o.ruleVersion}`,
+      projectId: o.projectId,
+      reason: data.reason,
+    });
+  });
+}
+
+export async function listOverrides(db: DbOrTx, projectId: string) {
+  return db.select().from(ruleOverrides).where(eq(ruleOverrides.projectId, projectId)).orderBy(desc(ruleOverrides.createdAt));
+}
+
+/** Store a reproducible snapshot of the current evaluation (SPEC §4 RuleEvaluation). */
+export async function saveEvaluationSnapshot(db: Db, actor: Actor, input: unknown): Promise<string> {
+  assertCan(actor.roles, "safety.snapshot");
+  const { projectId } = z.object({ projectId: z.uuid() }).parse(input);
+  return db.transaction(async (tx) => {
+    const evaluation = await evaluateProject(tx, projectId);
+    if (!evaluation) throw new SafetyServiceError("NOT_FOUND");
+    const runId = randomUUID();
+    if (evaluation.results.length) {
+      await tx.insert(ruleEvaluations).values(
+        evaluation.results.map((r) => ({
+          runId,
+          projectId,
+          ruleId: r.ruleId,
+          ruleVersion: r.ruleVersion,
+          ruleStatus: r.status,
+          result: r.result,
+          overridden: !!r.override,
+          inputs: r.inputs,
+          params: r.params,
+          details: { missingInputs: r.missingInputs, missingParams: r.missingParams, fingerprint: r.fingerprint, overrideId: r.override?.id ?? null },
+          evaluatedBy: actor.id,
+        })),
+      );
+    }
+    await writeAudit(tx, {
+      actorUserId: actor.id,
+      action: "safety.snapshot",
+      entityType: "rule_evaluation_run",
+      entityId: runId,
+      projectId,
+      after: { counts: evaluation.counts, layoutVersion: evaluation.layoutVersion },
+    });
+    return runId;
+  });
+}
+
+export async function listSnapshots(db: DbOrTx, projectId: string) {
+  const rows = await db
+    .select({ runId: ruleEvaluations.runId, evaluatedAt: ruleEvaluations.evaluatedAt, evaluatedBy: ruleEvaluations.evaluatedBy, result: ruleEvaluations.result })
+    .from(ruleEvaluations)
+    .where(eq(ruleEvaluations.projectId, projectId))
+    .orderBy(desc(ruleEvaluations.evaluatedAt));
+  const runs = new Map<string, { runId: string; evaluatedAt: Date; evaluatedBy: string; counts: Record<string, number> }>();
+  for (const r of rows) {
+    const run = runs.get(r.runId) ?? { runId: r.runId, evaluatedAt: r.evaluatedAt, evaluatedBy: r.evaluatedBy, counts: {} };
+    run.counts[r.result] = (run.counts[r.result] ?? 0) + 1;
+    runs.set(r.runId, run);
+  }
+  return [...runs.values()];
+}
+
+export async function getDesignInputs(db: DbOrTx, projectId: string) {
+  const [row] = await db.select().from(designInputs).where(eq(designInputs.projectId, projectId));
+  return row ?? null;
+}

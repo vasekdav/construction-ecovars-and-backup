@@ -1,0 +1,82 @@
+{
+  "id": "R-ACC-01",
+  "version": 1,
+  "category": "Přístupnost",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Přístup k armaturám",
+    "en": "Access to valves"
+  },
+  "inputs": [
+    {
+      "key": "layout.access_blocked",
+      "label": {
+        "cs": "Přístup k armatuře blokován",
+        "en": "Valve access blocked"
+      }
+    },
+    {
+      "key": "layout.min_access_width",
+      "label": {
+        "cs": "Nejmenší šířka přístupu",
+        "en": "Minimum access width"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "key": "min_access_width",
+      "label": {
+        "cs": "Min. šířka přístupu",
+        "en": "Min. access width"
+      },
+      "dimension": "length",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    }
+  ],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "gte",
+        "left": {
+          "input": "layout.min_access_width"
+        },
+        "right": {
+          "param": "min_access_width"
+        }
+      },
+      {
+        "op": "isFalse",
+        "value": {
+          "input": "layout.access_blocked"
+        }
+      }
+    ]
+  },
+  "severity": "WARNING",
+  "message": {
+    "cs": "Armatury nebo instrumenty vyžadující údržbu nemají volný přístup minimální šířky nebo je blokuje zeď či zařízení.",
+    "en": "Valves or instruments requiring maintenance lack free access of minimum width or are blocked."
+  },
+  "remediation": {
+    "cs": "Upravit layout pro volný přístup.",
+    "en": "Adjust the layout for free access."
+  },
+  "source": {
+    "document": "Interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "9"
+  ]
+}

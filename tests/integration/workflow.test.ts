@@ -183,7 +183,13 @@ describe.skipIf(!hasDb)("workflow service (Postgres)", () => {
     if (!blocked.ok) expect(blocked.gate?.results.find((r) => !r.met)).toMatchObject({ id: "comments_closed", details: ["1"] });
 
     await setTaskDone(db, as("ROC"), { taskId, done: true });
-    expect(await transitionStage(db, as("OAM"), { stageId: s4, transition: "close" })).toEqual({ ok: true, to: "CLOSED" });
+    // Everything but the P&ID rule checks is satisfied now (rules: tests/integration/safety.test.ts).
+    const rest = await transitionStage(db, as("OAM"), { stageId: s4, transition: "close" });
+    expect(rest.ok).toBe(false);
+    if (!rest.ok) expect(rest.gate?.results.filter((r) => !r.met).map((r) => r.id)).toEqual(["pid_rules"]);
+
+    // A closed step is frozen (simulate closing; the full rule path is covered in safety.test.ts).
+    await db.update(stages).set({ state: "CLOSED" }).where(eq(stages.id, s4));
     await expect(setTaskDone(db, as("ROC"), { taskId, done: false })).rejects.toThrow("STAGE_CLOSED");
   });
 

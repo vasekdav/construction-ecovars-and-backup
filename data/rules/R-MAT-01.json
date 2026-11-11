@@ -1,0 +1,66 @@
+{
+  "id": "R-MAT-01",
+  "version": 1,
+  "category": "Materiály",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Materiály pro kryogenní teploty",
+    "en": "Materials for cryogenic temperatures"
+  },
+  "inputs": [
+    {
+      "key": "design.carbon_steel_below_min_temp",
+      "label": {
+        "cs": "Uhlíková ocel pod min. návrhovou teplotou",
+        "en": "Carbon steel below minimum design temperature"
+      }
+    },
+    {
+      "key": "design.materials_suitable_min_temp",
+      "label": {
+        "cs": "Materiály vhodné pro minimální teplotu",
+        "en": "Materials suitable for minimum temperature"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.materials_suitable_min_temp"
+        }
+      },
+      {
+        "op": "isFalse",
+        "value": {
+          "input": "design.carbon_steel_below_min_temp"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Některé části ve styku s kryogenní kapalinou nebo studeným plynem nejsou z materiálu vhodného pro minimální teplotu.",
+    "en": "Some parts in contact with cryogenic liquid or cold gas are not suitable for the minimum temperature."
+  },
+  "remediation": {
+    "cs": "Nahradit materiál vhodným pro minimální teplotu.",
+    "en": "Replace with material suitable for the minimum temperature."
+  },
+  "source": {
+    "document": "ASME B31.3 / ČSN EN (kandidát) + interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

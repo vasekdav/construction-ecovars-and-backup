@@ -1,0 +1,79 @@
+{
+  "id": "R-VAP-02",
+  "version": 1,
+  "category": "Vaporizer",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Kapacita odpařovače s rezervou",
+    "en": "Vaporizer capacity with margin"
+  },
+  "inputs": [
+    {
+      "key": "db.qPeak",
+      "label": {
+        "cs": "Q_peak (dotazník)",
+        "en": "Q_peak (questionnaire)"
+      }
+    },
+    {
+      "key": "sizing.capacity_after_icing",
+      "label": {
+        "cs": "Kapacita odpařovače po degradaci námrazou při min. teplotě (sizing)",
+        "en": "Vaporizer capacity after icing at minimum temperature (sizing)"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "key": "capacity_margin_factor",
+      "label": {
+        "cs": "Součinitel rezervy kapacity",
+        "en": "Capacity margin factor"
+      },
+      "dimension": "fraction",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    }
+  ],
+  "condition": {
+    "op": "gte",
+    "left": {
+      "input": "sizing.capacity_after_icing"
+    },
+    "right": {
+      "op": "mul",
+      "args": [
+        {
+          "input": "db.qPeak"
+        },
+        {
+          "param": "capacity_margin_factor"
+        }
+      ]
+    }
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Kapacita odpařovače po zohlednění degradace námrazou a minimální návrhové teploty nepokrývá Q_peak × součinitel rezervy.",
+    "en": "Vaporizer capacity after icing degradation at minimum design temperature does not cover Q_peak × margin factor."
+  },
+  "remediation": {
+    "cs": "Zvětšit odpařovač (počet nebo typ modulů) a přepočítat sizing.",
+    "en": "Increase vaporizer size (number or type of modules) and re-run sizing."
+  },
+  "source": {
+    "document": "AAE sizing nástroj + interní standard (kandidát: CGA P-56)",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "8"
+  ]
+}

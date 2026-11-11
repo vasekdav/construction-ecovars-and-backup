@@ -56,7 +56,7 @@
       "layout": "concept",
       "gate": [
         { "id": "layout_concept", "type": "layoutVersion", "which": "concept", "requireDrawing": true },
-        { "id": "layout_dimensions", "type": "pendingFeature", "phase": 3, "label": { "cs": "Vyplněné rozměry pro kontrolu pravidel (SPEC §7)", "en": "Dimensions for rule checks filled in (SPEC §7)" } }
+        { "id": "layout_dimensions", "type": "layoutGeometryComplete", "which": "concept", "label": { "cs": "Vyplněné rozměry pro kontrolu pravidel (layout v0)", "en": "Dimensions for rule checks filled in (layout v0)" } }
       ]
     },
     {
@@ -69,7 +69,8 @@
       "gate": [
         { "id": "comments_closed", "type": "allTasksDone", "label": { "cs": "Všechny připomínky (úkoly) uzavřeny", "en": "All review comments (tasks) closed" } },
         { "id": "pid_dwg_link", "type": "documentLinks", "kinds": ["pid_dwg"], "requireVersion": true, "requireDate": true },
-        { "id": "roc_confirmed", "type": "manualCheck", "roles": ["ROC"], "label": { "cs": "ROC / Třinec potvrdil dodání výkresu", "en": "ROC / Třinec confirmed drawing delivery" } }
+        { "id": "roc_confirmed", "type": "manualCheck", "roles": ["ROC"], "label": { "cs": "ROC / Třinec potvrdil dodání výkresu", "en": "ROC / Třinec confirmed drawing delivery" } },
+        { "id": "pid_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly P&ID (návrhový checklist) vyhodnoceny a bez NO-GO", "en": "P&ID checks (design checklist) evaluated without NO-GO" } }
       ]
     },
     {
@@ -80,7 +81,7 @@
       "ownerRoles": ["PROCESS_SAFETY"],
       "dependsOn": ["2"],
       "gate": [
-        { "id": "standards_verified", "type": "pendingFeature", "phase": 3, "label": { "cs": "Každý standard a pravidlo má stav VERIFIED", "en": "Every standard and rule is VERIFIED" } },
+        { "id": "standards_verified", "type": "standardsVerified", "label": { "cs": "Každý standard a pravidlo použité v projektu má stav VERIFIED", "en": "Every standard and rule used in the project is VERIFIED" } },
         { "id": "reviewer_approved", "type": "manualCheck", "roles": ["PROCESS_SAFETY"], "label": { "cs": "Process Safety reviewer schválil seznam", "en": "Process Safety reviewer approved the list" } }
       ]
     },
@@ -117,7 +118,7 @@
       "dependsOn": ["4", "5", "7"],
       "gate": [
         { "id": "sizing_result", "type": "pendingFeature", "phase": 4, "label": { "cs": "Vstupy sizingu uloženy, výsledek má zdroj (soubor + revize)", "en": "Sizing inputs stored, result has a source (file + revision)" } },
-        { "id": "sizing_rules", "type": "pendingFeature", "phase": 3, "label": { "cs": "Kontroly sizingu bez NO-GO", "en": "Sizing checks without NO-GO" } }
+        { "id": "sizing_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly sizingu vyhodnoceny a bez NO-GO", "en": "Sizing checks evaluated without NO-GO" } }
       ]
     },
     {
@@ -130,7 +131,7 @@
       "layout": "final",
       "gate": [
         { "id": "layout_final", "type": "layoutVersion", "which": "final", "requireDrawing": true },
-        { "id": "layout_rules", "type": "pendingFeature", "phase": 3, "label": { "cs": "Kontroly přístupnosti a vzdáleností bez NO-GO", "en": "Accessibility and distance checks without NO-GO" } }
+        { "id": "layout_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly přístupnosti a vzdáleností vyhodnoceny a bez NO-GO", "en": "Accessibility and distance checks evaluated without NO-GO" } }
       ]
     },
     {

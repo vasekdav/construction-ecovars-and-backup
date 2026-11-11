@@ -21,7 +21,7 @@ Vercel zatím není připojen (viz ADR-003): místo „preview na Vercelu“ pla
 | 0. Základ | Next.js, Tailwind, shadcn-style UI, next-intl, Drizzle + migrace, Auth, RBAC, append-only audit log, správa uživatelů, bezpečnostní hlavičky, rate limit, CI, Dependabot, demo seed | hotovo |
 | 1. Workflow | Project, Stage, Task, DocumentLink, Decision, šablona procesu, stavový automat, gate, závislosti, LayoutVersion v0..vN, dashboard, detail kroku, demo projekt | hotovo |
 | 2. Dotazník + DesignBasis | Verzovaná JSON šablona, podmíněné otázky, dvě fáze, průběžné ukládání, úplnost %, `lib/units` (≥ 90 %), mapování na DesignBasis, gate 7 | hotovo |
-| 3. Rule engine + Safety Review | `lib/rules` (čisté TS), 21 pravidel DRAFT v `data/rules`, Standard, VERIFIED workflow, override (jen Process Safety), Safety Review UI s bannerem, gate 5, testy GO/FAIL/NEVYHODNOCENO pro každé pravidlo (≥ 90 %) | |
+| 3. Rule engine + Safety Review | `lib/rules` (čisté TS), 21 pravidel DRAFT v `data/rules`, Standard, VERIFIED workflow, override (jen Process Safety), Safety Review UI s bannerem, gate 5, testy GO/FAIL/NEVYHODNOCENO pro každé pravidlo (≥ 90 %) | hotovo |
 | 4. Autonomie + sizing | `lib/calc/autonomy` s předpoklady a konzervativní variantou, SizingResult se zdrojem a revizí, gate 8, R-CAP-01, R-VAP-02 | |
 | 5. Export | Design Basis & Safety Review: Markdown, PDF (`@react-pdf/renderer`), XLSX (`exceljs`), verze, overridy červeně | |
 | 6. Rozšíření | Až po schválení (SPEC §12) | |

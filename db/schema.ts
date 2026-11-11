@@ -5,6 +5,7 @@ import {
   date,
   index,
   integer,
+  primaryKey,
   jsonb,
   pgEnum,
   pgTable,
@@ -16,6 +17,7 @@ import {
 import { ROLES } from "../lib/auth/roles";
 import type { Answers } from "../lib/questionnaire/answers";
 import type { DesignBasis } from "../lib/questionnaire/design-basis";
+import type { Rule } from "../lib/rules/rule";
 import { MEDIA } from "../lib/workflow/template";
 import { DECISION_OUTCOMES, PROJECT_STATUSES, STAGE_STATES } from "../lib/workflow/types";
 
@@ -250,6 +252,109 @@ export const designBases = pgTable("design_basis", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "restrict" }),
 });
+
+export const ruleStatusEnum = pgEnum("rule_status", ["DRAFT", "VERIFIED"]);
+export const ruleResultEnum = pgEnum("rule_result", ["GO", "WARNING", "NO-GO", "NOT_EVALUATED"]);
+
+/**
+ * Rules are data (SPEC §7.1). Every change creates a new version; verification
+ * applies to exactly one version. The JSON definition holds the condition,
+ * parameters and texts; status columns are authoritative.
+ */
+export const rules = pgTable(
+  "rules",
+  {
+    id: text("id").notNull(),
+    version: integer("version").notNull(),
+    definition: jsonb("definition").$type<Rule>().notNull(),
+    status: ruleStatusEnum("status").notNull().default("DRAFT"),
+    verifiedBy: uuid("verified_by").references(() => users.id, { onDelete: "restrict" }),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    changeNote: text("change_note"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.id, t.version] })],
+);
+
+/** Standards list for step 5 (SPEC §7.3), DRAFT until verified by Process Safety. */
+export const standards = pgTable("standards", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: text("code").notNull().unique(),
+  titleCs: text("title_cs").notNull(),
+  titleEn: text("title_en").notNull(),
+  revision: text("revision"),
+  appliesTo: text("applies_to").array().notNull(),
+  notes: text("notes"),
+  status: ruleStatusEnum("status").notNull().default("DRAFT"),
+  verifiedBy: uuid("verified_by").references(() => users.id, { onDelete: "restrict" }),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Design checklist answers per project (inputs for P&ID rules). */
+export const designInputs = pgTable("design_inputs", {
+  projectId: uuid("project_id")
+    .primaryKey()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  templateKey: text("template_key").notNull(),
+  templateVersion: integer("template_version").notNull(),
+  answers: jsonb("answers").$type<Answers>().notNull().default({}),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "restrict" }),
+});
+
+/**
+ * Manual NO-GO override by Process Safety (SPEC §7.1). Bound to the rule
+ * version and to the fingerprint of inputs + parameters: when anything the
+ * result depends on changes, the override no longer applies.
+ */
+export const ruleOverrides = pgTable(
+  "rule_overrides",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    ruleId: text("rule_id").notNull(),
+    ruleVersion: integer("rule_version").notNull(),
+    fingerprint: text("fingerprint").notNull(),
+    reason: text("reason").notNull(),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    revokedBy: uuid("revoked_by").references(() => users.id, { onDelete: "restrict" }),
+    revokeReason: text("revoke_reason"),
+  },
+  (t) => [index("rule_overrides_project_idx").on(t.projectId, t.ruleId)],
+);
+
+/** Reproducible snapshots of rule evaluations (SPEC §4 RuleEvaluation). */
+export const ruleEvaluations = pgTable(
+  "rule_evaluations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    runId: uuid("run_id").notNull(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    ruleId: text("rule_id").notNull(),
+    ruleVersion: integer("rule_version").notNull(),
+    ruleStatus: ruleStatusEnum("rule_status").notNull(),
+    result: ruleResultEnum("result").notNull(),
+    overridden: boolean("overridden").notNull().default(false),
+    inputs: jsonb("inputs").notNull(),
+    params: jsonb("params").notNull(),
+    details: jsonb("details"),
+    evaluatedBy: uuid("evaluated_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    evaluatedAt: timestamp("evaluated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("rule_evaluations_project_idx").on(t.projectId, t.evaluatedAt), index("rule_evaluations_run_idx").on(t.runId)],
+);
 
 export type User = typeof users.$inferSelect;
 export type Project = typeof projects.$inferSelect;

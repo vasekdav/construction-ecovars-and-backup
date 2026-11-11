@@ -1,0 +1,82 @@
+{
+  "id": "R-SD-02",
+  "version": 1,
+  "category": "Safety distances",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Vzdálenost od jímek, šachet a prohlubní",
+    "en": "Distance to pits, shafts and depressions"
+  },
+  "inputs": [
+    {
+      "key": "db.lowPointsNearby",
+      "label": {
+        "cs": "Jímky / šachty v okolí (dotazník)",
+        "en": "Pits / shafts nearby (questionnaire)"
+      }
+    },
+    {
+      "key": "layout.dist_low_points",
+      "label": {
+        "cs": "Vzdálenost od jímek / šachet / prohlubní",
+        "en": "Distance to pits / shafts / depressions"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "key": "min_dist_low_points",
+      "label": {
+        "cs": "Min. vzdálenost od jímek / šachet",
+        "en": "Min. distance to pits / shafts"
+      },
+      "dimension": "length",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    }
+  ],
+  "condition": {
+    "op": "or",
+    "args": [
+      {
+        "op": "isFalse",
+        "value": {
+          "input": "db.lowPointsNearby"
+        }
+      },
+      {
+        "op": "gte",
+        "left": {
+          "input": "layout.dist_low_points"
+        },
+        "right": {
+          "param": "min_dist_low_points"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Stanice je blíže k jímkám, šachtám, sklepům nebo prohlubním, než dovoluje standard (hromadění těžšího plynu, u N₂ asfyxie).",
+    "en": "Station is closer to pits, shafts, basements or depressions than allowed (accumulation of heavier gas, asphyxiation for N₂)."
+  },
+  "remediation": {
+    "cs": "Zvětšit vzdálenost nebo zajistit, aby plyn nemohl do prohlubní natékat.",
+    "en": "Increase the distance or prevent gas from entering low points."
+  },
+  "source": {
+    "document": "EIGA Doc 44 (kandidát) + interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "9"
+  ]
+}

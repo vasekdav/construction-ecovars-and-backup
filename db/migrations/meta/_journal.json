@@ -29,6 +29,13 @@
       "when": 1794394758846,
       "tag": "0003_questionnaire",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794395682541,
+      "tag": "0004_rules",
+      "breakpoints": true
     }
   ]
 }

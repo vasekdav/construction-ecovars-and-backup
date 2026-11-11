@@ -25,6 +25,12 @@ export const gateConditionSchema = z.discriminatedUnion("type", [
   z.object({ id: z.string().min(1), type: z.literal("ownerAssigned"), label: localized }),
   z.object({ id: z.string().min(1), type: z.literal("decisionRecorded"), label: localized }),
   z.object({ id: z.string().min(1), type: z.literal("questionnaireComplete"), label: localized }),
+  /** Every standard and rule applicable to the project is VERIFIED (step 5). */
+  z.object({ id: z.string().min(1), type: z.literal("standardsVerified"), label: localized }),
+  /** Rules mapped to this step are evaluated and have no (non-overridden) NO-GO. */
+  z.object({ id: z.string().min(1), type: z.literal("rulesNoNoGo"), label: localized }),
+  /** All required geometry inputs of the layout version are filled in. */
+  z.object({ id: z.string().min(1), type: z.literal("layoutGeometryComplete"), which: z.enum(["concept", "final"]), label: localized }),
   z.object({
     id: z.string().min(1),
     type: z.literal("layoutVersion"),
@@ -87,7 +93,9 @@ export function templateIssues(tpl: Omit<ProcessTemplate, never>): string[] {
       if (g.type === "documentLinks") {
         for (const k of g.kinds) if (!kinds.has(k)) issues.push(`unknown document kind ${k} in stage ${s.key}`);
       }
-      if (g.type === "layoutVersion" && s.layout !== g.which) issues.push(`stage ${s.key} gate expects layout ${g.which}`);
+      if ((g.type === "layoutVersion" || g.type === "layoutGeometryComplete") && s.layout !== g.which) {
+        issues.push(`stage ${s.key} gate expects layout ${g.which}`);
+      }
     }
   }
   for (const s of tpl.stages) {

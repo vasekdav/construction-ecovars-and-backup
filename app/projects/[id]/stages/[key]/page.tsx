@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { ActionForm } from "@/components/action-form";
+import { DecisionSupportBanner } from "@/components/decision-support-banner";
+import { QuestionnaireSectionForm } from "@/components/questionnaire/section-form";
 import { StageStateBadge } from "@/components/stage-state-badge";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +14,10 @@ import { Select, Textarea } from "@/components/ui/select";
 import { Table, TBody, Td, Th, THead, Tr } from "@/components/ui/table";
 import { getDb } from "@/db/client";
 import { requirePermission } from "@/lib/auth/session";
+import { LAYOUT_GEOMETRY_FORM } from "@/lib/forms";
 import { asLocale, type AppLocale } from "@/lib/i18n-helpers";
+import type { Answers } from "@/lib/questionnaire/answers";
+import { completeness } from "@/lib/questionnaire/completeness";
 import type { ConditionResult } from "@/lib/workflow/gate";
 import { canConfirmCheck, canEditStage, canManageStage, canTransition } from "@/lib/workflow/permissions";
 import { getStageDetail, listActiveUsers } from "@/lib/workflow/queries";
@@ -32,6 +37,7 @@ import {
   stageSettingsAction,
   transitionAction,
 } from "../../../actions";
+import { saveLayoutGeometryAction } from "../../../safety-actions";
 
 const REASON_TRANSITIONS: readonly Transition[] = ["block", "reopen", "return"];
 
@@ -75,7 +81,7 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
   if (!d || !d.stage.enabled) notFound();
   const { project, tpl, def, stage, gate, names } = d;
   const locale = asLocale(await getLocale());
-  const [t, tGate, tTr, tRoles, tCommon, tOutcome, tProjects, tQ, format, users] = await Promise.all([
+  const [t, tGate, tTr, tRoles, tCommon, tOutcome, tProjects, tQ, tGeo, tSafety, format, users] = await Promise.all([
     getTranslations("stage"),
     getTranslations("gate"),
     getTranslations("transitions"),
@@ -84,6 +90,8 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
     getTranslations("outcome"),
     getTranslations("projects"),
     getTranslations("questionnaire"),
+    getTranslations("geometry"),
+    getTranslations("safety"),
     getFormatter(),
     listActiveUsers(db),
   ]);
@@ -97,6 +105,17 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
     ...new Set([...def.gate.flatMap((g) => (g.type === "documentLinks" ? g.kinds : [])), ...tpl.documentKinds.map((k) => k.key)]),
   ];
   const hasDecision = def.gate.some((g) => g.type === "decisionRecorded");
+  const hasRules = def.gate.some((g) => g.type === "rulesNoNoGo" || g.type === "standardsVerified");
+  // Geometry inputs belong to v0 (step 3) or to the latest final version (step 9).
+  const geometryLayout = def.layout
+    ? def.layout === "concept"
+      ? d.layouts.find((l) => l.version === 0)
+      : [...d.layouts].filter((l) => l.version >= 1).pop()
+    : undefined;
+  const geometryAnswers = (geometryLayout?.geometry as Answers | null) ?? {};
+  const geometryMissing = geometryLayout
+    ? completeness(LAYOUT_GEOMETRY_FORM, { medium: project.medium, answers: geometryAnswers }, "detailed").missing.length
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -118,6 +137,15 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
           {def.dependsOn.length > 0 && ` · ${t("dependsOn")}: ${def.dependsOn.join(", ")}`}
         </p>
       </div>
+
+      {hasRules && (
+        <div className="space-y-2">
+          <DecisionSupportBanner />
+          <Link href={`/projects/${project.id}/safety`} className="text-sm font-medium text-primary underline">
+            {tSafety("title")} →
+          </Link>
+        </div>
+      )}
 
       {stage.state === "CLOSED" && (
         <Alert tone="success">
@@ -410,6 +438,37 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
                 </div>
               </div>
             </ActionForm>
+          )}
+        </Card>
+      )}
+
+      {def.layout && (
+        <Card data-testid="geometry-card">
+          <CardTitle>{geometryLayout ? tGeo("title", { version: geometryLayout.version }) : tGeo("title", { version: def.layout === "concept" ? 0 : "N" })}</CardTitle>
+          {!geometryLayout ? (
+            <p className="text-sm text-muted-foreground">{tGeo("none")}</p>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground">{tGeo("description")}</p>
+              {geometryMissing > 0 && <Alert tone="warning">{tGeo("missing", { count: geometryMissing })}</Alert>}
+              {LAYOUT_GEOMETRY_FORM.sections.map((sec) => (
+                <details key={sec.id} className="rounded border border-border p-3" open={sec.id === "distances"}>
+                  <summary className="cursor-pointer font-medium">{sec.title[locale]}</summary>
+                  <div className="mt-3">
+                    <QuestionnaireSectionForm
+                      projectId={project.id}
+                      section={sec}
+                      medium={project.medium}
+                      answers={geometryAnswers}
+                      locale={locale}
+                      readOnly={!editable}
+                      action={saveLayoutGeometryAction}
+                      hidden={{ version: String(geometryLayout.version) }}
+                    />
+                  </div>
+                </details>
+              ))}
+            </div>
           )}
         </Card>
       )}

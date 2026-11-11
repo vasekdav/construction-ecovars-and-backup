@@ -19,6 +19,8 @@ export const PERMISSIONS = {
   "standard.verify": ["PROCESS_SAFETY"],
   "questionnaire.write": ["OAM"],
   "sizing.write": ["SIZING"],
+  "design.write": ["OAM", "OPS", "ROC", "PROCESS_SAFETY", "SIZING"],
+  "safety.snapshot": ["OAM", "PROCESS_SAFETY"],
   "equipment.write": ["INVESTMENT"],
 } as const satisfies Record<string, readonly Role[]>;
 
