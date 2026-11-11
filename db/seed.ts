@@ -8,6 +8,8 @@ import { hashPassword } from "../lib/auth/password";
 import { MIN_PASSWORD_LENGTH } from "../lib/auth/password-policy";
 import type { Role } from "../lib/auth/roles";
 import { saveAnswers } from "../lib/questionnaire/service";
+import { recordSizingResult } from "../lib/sizing/service";
+import { loadCalcConfigFile, syncCalcConfigs } from "../lib/calc/config-service";
 import { loadRuleFiles } from "../lib/rules/catalog";
 import { syncRules } from "../lib/safety/rules-service";
 import { syncStandards, type StandardCandidate } from "../lib/safety/standards-service";
@@ -51,7 +53,8 @@ async function main() {
     // Rules and standard candidates (DRAFT, no parameter values) – safe in every environment.
     const newRules = await syncRules(db, loadRuleFiles());
     const newStandards = await syncStandards(db, standardsJson.standards as StandardCandidate[]);
-    console.log(`Rules imported: ${newRules}, standards imported: ${newStandards}`);
+    const newCalc = await syncCalcConfigs(db, [loadCalcConfigFile()]);
+    console.log(`Rules imported: ${newRules}, standards imported: ${newStandards}, calc configs imported: ${newCalc}`);
     if (rulesOnly) return;
     const passwordHash = await hashPassword(password!);
     for (const u of DEMO_USERS) {
@@ -148,6 +151,24 @@ async function seedDemoProject(db: Db) {
       "consumption.q_peak": { input: "200", unit: "Nm3/h" },
       "consumption.criticality": "high",
       "site.address": "Demo Město, Demo ulice 1 (fiktivní)",
+    },
+  });
+  // Fictitious sizing result (step 8 is far ahead in the process; this only demonstrates the screen).
+  const sizing = await actorFor(db, "sizing@demo.local");
+  await recordSizingResult(db, sizing, {
+    projectId,
+    answers: {
+      "source.file_name": "AAE_sizing_DEMO.xlsx",
+      "source.file_revision": "DEMO-1",
+      "source.author": "Demo Sizing",
+      "source.date": "2026-11-01",
+      "inputs.tank_volume": { input: "20", unit: "m3" },
+      "inputs.design_flow": { input: "200", unit: "Nm3/h" },
+      "inputs.design_ambient_min_temp": { input: "-20", unit: "°C" },
+      "inputs.icing_considered": true,
+      "result.capacity_after_icing": { input: "250", unit: "Nm3/h" },
+      "result.vaporizer_type": "Demo AAE modul",
+      "result.module_count": "2",
     },
   });
   console.log(`Seeded demo project "${DEMO_PROJECT_NAME}"`);

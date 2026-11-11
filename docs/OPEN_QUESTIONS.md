@@ -34,3 +34,6 @@ Do zodpovězení aplikace pracuje s nejbezpečnějším předpokladem (sloupec �
 | 28 | Položky návrhového checklistu (ano/ne) potvrzuje kdokoli s procesní rolí. Mají vybrané položky (např. O₂ cleaning) potvrzovat jen konkrétní role? | Fáze 3 | Zatím kterákoli procesní role, s auditní stopou. |
 | 29 | Override je vázaný na verzi pravidla: nová verze (i pouhá oprava citace) zneplatní overridy ve všech projektech. Je to žádoucí? | Fáze 3 | Ano, konzervativní varianta. |
 | 30 | Je mapování zdrojů na pravidla, kde SPEC normu výslovně neuvádí (označeno „kandidát“), správné? | Fáze 3 | Kandidáti, kapitola TBD-VERIFY; rozhodne Process Safety. |
+| 31 | Mají být parametry výpočtu autonomie závislé jen na médiu, nebo i na tlaku zásobníku (hustota kapaliny se s tlakem mění)? | Fáze 4 | Jen na médiu (jedna hodnota pro O₂ a jedna pro N₂). |
+| 32 | Má se autonomie počítat i ve stavu DRAFT parametrů (s viditelným označením), nebo až po VERIFIED? | Fáze 4 | Počítá se i v DRAFT, s označením; krok 5 vyžaduje VERIFIED (ADR-030). |
+| 33 | Formát předání výsledku AAE nástroje: stačí ruční formulář, nebo import z Excelu (fáze 6)? | Fáze 4 | Ruční formulář se zdrojem a revizí. |

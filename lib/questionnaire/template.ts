@@ -7,7 +7,7 @@ import { MEDIA } from "@/lib/workflow/template";
 
 const localized = z.object({ cs: z.string().min(1), en: z.string().min(1) });
 
-export const QUESTION_TYPES = ["text", "textarea", "number", "quantity", "select", "multiselect", "boolean", "date"] as const;
+export const QUESTION_TYPES = ["text", "textarea", "number", "quantity", "select", "multiselect", "boolean", "date", "url"] as const;
 export type QuestionType = (typeof QUESTION_TYPES)[number];
 
 export const PHASES = ["initial", "detailed"] as const;

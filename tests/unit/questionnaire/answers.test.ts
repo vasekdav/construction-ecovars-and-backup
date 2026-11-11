@@ -86,6 +86,14 @@ describe("parseAnswer", () => {
     expect(parseAnswer(d, null)).toEqual({ ok: true, value: null });
   });
 
+  it("url accepts https only", () => {
+    const u = q({ type: "url" });
+    expect(parseAnswer(u, " https://demo.sharepoint.com/x ")).toEqual({ ok: true, value: "https://demo.sharepoint.com/x" });
+    expect(parseAnswer(u, "http://insecure.example")).toEqual({ ok: false, error: "invalid_url" });
+    expect(parseAnswer(u, "not a url")).toEqual({ ok: false, error: "invalid_url" });
+    expect(parseAnswer(u, "")).toEqual({ ok: true, value: null });
+  });
+
   it("isAnswered / isQuantity", () => {
     expect(isAnswered(null)).toBe(false);
     expect(isAnswered(undefined)).toBe(false);

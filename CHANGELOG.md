@@ -1,5 +1,15 @@
 # Changelog
 
+## Fáze 4: Autonomie + import sizingu (2026-11-11)
+- `lib/calc/autonomy`: výpočet podle SPEC §6 (využitelný objem → expansion_ratio = ρ_liq / ρ_gas,normal → objem plynu → autonomie). Konzervativní varianta s Q_peak (pro R-CAP-01) a informativní s Q_avg. Hodnoty mimo fyzikální rozsah se odmítnou a chybějící hodnota dává NEVYHODNOCENO. Pokrytí 100 %.
+- Parametry výpočtu (`fill_max`, `heel_fraction`, `rho_liquid`, `rho_gas_normal`, definice normálních podmínek, zdroj) jsou konfigurace bez výchozích hodnot (`data/calc/autonomy.json`). Verzují se jako pravidla (úprava = nová verze DRAFT) a VERIFIED nastavuje jen Process Safety. Krok 5 vyžaduje, aby byly VERIFIED.
+- SizingResult: neměnné verze s povinnými vstupy (V_tank, návrhový průtok, min. teplota, námraza), výsledkem (kapacita po námraze, typ a počet modulů) a zdrojem (soubor, revize, autor, datum, volitelně https odkaz). Zadává Sizing responsible; po uzavření kroku 8 je zmrazený.
+- Pravidla R-VAP-02, R-CAP-01 a R-ENV-01 dostávají vstupy ze sizingu a z výpočtu autonomie. Gate kroku 8 vyžaduje uložený výsledek sizingu. V šabloně procesu už nezbývá žádná podmínka „funkce z pozdější fáze“.
+- Stránka „Sizing a autonomie“ (banner, výsledek, výpočet krok po kroku, předpoklady, štítek DRAFT, aktuální výsledek a historie verzí) a správa parametrů výpočtu.
+- Oprava: formuláře si po validační chybě ponechají zadané hodnoty. React 19 je při odeslání přes `action` resetoval a uživatel by přišel o vyplněná data; týkalo se to dotazníku, checklistu, sizingu, pravidel i správy uživatelů.
+- Nový typ otázky `url` (jen https) a jednotka hustoty.
+- Testy: 294 unit a integračních, 13 e2e.
+
 ## Fáze 3: Rule engine + Safety Review (2026-11-11)
 - `lib/rules`: čistý TS rule engine. Podmínky jsou data (AST validovaný přes Zod), vyhodnocení probíhá v tříhodnotové logice. Chybějící parametr dává vždy NEVYHODNOCENO, chybějící vstup NEVYHODNOCENO, pokud výsledek nerozhodnou jiné vstupy. Výsledek nikdy není GO, když něco chybí.
 - 21 startovních pravidel (`data/rules/*.json`) s plnou definicí podle SPEC §7.1: stav DRAFT, parametry bez hodnot (TBD-VERIFY), zdroj podle SPEC (kde SPEC normu výslovně neuvádí, je označena jako „kandidát“), kapitola TBD-VERIFY. Seznam lze rozšiřovat bez změny kódu (`npm run db:sync-rules`).

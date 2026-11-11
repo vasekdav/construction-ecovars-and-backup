@@ -42,9 +42,10 @@ export default async function SafetyReviewPage({
   const filter = (FILTERS as readonly string[]).includes(rawFilter ?? "") ? (rawFilter as Filter) : null;
   const locale = asLocale(await getLocale());
   const nf = locale === "cs" ? "cs-CZ" : "en-GB";
-  const [t, tRes, format, snapshots] = await Promise.all([
+  const [t, tRes, tSizing, format, snapshots] = await Promise.all([
     getTranslations("safety"),
     getTranslations("results"),
+    getTranslations("sizing"),
     getFormatter(),
     listSnapshots(db, id),
   ]);
@@ -125,8 +126,12 @@ export default async function SafetyReviewPage({
               ({evaluation.layoutVersion === null ? t("noLayout") : t("layoutVersion", { version: evaluation.layoutVersion })})
             </span>
           </li>
+          <li>
+            <Link className="text-primary underline" href={`/projects/${project.id}/sizing`}>
+              {tSizing("open")}
+            </Link>
+          </li>
         </ul>
-        <p className="mt-3 text-xs text-muted-foreground">{t("sizingPending")}</p>
       </Card>
 
       <div className="space-y-3" data-testid="rules-list">

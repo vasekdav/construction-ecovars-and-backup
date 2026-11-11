@@ -13,7 +13,15 @@ export interface GateContext {
   /** Rule check status of this stage (rules whose `stages` include it). */
   rules?: { noGo: string[]; notEvaluated: string[] } | null;
   /** Rules and standards applicable to the project that are not VERIFIED. */
-  verification?: { unverifiedRules: string[]; unverifiedStandards: string[]; standardsCount: number } | null;
+  verification?: {
+    unverifiedRules: string[];
+    unverifiedStandards: string[];
+    standardsCount: number;
+    /** Calculation configs (e.g. autonomy parameters) that are not VERIFIED. */
+    unverifiedCalc?: string[];
+  } | null;
+  /** Latest recorded sizing result version (null = none). */
+  sizing?: { version: number | null } | null;
   /** Missing required geometry inputs per layout kind (null = no such layout version). */
   layoutGeometry?: { concept: number | null; final: number | null } | null;
 }
@@ -36,7 +44,9 @@ export type GateFailure =
   | "no_standards"
   | "rules_no_go"
   | "rules_not_evaluated"
-  | "geometry_incomplete";
+  | "geometry_incomplete"
+  | "unverified_calc"
+  | "no_sizing";
 
 export interface ConditionResult {
   id: string;
@@ -101,6 +111,7 @@ function evaluateCondition(c: GateCondition, ctx: GateContext): ConditionResult 
       if (!v || v.standardsCount === 0) return { ...base, met: false, failure: "no_standards" };
       if (v.unverifiedStandards.length) return { ...base, met: false, failure: "unverified_standards", details: v.unverifiedStandards };
       if (v.unverifiedRules.length) return { ...base, met: false, failure: "unverified_rules", details: v.unverifiedRules };
+      if (v.unverifiedCalc?.length) return { ...base, met: false, failure: "unverified_calc", details: v.unverifiedCalc };
       return { ...base, met: true };
     }
     case "rulesNoNoGo": {
@@ -116,6 +127,8 @@ function evaluateCondition(c: GateCondition, ctx: GateContext): ConditionResult 
       if (missing > 0) return { ...base, met: false, failure: "geometry_incomplete", details: [String(missing)] };
       return { ...base, met: true };
     }
+    case "sizingResultRecorded":
+      return ctx.sizing?.version ? { ...base, met: true, details: [`v${ctx.sizing.version}`] } : { ...base, met: false, failure: "no_sizing" };
     case "pendingFeature":
       return { ...base, met: false, failure: "pending_feature", details: [String(c.phase)] };
   }

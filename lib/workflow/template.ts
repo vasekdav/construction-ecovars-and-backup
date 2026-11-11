@@ -25,6 +25,8 @@ export const gateConditionSchema = z.discriminatedUnion("type", [
   z.object({ id: z.string().min(1), type: z.literal("ownerAssigned"), label: localized }),
   z.object({ id: z.string().min(1), type: z.literal("decisionRecorded"), label: localized }),
   z.object({ id: z.string().min(1), type: z.literal("questionnaireComplete"), label: localized }),
+  /** A complete sizing result (inputs, result, source) is recorded (step 8). */
+  z.object({ id: z.string().min(1), type: z.literal("sizingResultRecorded"), label: localized }),
   /** Every standard and rule applicable to the project is VERIFIED (step 5). */
   z.object({ id: z.string().min(1), type: z.literal("standardsVerified"), label: localized }),
   /** Rules mapped to this step are evaluated and have no (non-overridden) NO-GO. */

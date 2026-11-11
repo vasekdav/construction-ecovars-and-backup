@@ -14,7 +14,8 @@ export type AnswerError =
   | "too_long"
   | "invalid_boolean"
   | "invalid_date"
-  | "below_absolute_zero";
+  | "below_absolute_zero"
+  | "invalid_url";
 
 export type ParseResult = { ok: true; value: AnswerValue | null } | { ok: false; error: AnswerError };
 
@@ -82,6 +83,16 @@ export function parseAnswer(q: Question, raw: unknown): ParseResult {
       if (raw === true || raw === "true") return { ok: true, value: true };
       if (raw === false || raw === "false") return { ok: true, value: false };
       return { ok: false, error: "invalid_boolean" };
+    }
+    case "url": {
+      if (isEmpty(raw)) return { ok: true, value: null };
+      const s = String(raw).trim();
+      try {
+        const u = new URL(s);
+        return u.protocol === "https:" && s.length <= 2000 ? { ok: true, value: s } : { ok: false, error: "invalid_url" };
+      } catch {
+        return { ok: false, error: "invalid_url" };
+      }
     }
     case "date": {
       if (isEmpty(raw)) return { ok: true, value: null };

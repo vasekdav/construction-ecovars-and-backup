@@ -17,6 +17,7 @@ import {
 import { ROLES } from "../lib/auth/roles";
 import type { Answers } from "../lib/questionnaire/answers";
 import type { DesignBasis } from "../lib/questionnaire/design-basis";
+import type { CalcConfig } from "../lib/calc/config";
 import type { Rule } from "../lib/rules/rule";
 import { MEDIA } from "../lib/workflow/template";
 import { DECISION_OUTCOMES, PROJECT_STATUSES, STAGE_STATES } from "../lib/workflow/types";
@@ -354,6 +355,46 @@ export const ruleEvaluations = pgTable(
     evaluatedAt: timestamp("evaluated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("rule_evaluations_project_idx").on(t.projectId, t.evaluatedAt), index("rule_evaluations_run_idx").on(t.runId)],
+);
+
+/** Calculation parameters (SPEC §6), versioned and verified like rules. */
+export const calcConfigs = pgTable(
+  "calc_configs",
+  {
+    key: text("key").notNull(),
+    version: integer("version").notNull(),
+    definition: jsonb("definition").$type<CalcConfig>().notNull(),
+    status: ruleStatusEnum("status").notNull().default("DRAFT"),
+    verifiedBy: uuid("verified_by").references(() => users.id, { onDelete: "restrict" }),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    changeNote: text("change_note"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.key, t.version] })],
+);
+
+/**
+ * Imported result of the AAE sizing tool (SPEC §4 SizingResult). Immutable:
+ * every import is a new version with its source (file, revision, author, date).
+ */
+export const sizingResults = pgTable(
+  "sizing_results",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    version: integer("version").notNull(),
+    templateKey: text("template_key").notNull(),
+    templateVersion: integer("template_version").notNull(),
+    answers: jsonb("answers").$type<Answers>().notNull(),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("sizing_results_project_version_uq").on(t.projectId, t.version)],
 );
 
 export type User = typeof users.$inferSelect;

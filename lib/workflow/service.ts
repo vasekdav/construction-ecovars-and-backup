@@ -16,6 +16,7 @@ import {
 import { writeAudit } from "@/lib/audit";
 import { questionnaireGateStatus } from "@/lib/questionnaire/status";
 import { evaluateProject, layoutGeometryStatus, verificationStatus } from "@/lib/safety/project";
+import { getLatestSizing } from "@/lib/sizing/service";
 import { assertCan, ForbiddenError } from "@/lib/auth/rbac";
 import type { Role } from "@/lib/auth/roles";
 import { unmetDependencies } from "./dependencies";
@@ -148,6 +149,7 @@ async function safetyGateContext(tx: DbOrTx, stage: Stage): Promise<Partial<Gate
   }
   if (types.has("standardsVerified")) out.verification = await verificationStatus(tx, project.medium);
   if (types.has("layoutGeometryComplete")) out.layoutGeometry = await layoutGeometryStatus(tx, project.id, project.medium);
+  if (types.has("sizingResultRecorded")) out.sizing = { version: (await getLatestSizing(tx, project.id))?.version ?? null };
   return out;
 }
 

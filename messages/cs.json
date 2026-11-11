@@ -110,7 +110,8 @@
     "INVALID_RULE": "Neplatná definice pravidla.",
     "NOT_NO_GO": "Override je možný jen u výsledku NO-GO.",
     "ALREADY_OVERRIDDEN": "NO-GO už je přepsáno.",
-    "NO_LAYOUT_VERSION": "Verze layoutu neexistuje."
+    "NO_LAYOUT_VERSION": "Verze layoutu neexistuje.",
+    "required": "Povinná položka."
   },
   "common": {
     "save": "Uložit",
@@ -279,7 +280,9 @@
       "no_standards": "seznam standardů je prázdný",
       "rules_no_go": "NO-GO: {details}",
       "rules_not_evaluated": "nevyhodnoceno: {details}",
-      "geometry_incomplete": "chybí povinných rozměrů: {details}"
+      "geometry_incomplete": "chybí povinných rozměrů: {details}",
+      "unverified_calc": "neověřené parametry výpočtu: {details}",
+      "no_sizing": "výsledek sizingu není uložen"
     }
   },
   "questionnaire": {
@@ -330,7 +333,9 @@
     "invalid_boolean": "Neplatná hodnota.",
     "invalid_date": "Neplatné datum.",
     "below_absolute_zero": "Teplota pod absolutní nulou.",
-    "unknown_question": "Neznámá otázka."
+    "unknown_question": "Neznámá otázka.",
+    "required": "Povinná položka.",
+    "invalid_url": "Neplatný odkaz (jen https)."
   },
   "results": {
     "GO": "GO",
@@ -376,7 +381,6 @@
     "designInputs": "Návrhový checklist (P&ID)",
     "questionnaire": "Zákaznický dotazník",
     "layoutGeometry": "Geometrie layoutu (kroky 3 a 9)",
-    "sizingPending": "Sizing a autonomie přibudou ve fázi 4; pravidla R-VAP-02, R-CAP-01 a R-ENV-01 jsou do té doby NEVYHODNOCENO.",
     "empty": "Žádná pravidla pro tento filtr."
   },
   "design": {
@@ -424,5 +428,50 @@
     "status": "Stav",
     "save": "Uložit (DRAFT)",
     "verify": "Ověřit (VERIFIED)"
+  },
+  "sizing": {
+    "title": "Krok 8: Sizing a autonomie",
+    "record": "Uložit novou verzi výsledku sizingu",
+    "recordHint": "Každé uložení vytvoří novou neměnnou verzi. Povinné jsou vstupy, výsledek i zdroj (soubor, revize, autor, datum).",
+    "latest": "Aktuální výsledek sizingu (v{version})",
+    "none": "Zatím není uložen žádný výsledek sizingu.",
+    "history": "Historie verzí",
+    "readOnly": "Výsledek sizingu zadává Sizing responsible.",
+    "frozen": "Krok 8 je uzavřený, sizing je zmrazený.",
+    "source": "Zdroj: {file} rev. {revision}, {author}, {date}",
+    "open": "Sizing a autonomie"
+  },
+  "autonomy": {
+    "title": "Autonomie zálohy (informativní)",
+    "status": "Stav",
+    "notEvaluated": "NEVYHODNOCENO",
+    "conservative": "Konzervativní (Q_peak po celou dobu, použito pro R-CAP-01)",
+    "informative": "Informativní (Q_avg)",
+    "required": "Požadovaná autonomie (dotazník)",
+    "meets": "Splňuje požadavek",
+    "notMeets": "Nesplňuje požadavek (R-CAP-01 NO-GO)",
+    "formula": "Výpočet",
+    "assumptions": "Předpoklady",
+    "usable": "Využitelný objem kapaliny = V_tank · fill_max · (1 − heel_fraction)",
+    "ratio": "expansion_ratio = ρ_liq / ρ_gas,normal",
+    "gas": "Objem plynu (normální podmínky) = využitelný objem · expansion_ratio",
+    "time": "Autonomie = objem plynu / Q",
+    "config": "Parametry výpočtu {key} v{version}",
+    "normalConditions": "Normální podmínky",
+    "tankVolume": "V_tank (sizing v{version})",
+    "qPeak": "Q_peak (dotazník)",
+    "qAvg": "Q_avg (dotazník)",
+    "missingParams": "Chybí parametry (TBD-VERIFY): {list}",
+    "missingInputs": "Chybí vstupy: {list}",
+    "invalid": "Neplatné hodnoty: {list}",
+    "edit": "Upravit parametry výpočtu"
+  },
+  "calcAdmin": {
+    "title": "Parametry výpočtu autonomie",
+    "description": "Konfigurovatelné parametry bez výchozí hodnoty (SPEC §6). Úprava vytvoří novou verzi DRAFT, VERIFIED nastavuje jen Process Safety.",
+    "normalConditions": "Definice normálních podmínek (teplota, tlak)",
+    "save": "Uložit jako novou verzi (DRAFT)",
+    "verify": "Ověřit (VERIFIED)",
+    "link": "Parametry výpočtu autonomie"
   }
 }

@@ -25,19 +25,10 @@ import { getTemplate, stageTemplate, type Medium } from "@/lib/workflow/template
 import { FormValidationError, SafetyServiceError, type Actor } from "./errors";
 import { listCurrentRules } from "./rules-service";
 import { listStandards } from "./standards-service";
+import { getLatestSizing, projectAutonomy, sizingRuleInputs } from "@/lib/sizing/service";
+import { AUTONOMY_KEY, getCurrentCalcConfig } from "@/lib/calc/config-service";
 
 // ------------------------------------------------------------------ inputs
-
-/** Sizing / calculation inputs; filled in phase 4 (until then rules depending on them are NEVYHODNOCENO). */
-export type ExtraInputsProvider = (db: DbOrTx, project: Project) => Promise<{
-  sizing: Record<string, number | string | boolean | undefined>;
-  calc: Record<string, number | string | boolean | undefined>;
-}>;
-
-let extraInputs: ExtraInputsProvider = async () => ({ sizing: {}, calc: {} });
-export function setExtraInputsProvider(p: ExtraInputsProvider): void {
-  extraInputs = p;
-}
 
 export async function loadProjectRuleInputs(db: DbOrTx, project: Project) {
   const [basis] = await db.select().from(designBases).where(eq(designBases.projectId, project.id));
@@ -48,14 +39,15 @@ export async function loadProjectRuleInputs(db: DbOrTx, project: Project) {
     .orderBy(desc(layoutVersions.version))
     .limit(1);
   const [design] = await db.select().from(designInputs).where(eq(designInputs.projectId, project.id));
-  const extra = await extraInputs(db, project);
+  const sizing = await getLatestSizing(db, project.id);
+  const autonomy = await projectAutonomy(db, project);
   const inputs = buildRuleInputs({
     medium: project.medium,
     designBasis: basis?.data ?? null,
     layout: layout ? { form: LAYOUT_GEOMETRY_FORM, answers: (layout.geometry as Answers | null) ?? {} } : null,
     design: design ? { form: DESIGN_CHECKLIST_FORM, answers: design.answers } : null,
-    sizing: extra.sizing,
-    calc: extra.calc,
+    sizing: sizingRuleInputs(sizing?.answers ?? null),
+    calc: { autonomy: autonomy.result.autonomyPeak ?? undefined },
   });
   return { inputs, layoutVersion: layout?.version ?? null };
 }
@@ -126,7 +118,9 @@ export async function verificationStatus(db: DbOrTx, medium: Medium) {
   const current = await listCurrentRules(db);
   const stds = await listStandards(db);
   const applicable = stds.filter((s) => s.appliesTo.includes(medium));
+  const calc = await getCurrentCalcConfig(db, AUTONOMY_KEY);
   return {
+    unverifiedCalc: calc && calc.status !== "VERIFIED" ? [`${AUTONOMY_KEY}@${calc.config.version}`] : [],
     unverifiedRules: current.filter((r) => r.rule.appliesTo.includes(medium) && r.status !== "VERIFIED").map((r) => r.rule.id),
     unverifiedStandards: applicable.filter((s) => s.status !== "VERIFIED").map((s) => s.code),
     standardsCount: applicable.length,

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef } from "react";
+import { useSubmit } from "@/components/use-submit";
 import { ActionMessage as SharedActionMessage } from "@/components/action-message";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,12 +34,13 @@ function RoleCheckboxes({ selected, idPrefix }: { selected: readonly Role[]; idP
 export function CreateUserForm() {
   const t = useTranslations("users");
   const [state, action, pending] = useActionState(createUserAction, null);
+  const onSubmit = useSubmit(action);
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (state?.ok) formRef.current?.reset();
   }, [state]);
   return (
-    <form ref={formRef} action={action} className="grid gap-4 md:grid-cols-2" data-testid="create-user-form">
+    <form ref={formRef} onSubmit={onSubmit} method="post" className="grid gap-4 md:grid-cols-2" data-testid="create-user-form">
       <div className="space-y-2">
         <Label htmlFor="new-email">{t("email")}</Label>
         <Input id="new-email" name="email" type="email" required autoComplete="off" />
@@ -76,8 +78,9 @@ export function CreateUserForm() {
 export function EditUserForm({ userId, roles, active }: { userId: string; roles: Role[]; active: boolean }) {
   const t = useTranslations("users");
   const [state, action, pending] = useActionState(updateUserAction, null);
+  const onSubmit = useSubmit(action);
   return (
-    <form action={action} className="space-y-3">
+    <form onSubmit={onSubmit} method="post" className="space-y-3">
       <input type="hidden" name="userId" value={userId} />
       <RoleCheckboxes selected={roles} idPrefix={`edit-${userId}`} />
       <label className="flex items-center gap-2 text-sm">
@@ -95,8 +98,9 @@ export function EditUserForm({ userId, roles, active }: { userId: string; roles:
 export function SetPasswordForm({ userId }: { userId: string }) {
   const t = useTranslations("users");
   const [state, action, pending] = useActionState(setPasswordAction, null);
+  const onSubmit = useSubmit(action);
   return (
-    <form action={action} className="flex flex-wrap items-end gap-2">
+    <form onSubmit={onSubmit} method="post" className="flex flex-wrap items-end gap-2">
       <input type="hidden" name="userId" value={userId} />
       <div className="space-y-1">
         <Label htmlFor={`pw-${userId}`}>{t("newPassword")}</Label>

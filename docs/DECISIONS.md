@@ -27,7 +27,7 @@ CSP zatím povoluje `'unsafe-inline'` pro skripty, protože Next.js bez nonce vk
 Kroky 1–10 a jejich závislosti (`1 → 2 → {4, 5, 7} → 8 → {3, 9} → 6 → 10`) jsou data šablony. Kroky navíc mají vlastní kódy (`H1`, `C1`, …) a jsou ve výchozím stavu vypnuté. Krok 3 a 9 sdílí objekt `LayoutVersion` (v0 = koncept, vN = finál).
 
 ## ADR-009 Expansion ratio
-`expansion_ratio = ρ_liq / ρ_gas,normal`. Obě hustoty a definice normálních podmínek jsou konfigurační parametry `TBD-VERIFY` bez výchozí hodnoty. CoolProp (WASM) se ve v1 nepoužívá kvůli velikosti a složitosti nasazení.
+`expansion_ratio = ρ_liq / ρ_gas,normal`. Obě hustoty a definice normálních podmínek jsou konfigurační parametry `TBD-VERIFY` bez výchozí hodnoty. CoolProp (WASM) se ve v1 nepoužívá kvůli velikosti a složitosti nasazení. Implementace: ADR-030.
 
 ## ADR-010 Vazba pravidlo → krok
 Pole `stages` v datech pravidla určuje, jehož gate NO-GO blokuje. Výchozí návrh (otevřená otázka 9):
@@ -93,3 +93,12 @@ Override NO-GO smí jen Process Safety, s povinným zdůvodněním (min. 10 znak
 
 ## ADR-029 Standardy
 Seznam standardů je společný pro všechny projekty a u každého je uvedeno, pro které médium platí. Kandidáti jsou ze SPEC §7.3. Ověření vyžaduje vyplněnou revizi; každá úprava vrací standard do stavu DRAFT.
+
+## ADR-030 Výpočet autonomie a jeho parametry
+Parametry výpočtu (`fill_max`, `heel_fraction`, `rho_liquid`, `rho_gas_normal`) mají hodnoty zvlášť pro O₂ a N₂ a jsou uložené jako verzovaná konfigurace (`calc_configs`) se stejným režimem jako pravidla: úprava = nová verze DRAFT, VERIFIED smí jen Process Safety, a to až bez mezer (všechny hodnoty, definice normálních podmínek, zdroj). Výpočet proběhne, jakmile jsou hodnoty vyplněné, i ve stavu DRAFT, který je viditelně označen. Uzavření kroku 5 ale vyžaduje VERIFIED, takže DRAFT hodnoty se do schváleného návrhu nedostanou. Pro R-CAP-01 se používá konzervativní varianta (Q_peak po celou dobu); varianta s Q_avg je jen informativní.
+
+## ADR-031 SizingResult
+Výsledek AAE nástroje se zadává ručně formulářem (formát předání je otevřená otázka 6). Každý záznam je neměnná verze a musí být úplný: vstupy, výsledek i zdroj (soubor, revize, autor, datum). Odkaz na soubor je volitelný, pouze https. Pravidla a výpočty používají nejnovější verzi. Po uzavření kroku 8 nelze přidat další verzi.
+
+## ADR-032 Odesílání formulářů
+Formuláře napojené na server actions se odesílají přes `onSubmit` + `startTransition` (hook `useSubmit`), ne přes atribut `action`. React 19 totiž po každé form action resetuje nekontrolované vstupy, takže uživatel by po validační chybě přišel o vyplněná data. Formuláře mají `method="post"`, aby se data při nenačteném JS nikdy nedostala do URL.

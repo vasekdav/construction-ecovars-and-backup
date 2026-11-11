@@ -30,12 +30,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const safety = await evaluateProject(db, id);
   const { project, stages, deadlines, names } = data;
   const locale = asLocale(await getLocale());
-  const [t, tMedium, tStatus, tRoles, tQ, format] = await Promise.all([
+  const [t, tMedium, tStatus, tRoles, tQ, tSizing, format] = await Promise.all([
     getTranslations("projects"),
     getTranslations("medium"),
     getTranslations("projectStatus"),
     getTranslations("roles"),
     getTranslations("questionnaire"),
+    getTranslations("sizing"),
     getFormatter(),
   ]);
   const enabled = stages.filter((s) => s.enabled);
@@ -77,6 +78,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
         </span>
         <Link href={`/projects/${project.id}/design-basis`} className="ml-auto text-sm text-primary underline">
           {tQ("openDesignBasis")}
+        </Link>
+        <Link href={`/projects/${project.id}/sizing`} className="text-sm text-primary underline" data-testid="sizing-link">
+          {tSizing("open")}
         </Link>
       </Card>
 

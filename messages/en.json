@@ -110,7 +110,8 @@
     "INVALID_RULE": "Invalid rule definition.",
     "NOT_NO_GO": "Override is only possible for a NO-GO result.",
     "ALREADY_OVERRIDDEN": "NO-GO is already overridden.",
-    "NO_LAYOUT_VERSION": "Layout version does not exist."
+    "NO_LAYOUT_VERSION": "Layout version does not exist.",
+    "required": "Required."
   },
   "common": {
     "save": "Save",
@@ -279,7 +280,9 @@
       "no_standards": "the standards list is empty",
       "rules_no_go": "NO-GO: {details}",
       "rules_not_evaluated": "not evaluated: {details}",
-      "geometry_incomplete": "missing mandatory dimensions: {details}"
+      "geometry_incomplete": "missing mandatory dimensions: {details}",
+      "unverified_calc": "unverified calculation parameters: {details}",
+      "no_sizing": "no sizing result recorded"
     }
   },
   "questionnaire": {
@@ -330,7 +333,9 @@
     "invalid_boolean": "Invalid value.",
     "invalid_date": "Invalid date.",
     "below_absolute_zero": "Temperature below absolute zero.",
-    "unknown_question": "Unknown question."
+    "unknown_question": "Unknown question.",
+    "required": "Required.",
+    "invalid_url": "Invalid link (https only)."
   },
   "results": {
     "GO": "GO",
@@ -376,7 +381,6 @@
     "designInputs": "Design checklist (P&ID)",
     "questionnaire": "Customer questionnaire",
     "layoutGeometry": "Layout geometry (steps 3 and 9)",
-    "sizingPending": "Sizing and autonomy arrive in phase 4; rules R-VAP-02, R-CAP-01 and R-ENV-01 are NOT EVALUATED until then.",
     "empty": "No rules for this filter."
   },
   "design": {
@@ -424,5 +428,50 @@
     "status": "Status",
     "save": "Save (DRAFT)",
     "verify": "Verify (VERIFIED)"
+  },
+  "sizing": {
+    "title": "Step 8: Sizing and autonomy",
+    "record": "Save a new sizing result version",
+    "recordHint": "Every save creates a new immutable version. Inputs, result and source (file, revision, author, date) are required.",
+    "latest": "Current sizing result (v{version})",
+    "none": "No sizing result recorded yet.",
+    "history": "Version history",
+    "readOnly": "The sizing result is entered by the Sizing responsible.",
+    "frozen": "Step 8 is closed; sizing is frozen.",
+    "source": "Source: {file} rev. {revision}, {author}, {date}",
+    "open": "Sizing and autonomy"
+  },
+  "autonomy": {
+    "title": "Backup autonomy (informative)",
+    "status": "Status",
+    "notEvaluated": "NOT EVALUATED",
+    "conservative": "Conservative (Q_peak the whole time, used for R-CAP-01)",
+    "informative": "Informative (Q_avg)",
+    "required": "Required autonomy (questionnaire)",
+    "meets": "Meets the requirement",
+    "notMeets": "Does not meet the requirement (R-CAP-01 NO-GO)",
+    "formula": "Calculation",
+    "assumptions": "Assumptions",
+    "usable": "Usable liquid volume = V_tank · fill_max · (1 − heel_fraction)",
+    "ratio": "expansion_ratio = ρ_liq / ρ_gas,normal",
+    "gas": "Gas volume (normal conditions) = usable volume · expansion_ratio",
+    "time": "Autonomy = gas volume / Q",
+    "config": "Calculation parameters {key} v{version}",
+    "normalConditions": "Normal conditions",
+    "tankVolume": "V_tank (sizing v{version})",
+    "qPeak": "Q_peak (questionnaire)",
+    "qAvg": "Q_avg (questionnaire)",
+    "missingParams": "Missing parameters (TBD-VERIFY): {list}",
+    "missingInputs": "Missing inputs: {list}",
+    "invalid": "Invalid values: {list}",
+    "edit": "Edit calculation parameters"
+  },
+  "calcAdmin": {
+    "title": "Autonomy calculation parameters",
+    "description": "Configurable parameters without default values (SPEC §6). Editing creates a new DRAFT version; only Process Safety sets VERIFIED.",
+    "normalConditions": "Definition of normal conditions (temperature, pressure)",
+    "save": "Save as new version (DRAFT)",
+    "verify": "Verify (VERIFIED)",
+    "link": "Autonomy calculation parameters"
   }
 }

@@ -12,11 +12,19 @@ import { listCurrentRules } from "@/lib/safety/rules-service";
 export default async function RulesPage() {
   await requirePermission("project.read");
   const locale = asLocale(await getLocale());
-  const [t, tRes, rules] = await Promise.all([getTranslations("rulesAdmin"), getTranslations("results"), listCurrentRules(await getDb())]);
+  const [t, tRes, tCalc, rules] = await Promise.all([
+    getTranslations("rulesAdmin"),
+    getTranslations("results"),
+    getTranslations("calcAdmin"),
+    listCurrentRules(await getDb()),
+  ]);
   return (
     <Card>
       <CardTitle>{t("title")}</CardTitle>
-      <p className="mb-4 text-sm text-muted-foreground">{t("description")}</p>
+      <p className="mb-2 text-sm text-muted-foreground">{t("description")}</p>
+      <Link href="/calc/autonomy" className="mb-4 inline-block text-sm font-medium text-primary underline">
+        {tCalc("link")} →
+      </Link>
       <Table data-testid="rules-table">
         <THead>
           <Tr>

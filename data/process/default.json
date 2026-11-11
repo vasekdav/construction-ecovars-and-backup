@@ -117,7 +117,7 @@
       "ownerRoles": ["SIZING"],
       "dependsOn": ["4", "5", "7"],
       "gate": [
-        { "id": "sizing_result", "type": "pendingFeature", "phase": 4, "label": { "cs": "Vstupy sizingu uloženy, výsledek má zdroj (soubor + revize)", "en": "Sizing inputs stored, result has a source (file + revision)" } },
+        { "id": "sizing_result", "type": "sizingResultRecorded", "label": { "cs": "Vstupy sizingu uloženy, výsledek má zdroj (soubor + revize)", "en": "Sizing inputs stored, result has a source (file + revision)" } },
         { "id": "sizing_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly sizingu vyhodnoceny a bez NO-GO", "en": "Sizing checks evaluated without NO-GO" } }
       ]
     },

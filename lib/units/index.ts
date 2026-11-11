@@ -23,6 +23,7 @@ export const DIMENSIONS = [
   "fraction",
   "angle",
   "velocity",
+  "density",
 ] as const;
 export type Dimension = (typeof DIMENSIONS)[number];
 
@@ -83,6 +84,9 @@ export const UNITS = {
   deg: { dimension: "angle", factor: 1, label: "°" },
   // velocity, SI base: m/s
   "m/s": { dimension: "velocity", factor: 1, label: "m/s" },
+  // density, SI base: kg/m³
+  "kg/m3": { dimension: "density", factor: 1, label: "kg/m³" },
+  "g/l": { dimension: "density", factor: 1, label: "g/l" },
 } as const satisfies Record<string, UnitDef>;
 
 export type UnitId = keyof typeof UNITS;
@@ -100,6 +104,7 @@ export const BASE_UNIT: Record<Dimension, UnitId> = {
   fraction: "1",
   angle: "deg",
   velocity: "m/s",
+  density: "kg/m3",
 };
 
 export class UnitError extends Error {

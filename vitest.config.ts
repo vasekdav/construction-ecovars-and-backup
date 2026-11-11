@@ -22,6 +22,8 @@ export default defineConfig({
         "lib/rate-limit.ts": { lines: 90, branches: 90, functions: 90, statements: 90 },
         // SPEC §11.8: rule engine >= 90 %.
         "lib/rules/**/*.ts": { lines: 90, branches: 90, functions: 90, statements: 90 },
+        // Autonomy calculation and its configuration (SPEC §6).
+        "lib/calc/{autonomy,config}.ts": { lines: 90, branches: 90, functions: 90, statements: 90 },
         // SPEC §11.8: unit conversions >= 90 %.
         "lib/units/**/*.ts": { lines: 90, branches: 90, functions: 90, statements: 90 },
         // Pure questionnaire logic (template, answers, completeness, design basis).

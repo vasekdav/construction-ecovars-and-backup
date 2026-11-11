@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
+import { useSubmit } from "@/components/use-submit";
 import { ActionMessage } from "@/components/action-message";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,9 @@ function Field({
       break;
     case "date":
       control = <Input id={id} name={name} type="date" defaultValue={inputText(value, locale)} />;
+      break;
+    case "url":
+      control = <Input id={id} name={name} type="url" pattern="https://.*" defaultValue={inputText(value, locale)} />;
       break;
     case "quantity":
       control = (
@@ -165,9 +169,12 @@ export function QuestionnaireSectionForm({
   readOnly,
   action,
   hidden = {},
+  submitLabel,
+  successText,
 }: {
   projectId: string;
-  section: Section;
+  /** One section, or several rendered in one form with headings. */
+  section: Section | Section[];
   medium: Medium;
   answers: Answers;
   locale: Locale;
@@ -175,38 +182,48 @@ export function QuestionnaireSectionForm({
   action: (prev: ActionState, fd: FormData) => Promise<ActionState>;
   /** Extra hidden fields (e.g. the layout version). */
   hidden?: Record<string, string>;
+  submitLabel?: string;
+  successText?: string;
 }) {
   const t = useTranslations("questionnaire");
   const [state, formAction, pending] = useActionState(action, null);
   // Live values of select/boolean answers, so that conditional questions react immediately.
   const [live, setLive] = useState<Answers>(answers);
   const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const sections = Array.isArray(section) ? section : [section];
+  const onSubmit = useSubmit(formAction);
+  const testId = Array.isArray(section) ? "multi" : section.id;
   return (
-    <form action={formAction} className="space-y-5" data-testid={`section-form-${section.id}`}>
+    <form onSubmit={onSubmit} method="post" className="space-y-5" data-testid={`section-form-${testId}`}>
       <input type="hidden" name="projectId" value={projectId} />
       {Object.entries(hidden).map(([k, v]) => (
         <input key={k} type="hidden" name={k} value={v} />
       ))}
       <fieldset disabled={readOnly || pending} className="space-y-5">
-        {section.questions
-          .filter((q) => isVisible(q, { medium, answers: live }))
-          .map((q) => (
-            <Field
-              key={q.id}
-              q={q}
-              value={answers[q.id]}
-              locale={locale}
-              error={errors?.[q.id]?.[0]}
-              onLiveChange={(v) => setLive((prev) => ({ ...prev, [q.id]: v }))}
-            />
-          ))}
+        {sections.map((sec) => (
+          <div key={sec.id} className="space-y-5">
+            {sections.length > 1 && <h3 className="border-b border-border pb-1 font-semibold">{sec.title[locale]}</h3>}
+            {sec.questions
+              .filter((q) => isVisible(q, { medium, answers: live }))
+              .map((q) => (
+                <Field
+                  key={q.id}
+                  q={q}
+                  value={answers[q.id]}
+                  locale={locale}
+                  error={errors?.[q.id]?.[0]}
+                  onLiveChange={(v) => setLive((prev) => ({ ...prev, [q.id]: v }))}
+                />
+              ))}
+          </div>
+        ))}
       </fieldset>
       {!readOnly && (
         <div className="space-y-2">
           <Button type="submit" size="sm" disabled={pending}>
-            {t("saveSection")}
+            {submitLabel ?? t("saveSection")}
           </Button>
-          <ActionMessage state={state} successText={t("saved")} />
+          <ActionMessage state={state} successText={successText ?? t("saved")} />
         </div>
       )}
     </form>
