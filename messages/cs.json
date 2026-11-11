@@ -96,7 +96,9 @@
     "UNKNOWN_DOCUMENT_KIND": "Neznámý typ dokumentu.",
     "UNKNOWN_CHECK": "Neznámá podmínka.",
     "NO_LAYOUT_STEP": "Tento krok nevede layout.",
-    "LAYOUT_EXISTS": "Koncept v0 už existuje."
+    "LAYOUT_EXISTS": "Koncept v0 už existuje.",
+    "INITIAL_INCOMPLETE": "Počáteční požadavky nejsou kompletní.",
+    "ALREADY_DETAILED": "Dotazník už je v detailní fázi."
   },
   "common": {
     "save": "Uložit",
@@ -255,7 +257,59 @@
       "no_decision": "rozhodnutí není zapsáno",
       "no_layout": "verze layoutu chybí",
       "no_drawing": "chybí odkaz na výkres",
-      "pending_feature": "vyhodnotí se od fáze {details}, do té doby nesplněno"
+      "pending_feature": "vyhodnotí se od fáze {details}, do té doby nesplněno",
+      "questionnaire_initial_phase": "dotazník je teprve v počáteční fázi",
+      "questionnaire_incomplete": "chybí povinných položek: {details}"
     }
+  },
+  "questionnaire": {
+    "title": "Zákaznický dotazník",
+    "step": "Krok 7",
+    "phase": "Fáze",
+    "phaseINITIAL": "Počáteční požadavky",
+    "phaseDETAILED": "Detailní požadavky",
+    "initialProgress": "Počáteční požadavky",
+    "detailedProgress": "Celý dotazník (detailní)",
+    "advance": "Přejít na detailní požadavky",
+    "advanceHint": "Možné po vyplnění všech povinných položek počátečních požadavků.",
+    "saveSection": "Uložit sekci",
+    "saved": "Sekce uložena.",
+    "readOnly": "Pouze pro čtení: dotazník vyplňuje OAM.",
+    "frozen": "Krok 7 je uzavřený, dotazník je zmrazený.",
+    "required": "povinné",
+    "detailedBadge": "detailní",
+    "yes": "Ano",
+    "no": "Ne",
+    "unset": "Nevyplněno",
+    "choose": "— vyberte —",
+    "lastSaved": "Naposledy uloženo {date} ({name})",
+    "missing": "Chybí povinné položky: {count}",
+    "designBasis": "Design Basis",
+    "openDesignBasis": "Zobrazit Design Basis",
+    "fictitious": "Vyplňujte pouze fiktivní údaje (v1 nesmí obsahovat důvěrná data).",
+    "medium": "Médium projektu: {medium} (otázky se zobrazují podle média)",
+    "unit": "jednotka"
+  },
+  "designBasis": {
+    "title": "Design Basis",
+    "description": "Strukturované vstupy z dotazníku. Veličiny jsou uloženy v SI, u každé je zadaná hodnota a jednotka.",
+    "field": "Položka",
+    "value": "Hodnota",
+    "si": "SI",
+    "source": "Zdroj (otázka)",
+    "empty": "Design Basis je prázdný: dotazník zatím nemá odpovědi.",
+    "generatedFrom": "Vygenerováno z šablony {template}, aktualizováno {date}."
+  },
+  "qerrors": {
+    "invalid_number": "Neplatné číslo.",
+    "out_of_range": "Hodnota mimo povolený rozsah.",
+    "negative": "Hodnota nesmí být záporná.",
+    "invalid_unit": "Neplatná jednotka.",
+    "invalid_option": "Neplatná volba.",
+    "too_long": "Text je příliš dlouhý.",
+    "invalid_boolean": "Neplatná hodnota.",
+    "invalid_date": "Neplatné datum.",
+    "below_absolute_zero": "Teplota pod absolutní nulou.",
+    "unknown_question": "Neznámá otázka."
   }
 }

@@ -104,7 +104,7 @@
       "ownerRoles": ["OAM"],
       "dependsOn": ["2"],
       "gate": [
-        { "id": "questionnaire_complete", "type": "pendingFeature", "phase": 2, "label": { "cs": "Všechny povinné položky dotazníku vyplněny", "en": "All mandatory questionnaire items filled in" } },
+        { "id": "questionnaire_complete", "type": "questionnaireComplete", "label": { "cs": "Dotazník v detailní fázi a všechny povinné položky vyplněny", "en": "Questionnaire in detailed phase with all mandatory items filled in" } },
         { "id": "oam_confirmed", "type": "manualCheck", "roles": ["OAM"], "label": { "cs": "OAM potvrdil dotazník", "en": "OAM confirmed the questionnaire" } }
       ]
     },

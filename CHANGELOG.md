@@ -1,5 +1,15 @@
 # Changelog
 
+## Fáze 2: Dotazník + DesignBasis (2026-11-11)
+- `lib/units`: centrální převody jednotek (průtok v Nm³, přetlak a absolutní tlak jako oddělené veličiny, teplota, délka, plocha, objem, čas, hmotnost, podíl). Ukládá se SI hodnota spolu se zadanou hodnotou a jednotkou. Pokrytí testy 100 %.
+- Zákaznický dotazník jako verzovaná JSON šablona (`data/questionnaire/default.json`): 10 sekcí podle SPEC §5, povinné i volitelné položky, dvě fáze (počáteční / detailní požadavky), podmíněné zobrazení podle média (N₂: uzavřené prostory, O₂: hořlaviny) i podle jiné odpovědi.
+- Odpovědi jsou vázané na verzi šablony. Ukládá se průběžně po sekcích (rozpracovaný stav), validuje se na serveru (čísla s desetinnou čárkou, jednotky, nezápornost, rozsahy) a chyby se zobrazují u pole.
+- Úplnost v % zvlášť pro počáteční požadavky a pro celý dotazník, včetně přehledu po sekcích. Na detailní fázi lze přejít až po úplných počátečních požadavcích.
+- DesignBasis se z odpovědí znovu sestaví při každém uložení: SI hodnoty, zadaná jednotka a zdrojová otázka. Má vlastní stránku.
+- Gate kroku 7 je napojená na dotazník: vyžaduje detailní fázi a všechny povinné položky. Po uzavření kroku 7 je dotazník zmrazený. Dotazník vyplňuje jen OAM, ostatní role ho vidí jen pro čtení.
+- Demo projekt má částečně vyplněné počáteční požadavky.
+- Testy: 162 unit a integračních, 10 e2e.
+
 ## Fáze 1: Workflow (2026-11-11)
 - Šablona procesu jako data (`data/process/default.json`): kroky 1–10 s nezměněným číslováním, Definition of Done, vlastníci, gate podmínky, typy dokumentů a schválený graf závislostí `1 → 2 → {4, 5, 7} → 8 → {3, 9} → 6 → 10`. Validace šablony (unikátnost, reference, cykly).
 - Doporučené kroky navíc H1 (HAZID/HAZOP), C1 (O₂ cleaning, jen O₂), P1 (povolení), F1 (FAT/SAT), O1 (OPS handover): v šabloně, výchozí stav vypnuto, zapíná OAM.

@@ -24,6 +24,7 @@ export const gateConditionSchema = z.discriminatedUnion("type", [
   z.object({ id: z.string().min(1), type: z.literal("allTasksDone"), label: localized }),
   z.object({ id: z.string().min(1), type: z.literal("ownerAssigned"), label: localized }),
   z.object({ id: z.string().min(1), type: z.literal("decisionRecorded"), label: localized }),
+  z.object({ id: z.string().min(1), type: z.literal("questionnaireComplete"), label: localized }),
   z.object({
     id: z.string().min(1),
     type: z.literal("layoutVersion"),

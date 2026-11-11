@@ -8,6 +8,8 @@ export interface GateContext {
   decisions: readonly { rationale: string }[];
   layoutVersions: readonly { version: number; drawingUrl: string | null }[];
   ownerUserId: string | null;
+  /** Customer questionnaire status of the project (null = not started). */
+  questionnaire?: { phase: "INITIAL" | "DETAILED"; missing: number } | null;
 }
 
 export type GateFailure =
@@ -20,7 +22,9 @@ export type GateFailure =
   | "no_decision"
   | "no_layout"
   | "no_drawing"
-  | "pending_feature";
+  | "pending_feature"
+  | "questionnaire_initial_phase"
+  | "questionnaire_incomplete";
 
 export interface ConditionResult {
   id: string;
@@ -72,6 +76,12 @@ function evaluateCondition(c: GateCondition, ctx: GateContext): ConditionResult 
       const candidates = ctx.layoutVersions.filter((v) => (c.which === "concept" ? v.version === 0 : v.version >= 1));
       if (candidates.length === 0) return { ...base, met: false, failure: "no_layout" };
       if (c.requireDrawing && !candidates.some((v) => v.drawingUrl)) return { ...base, met: false, failure: "no_drawing" };
+      return { ...base, met: true };
+    }
+    case "questionnaireComplete": {
+      const q = ctx.questionnaire;
+      if (!q || q.phase !== "DETAILED") return { ...base, met: false, failure: "questionnaire_initial_phase" };
+      if (q.missing > 0) return { ...base, met: false, failure: "questionnaire_incomplete", details: [String(q.missing)] };
       return { ...base, met: true };
     }
     case "pendingFeature":

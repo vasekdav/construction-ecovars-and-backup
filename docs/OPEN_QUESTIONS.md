@@ -24,3 +24,6 @@ Do zodpovězení aplikace pracuje s nejbezpečnějším předpokladem (sloupec �
 | 18 | Má znovuotevření uzavřeného kroku automaticky znovu otevřít i navazující uzavřené kroky? | Fáze 1 | Ne, jen se zaloguje. Navazující kroky zůstávají uzavřené. |
 | 19 | Zařazení kroků navíc do grafu závislostí (ADR-018). | Fáze 1 | Podle ADR-018. |
 | 20 | Kdo smí zakládat projekty? SPEC: OAM. Teď smí i Admin, ale vlastníkem musí být uživatel s rolí OAM. | Fáze 1 | Ponecháno. |
+| 21 | Obsah dotazníku (otázky, povinnost, fáze počáteční / detailní, výběrové možnosti) je návrh a potřebuje revizi s OAM. | Fáze 2 | Návrh podle SPEC §5. |
+| 22 | Audit log ukládá změněné odpovědi dotazníku (před/po). Je to v pořádku pro reálná data (InfoSec)? | Fáze 2 | Ano pro fiktivní data ve v1. Před reálnými daty znovu posoudit. |
+| 23 | Jak převádět běžící projekty na novou verzi šablony procesu nebo dotazníku? | Fáze 2 | Projekt zůstává na své verzi. Migraci řešit při první změně šablony. |

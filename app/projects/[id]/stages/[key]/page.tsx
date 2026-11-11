@@ -75,7 +75,7 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
   if (!d || !d.stage.enabled) notFound();
   const { project, tpl, def, stage, gate, names } = d;
   const locale = asLocale(await getLocale());
-  const [t, tGate, tTr, tRoles, tCommon, tOutcome, tProjects, format, users] = await Promise.all([
+  const [t, tGate, tTr, tRoles, tCommon, tOutcome, tProjects, tQ, format, users] = await Promise.all([
     getTranslations("stage"),
     getTranslations("gate"),
     getTranslations("transitions"),
@@ -83,6 +83,7 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
     getTranslations("common"),
     getTranslations("outcome"),
     getTranslations("projects"),
+    getTranslations("questionnaire"),
     getFormatter(),
     listActiveUsers(db),
   ]);
@@ -135,6 +136,11 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
       <Card>
         <CardTitle>{t("definitionOfDone")}</CardTitle>
         <p className="text-sm">{def.definitionOfDone[locale]}</p>
+        {def.gate.some((g) => g.type === "questionnaireComplete") && (
+          <Link href={`/projects/${project.id}/questionnaire`} className="mt-3 inline-block text-sm font-medium text-primary underline">
+            {tQ("title")} →
+          </Link>
+        )}
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">

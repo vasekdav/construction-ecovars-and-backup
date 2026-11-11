@@ -14,6 +14,7 @@ import {
   type Stage,
 } from "@/db/schema";
 import { writeAudit } from "@/lib/audit";
+import { questionnaireGateStatus } from "@/lib/questionnaire/status";
 import { assertCan, ForbiddenError } from "@/lib/auth/rbac";
 import type { Role } from "@/lib/auth/roles";
 import { unmetDependencies } from "./dependencies";
@@ -128,6 +129,7 @@ export async function loadGateContext(tx: DbOrTx, stage: Stage): Promise<GateCon
     decisions: decisionRows,
     layoutVersions: layouts,
     ownerUserId: stage.ownerUserId,
+    questionnaire: await questionnaireGateStatus(tx, stage.projectId),
   };
 }
 

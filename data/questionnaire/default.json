@@ -1,0 +1,153 @@
+{
+  "key": "customer-checklist",
+  "version": 1,
+  "title": { "cs": "Zákaznický dotazník", "en": "Customer questionnaire" },
+  "sections": [
+    {
+      "id": "medium",
+      "title": { "cs": "1. Medium a čistota", "en": "1. Medium and purity" },
+      "questions": [
+        { "id": "medium.purity", "type": "quantity", "dimension": "fraction", "units": ["%"], "defaultUnit": "%", "nonNegative": true, "required": true, "phase": "initial", "designBasis": "purity", "label": { "cs": "Požadovaná čistota", "en": "Required purity" } },
+        { "id": "medium.application", "type": "select", "required": true, "phase": "initial", "designBasis": "applicationType", "label": { "cs": "Typ aplikace", "en": "Application type" },
+          "options": [
+            { "value": "process", "label": { "cs": "Výroba / proces", "en": "Production / process" } },
+            { "value": "combustion", "label": { "cs": "Spalování / hořáky", "en": "Combustion / burners" } },
+            { "value": "cutting_welding", "label": { "cs": "Řezání / svařování", "en": "Cutting / welding" } },
+            { "value": "inerting", "label": { "cs": "Inertizace / blanketing", "en": "Inerting / blanketing" } },
+            { "value": "water_treatment", "label": { "cs": "Úprava vody", "en": "Water treatment" } },
+            { "value": "laboratory", "label": { "cs": "Laboratoř", "en": "Laboratory" } },
+            { "value": "other", "label": { "cs": "Jiné", "en": "Other" } }
+          ] },
+        { "id": "medium.application_detail", "type": "textarea", "required": false, "phase": "detailed", "label": { "cs": "Popis aplikace", "en": "Application description" } }
+      ]
+    },
+    {
+      "id": "consumption",
+      "title": { "cs": "2. Spotřeba", "en": "2. Consumption" },
+      "questions": [
+        { "id": "consumption.q_avg", "type": "quantity", "dimension": "normal_volume_flow", "units": ["Nm3/h", "Nm3/min"], "defaultUnit": "Nm3/h", "nonNegative": true, "required": true, "phase": "initial", "designBasis": "qAvg", "label": { "cs": "Průměrná spotřeba Q_avg", "en": "Average consumption Q_avg" } },
+        { "id": "consumption.q_peak", "type": "quantity", "dimension": "normal_volume_flow", "units": ["Nm3/h", "Nm3/min"], "defaultUnit": "Nm3/h", "nonNegative": true, "required": true, "phase": "initial", "designBasis": "qPeak", "label": { "cs": "Špičková spotřeba Q_peak", "en": "Peak consumption Q_peak" } },
+        { "id": "consumption.profile", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "consumptionProfile", "label": { "cs": "Profil odběru (směny, sezónnost, špičky)", "en": "Consumption profile (shifts, seasonality, peaks)" } },
+        { "id": "consumption.criticality", "type": "select", "required": true, "phase": "initial", "designBasis": "supplyCriticality", "label": { "cs": "Kritičnost dodávky", "en": "Supply criticality" },
+          "options": [
+            { "value": "low", "label": { "cs": "Nízká: výpadek lze překlenout", "en": "Low: outage can be bridged" } },
+            { "value": "medium", "label": { "cs": "Střední: omezení výroby", "en": "Medium: production limited" } },
+            { "value": "high", "label": { "cs": "Vysoká: zastavení výroby", "en": "High: production stops" } },
+            { "value": "critical", "label": { "cs": "Kritická: ohrožení osob nebo zařízení", "en": "Critical: risk to people or equipment" } }
+          ] },
+        { "id": "consumption.outage_impact", "type": "textarea", "required": true, "phase": "initial", "designBasis": "outageImpact", "label": { "cs": "Co se stane při výpadku dodávky", "en": "What happens on a supply outage" } }
+      ]
+    },
+    {
+      "id": "autonomy",
+      "title": { "cs": "3. Doba autonomie", "en": "3. Autonomy" },
+      "questions": [
+        { "id": "autonomy.required", "type": "quantity", "dimension": "duration", "units": ["h", "d"], "defaultUnit": "h", "nonNegative": true, "required": true, "phase": "initial", "designBasis": "requiredAutonomy", "label": { "cs": "Požadovaná doba krytí zálohou", "en": "Required backup autonomy" } },
+        { "id": "autonomy.refill_by", "type": "text", "required": true, "phase": "detailed", "designBasis": "refillBy", "label": { "cs": "Kdo doplňuje zásobník", "en": "Who refills the tank" } },
+        { "id": "autonomy.refill_frequency", "type": "text", "required": false, "phase": "detailed", "label": { "cs": "Jak často se doplňuje", "en": "Refill frequency" } }
+      ]
+    },
+    {
+      "id": "pressure",
+      "title": { "cs": "4. Tlak a tie-in", "en": "4. Pressure and tie-in" },
+      "questions": [
+        { "id": "pressure.required", "type": "quantity", "dimension": "pressure_gauge", "units": ["bar(g)", "kPa(g)", "MPa(g)", "psig"], "defaultUnit": "bar(g)", "required": true, "phase": "initial", "designBasis": "requiredPressure", "label": { "cs": "Požadovaný tlak u zákazníka", "en": "Required pressure at customer" } },
+        { "id": "pressure.source_type", "type": "select", "required": true, "phase": "initial", "designBasis": "sourceType", "label": { "cs": "Typ stávajícího zdroje", "en": "Existing source type" },
+          "options": [
+            { "value": "asu", "label": { "cs": "ASU", "en": "ASU" } },
+            { "value": "psa", "label": { "cs": "PSA", "en": "PSA" } },
+            { "value": "minigan", "label": { "cs": "Minigan", "en": "Minigan" } },
+            { "value": "other", "label": { "cs": "Jiný", "en": "Other" } },
+            { "value": "none", "label": { "cs": "Žádný (nová dodávka)", "en": "None (new supply)" } }
+          ] },
+        { "id": "pressure.source_pressure", "type": "quantity", "dimension": "pressure_gauge", "units": ["bar(g)", "kPa(g)", "MPa(g)", "psig"], "defaultUnit": "bar(g)", "required": true, "phase": "detailed", "designBasis": "sourcePressure", "showIf": { "answer": { "question": "pressure.source_type", "notIn": ["none"] } }, "label": { "cs": "Provozní tlak stávajícího zdroje", "en": "Operating pressure of existing source" } },
+        { "id": "pressure.tie_in_location", "type": "text", "required": true, "phase": "detailed", "designBasis": "tieInLocation", "label": { "cs": "Místo napojení", "en": "Tie-in location" } },
+        { "id": "pressure.pipe_material", "type": "text", "required": true, "phase": "detailed", "designBasis": "pipeMaterial", "label": { "cs": "Materiál stávajícího potrubí", "en": "Existing pipe material" } }
+      ]
+    },
+    {
+      "id": "site",
+      "title": { "cs": "5. Lokalita", "en": "5. Site" },
+      "questions": [
+        { "id": "site.address", "type": "text", "required": true, "phase": "initial", "designBasis": "address", "label": { "cs": "Adresa", "en": "Address" } },
+        { "id": "site.latitude", "type": "number", "min": -90, "max": 90, "required": false, "phase": "detailed", "designBasis": "latitude", "label": { "cs": "Zeměpisná šířka (°)", "en": "Latitude (°)" } },
+        { "id": "site.longitude", "type": "number", "min": -180, "max": 180, "required": false, "phase": "detailed", "designBasis": "longitude", "label": { "cs": "Zeměpisná délka (°)", "en": "Longitude (°)" } },
+        { "id": "site.temp_min", "type": "quantity", "dimension": "temperature", "units": ["°C", "K", "°F"], "defaultUnit": "°C", "required": true, "phase": "detailed", "designBasis": "designTempMin", "label": { "cs": "Minimální návrhová teplota okolí", "en": "Minimum design ambient temperature" } },
+        { "id": "site.temp_max", "type": "quantity", "dimension": "temperature", "units": ["°C", "K", "°F"], "defaultUnit": "°C", "required": true, "phase": "detailed", "designBasis": "designTempMax", "label": { "cs": "Maximální návrhová teplota okolí", "en": "Maximum design ambient temperature" } },
+        { "id": "site.humidity", "type": "quantity", "dimension": "fraction", "units": ["%"], "defaultUnit": "%", "nonNegative": true, "required": false, "phase": "detailed", "designBasis": "relativeHumidity", "label": { "cs": "Relativní vlhkost (typická)", "en": "Relative humidity (typical)" } },
+        { "id": "site.snow_icing", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "snowAndIcing", "label": { "cs": "Sníh a námraza", "en": "Snow and icing" } },
+        { "id": "site.wind_direction", "type": "select", "required": false, "phase": "detailed", "designBasis": "prevailingWind", "label": { "cs": "Dominantní směr větru", "en": "Prevailing wind direction" },
+          "options": [
+            { "value": "N", "label": { "cs": "S", "en": "N" } }, { "value": "NE", "label": { "cs": "SV", "en": "NE" } },
+            { "value": "E", "label": { "cs": "V", "en": "E" } }, { "value": "SE", "label": { "cs": "JV", "en": "SE" } },
+            { "value": "S", "label": { "cs": "J", "en": "S" } }, { "value": "SW", "label": { "cs": "JZ", "en": "SW" } },
+            { "value": "W", "label": { "cs": "Z", "en": "W" } }, { "value": "NW", "label": { "cs": "SZ", "en": "NW" } },
+            { "value": "variable", "label": { "cs": "Proměnlivý", "en": "Variable" } }
+          ] }
+      ]
+    },
+    {
+      "id": "space",
+      "title": { "cs": "6. Prostor", "en": "6. Space" },
+      "questions": [
+        { "id": "space.available_area", "type": "quantity", "dimension": "area", "units": ["m2"], "defaultUnit": "m2", "nonNegative": true, "required": true, "phase": "detailed", "designBasis": "availableArea", "label": { "cs": "Dostupná plocha", "en": "Available area" } },
+        { "id": "space.obstacles", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "obstacles", "label": { "cs": "Překážky (zdi, budovy, komunikace)", "en": "Obstacles (walls, buildings, roads)" } },
+        { "id": "space.cooling_towers", "type": "boolean", "required": true, "phase": "detailed", "designBasis": "coolingTowersNearby", "label": { "cs": "Jsou v blízkosti chladicí věže nebo výdechy vlhkého vzduchu?", "en": "Cooling towers or humid air exhausts nearby?" } },
+        { "id": "space.cooling_towers_detail", "type": "textarea", "required": true, "phase": "detailed", "showIf": { "answer": { "question": "space.cooling_towers", "equals": true } }, "label": { "cs": "Popis chladicích věží / výdechů a jejich polohy", "en": "Describe cooling towers / exhausts and their position" } },
+        { "id": "space.ground_surface", "type": "select", "required": true, "phase": "detailed", "designBasis": "groundSurface", "label": { "cs": "Povrch podloží v místě stanice", "en": "Ground surface at the station" },
+          "options": [
+            { "value": "concrete", "label": { "cs": "Beton", "en": "Concrete" } },
+            { "value": "asphalt", "label": { "cs": "Asfalt", "en": "Asphalt" } },
+            { "value": "gravel", "label": { "cs": "Štěrk", "en": "Gravel" } },
+            { "value": "soil", "label": { "cs": "Zemina / tráva", "en": "Soil / grass" } },
+            { "value": "other", "label": { "cs": "Jiné", "en": "Other" } }
+          ] },
+        { "id": "space.underground_utilities", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "undergroundUtilities", "label": { "cs": "Podzemní vedení", "en": "Underground utilities" } }
+      ]
+    },
+    {
+      "id": "tanker",
+      "title": { "cs": "7. Příjezd cisterny", "en": "7. Tanker access" },
+      "questions": [
+        { "id": "tanker.road_width", "type": "quantity", "dimension": "length", "units": ["m"], "defaultUnit": "m", "nonNegative": true, "required": true, "phase": "detailed", "designBasis": "roadWidth", "label": { "cs": "Šířka příjezdové komunikace", "en": "Access road width" } },
+        { "id": "tanker.turning_radius", "type": "quantity", "dimension": "length", "units": ["m"], "defaultUnit": "m", "nonNegative": true, "required": true, "phase": "detailed", "designBasis": "turningRadius", "label": { "cs": "Dostupný poloměr otáčení", "en": "Available turning radius" } },
+        { "id": "tanker.load_capacity", "type": "quantity", "dimension": "mass", "units": ["t"], "defaultUnit": "t", "nonNegative": true, "required": true, "phase": "detailed", "designBasis": "roadLoadCapacity", "label": { "cs": "Nosnost komunikace", "en": "Road load capacity" } },
+        { "id": "tanker.unloading_location", "type": "text", "required": true, "phase": "detailed", "designBasis": "unloadingLocation", "label": { "cs": "Místo vykládky", "en": "Unloading location" } },
+        { "id": "tanker.distance_from_road", "type": "quantity", "dimension": "length", "units": ["m", "km"], "defaultUnit": "m", "nonNegative": true, "required": true, "phase": "detailed", "designBasis": "distanceFromRoad", "label": { "cs": "Vzdálenost od veřejné silnice", "en": "Distance from public road" } },
+        { "id": "tanker.traffic", "type": "textarea", "required": false, "phase": "detailed", "designBasis": "trafficNearby", "label": { "cs": "Provoz v okolí (vozidla, vysokozdvižné vozíky)", "en": "Traffic nearby (vehicles, forklifts)" } }
+      ]
+    },
+    {
+      "id": "surroundings",
+      "title": { "cs": "8. Okolí a rizika", "en": "8. Surroundings and hazards" },
+      "questions": [
+        { "id": "surroundings.buildings", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "neighbouringBuildings", "label": { "cs": "Sousední budovy (typ, vzdálenost, otvory, nasávání vzduchu)", "en": "Neighbouring buildings (type, distance, openings, air intakes)" } },
+        { "id": "surroundings.low_points", "type": "boolean", "required": true, "phase": "detailed", "designBasis": "lowPointsNearby", "label": { "cs": "Jsou v okolí jímky, šachty, sklepy nebo prohlubně?", "en": "Pits, shafts, basements or depressions nearby?" } },
+        { "id": "surroundings.low_points_detail", "type": "textarea", "required": true, "phase": "detailed", "showIf": { "answer": { "question": "surroundings.low_points", "equals": true } }, "label": { "cs": "Popis jímek / šachet a jejich polohy", "en": "Describe pits / shafts and their position" } },
+        { "id": "surroundings.confined_spaces", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "confinedSpaces", "showIf": { "medium": ["N2"] }, "label": { "cs": "Uzavřené prostory s pobytem osob, kam může N₂ proniknout (asfyxie)", "en": "Occupied enclosed spaces N₂ could enter (asphyxiation)" } },
+        { "id": "surroundings.ignition_sources", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "ignitionSources", "label": { "cs": "Zdroje zapálení v okolí", "en": "Ignition sources nearby" } },
+        { "id": "surroundings.flammables", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "flammableMaterials", "showIf": { "medium": ["O2"] }, "label": { "cs": "Hořlavé materiály, oleje a maziva v okolí (O₂)", "en": "Flammable materials, oils and greases nearby (O₂)" } },
+        { "id": "surroundings.public_access", "type": "boolean", "required": true, "phase": "detailed", "designBasis": "publicAccess", "label": { "cs": "Je místo přístupné veřejnosti?", "en": "Is the location publicly accessible?" } }
+      ]
+    },
+    {
+      "id": "utilities",
+      "title": { "cs": "9. Energie a komunikace", "en": "9. Power and communication" },
+      "questions": [
+        { "id": "utilities.power", "type": "text", "required": true, "phase": "detailed", "designBasis": "powerSupply", "label": { "cs": "Napájení (dostupnost, napětí)", "en": "Power supply (availability, voltage)" } },
+        { "id": "utilities.telemetry", "type": "boolean", "required": true, "phase": "detailed", "designBasis": "telemetryAvailable", "label": { "cs": "Je možné přenášet data na telemetrii?", "en": "Can data be transmitted to telemetry?" } },
+        { "id": "utilities.alarm_contact", "type": "text", "required": true, "phase": "detailed", "designBasis": "alarmContact", "label": { "cs": "Kontakt odpovědné osoby pro alarmy (role / funkce)", "en": "Alarm contact (role / function)" } },
+        { "id": "utilities.customer_system", "type": "text", "required": false, "phase": "detailed", "designBasis": "customerSystemConnection", "label": { "cs": "Připojení na zákaznický řídicí systém", "en": "Connection to customer control system" } }
+      ]
+    },
+    {
+      "id": "legal",
+      "title": { "cs": "10. Legislativa a povolení", "en": "10. Legislation and permits" },
+      "questions": [
+        { "id": "legal.existing_permits", "type": "textarea", "required": true, "phase": "detailed", "designBasis": "existingPermits", "label": { "cs": "Stávající povolení", "en": "Existing permits" } },
+        { "id": "legal.insurer", "type": "textarea", "required": false, "phase": "detailed", "designBasis": "insurerRequirements", "label": { "cs": "Požadavky pojišťovny", "en": "Insurer requirements" } },
+        { "id": "legal.internal_rules", "type": "textarea", "required": false, "phase": "detailed", "designBasis": "customerInternalRules", "label": { "cs": "Interní předpisy zákazníka", "en": "Customer internal rules" } }
+      ]
+    }
+  ]
+}

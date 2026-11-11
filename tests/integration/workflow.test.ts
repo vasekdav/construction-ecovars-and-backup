@@ -187,7 +187,7 @@ describe.skipIf(!hasDb)("workflow service (Postgres)", () => {
     await expect(setTaskDone(db, as("ROC"), { taskId, done: false })).rejects.toThrow("STAGE_CLOSED");
   });
 
-  it("phase-gated conditions keep steps 5, 7 and 8 from closing", async () => {
+  it("step 7 cannot close before the questionnaire is complete", async () => {
     const pid = await newProject();
     await forceClose(pid, "1");
     await forceClose(pid, "2");
@@ -197,7 +197,9 @@ describe.skipIf(!hasDb)("workflow service (Postgres)", () => {
     await transitionStage(db, as("OAM"), { stageId: s7, transition: "submit" });
     const res = await transitionStage(db, as("OAM"), { stageId: s7, transition: "close" });
     expect(res.ok).toBe(false);
-    if (!res.ok) expect(res.gate?.results.find((r) => r.id === "questionnaire_complete")?.failure).toBe("pending_feature");
+    if (!res.ok) {
+      expect(res.gate?.results.find((r) => r.id === "questionnaire_complete")?.failure).toBe("questionnaire_initial_phase");
+    }
   });
 
   it("block and unblock return to the previous state", async () => {

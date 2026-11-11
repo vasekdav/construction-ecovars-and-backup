@@ -85,6 +85,18 @@ describe("evaluateGate", () => {
     expect(one(noDrawing, { layoutVersions: [{ version: 1, drawingUrl: null }] }).met).toBe(true);
   });
 
+  it("questionnaireComplete requires the detailed phase with nothing missing", () => {
+    const c: GateCondition = { id: "q", type: "questionnaireComplete", label: L };
+    expect(one(c, {})).toMatchObject({ met: false, failure: "questionnaire_initial_phase" });
+    expect(one(c, { questionnaire: null })).toMatchObject({ met: false, failure: "questionnaire_initial_phase" });
+    expect(one(c, { questionnaire: { phase: "INITIAL", missing: 0 } })).toMatchObject({ failure: "questionnaire_initial_phase" });
+    expect(one(c, { questionnaire: { phase: "DETAILED", missing: 3 } })).toMatchObject({
+      failure: "questionnaire_incomplete",
+      details: ["3"],
+    });
+    expect(one(c, { questionnaire: { phase: "DETAILED", missing: 0 } }).met).toBe(true);
+  });
+
   it("pendingFeature is never met (safe default until the feature exists)", () => {
     const c: GateCondition = { id: "p", type: "pendingFeature", phase: 3, label: L };
     expect(one(c, {})).toMatchObject({ met: false, failure: "pending_feature", details: ["3"] });

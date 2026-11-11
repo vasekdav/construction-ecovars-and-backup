@@ -14,6 +14,8 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { ROLES } from "../lib/auth/roles";
+import type { Answers } from "../lib/questionnaire/answers";
+import type { DesignBasis } from "../lib/questionnaire/design-basis";
 import { MEDIA } from "../lib/workflow/template";
 import { DECISION_OUTCOMES, PROJECT_STATUSES, STAGE_STATES } from "../lib/workflow/types";
 
@@ -223,6 +225,31 @@ export const layoutVersions = pgTable(
   },
   (t) => [uniqueIndex("layout_versions_project_version_uq").on(t.projectId, t.version)],
 );
+
+export const questionnairePhaseEnum = pgEnum("questionnaire_phase", ["INITIAL", "DETAILED"]);
+
+/** One questionnaire per project (step 7), bound to a template version (SPEC §4). */
+export const questionnaireResponses = pgTable("questionnaire_responses", {
+  projectId: uuid("project_id")
+    .primaryKey()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  templateKey: text("template_key").notNull(),
+  templateVersion: integer("template_version").notNull(),
+  phase: questionnairePhaseEnum("phase").notNull().default("INITIAL"),
+  answers: jsonb("answers").$type<Answers>().notNull().default({}),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "restrict" }),
+});
+
+/** Structured design inputs derived from the questionnaire (SI values + provenance). */
+export const designBases = pgTable("design_basis", {
+  projectId: uuid("project_id")
+    .primaryKey()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  data: jsonb("data").$type<DesignBasis>().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "restrict" }),
+});
 
 export type User = typeof users.$inferSelect;
 export type Project = typeof projects.$inferSelect;

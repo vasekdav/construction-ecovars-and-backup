@@ -64,3 +64,12 @@ Ukládají se jen odkazy s protokolem `https` (validace na serveru). Odkaz mimo 
 
 ## ADR-020 Ochrana přihlašovacího formuláře
 Formulář má `method="post"`, aby se při nenačteném JavaScriptu přihlašovací údaje nikdy neodeslaly v URL.
+
+## ADR-021 Jednotky
+Ukládá se SI hodnota spolu se zadanou hodnotou a jednotkou (`Quantity`). Základ pro normální objemový průtok je Nm³/s. Přetlak a absolutní tlak jsou **oddělené veličiny** a knihovna mezi nimi nepřevádí, protože k tomu je potřeba atmosférický tlak lokality. Knihovna obsahuje jen definiční konstanty (psi, °F, h…), žádné inženýrské hodnoty. Definice „normálních podmínek“ zůstává otevřenou otázkou 11.
+
+## ADR-022 Dotazník a DesignBasis
+Šablona dotazníku je verzovaná JSON, odpovědi jsou vázané na verzi šablony. Ukládá se po sekcích a změní se jen odeslané otázky. Prázdná hodnota odpověď maže. Odpovědi na skryté (podmíněné) otázky zůstávají uložené, ale nezapočítávají se do úplnosti a nejdou do DesignBasis. DesignBasis se materializuje při každém uložení (tabulka `design_basis`) a u každé položky drží zdrojovou otázku. Audit log ukládá změněné hodnoty před a po (ve v1 jde o fiktivní data, viz otevřená otázka 22).
+
+## ADR-023 Změna šablony procesu v1
+Gate kroku 7 se změnila z `pendingFeature` na `questionnaireComplete` přímo ve verzi 1 šablony, protože zatím neexistují nasazená data. Každá další změna šablony po nasazení zvýší verzi; běžící projekty zůstanou na své verzi (otevřená otázka 23).

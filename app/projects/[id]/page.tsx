@@ -11,6 +11,7 @@ import { getDb } from "@/db/client";
 import { requirePermission } from "@/lib/auth/session";
 import { asLocale } from "@/lib/i18n-helpers";
 import { canManageStage } from "@/lib/workflow/permissions";
+import { getQuestionnaire } from "@/lib/questionnaire/service";
 import { getProjectOverview } from "@/lib/workflow/queries";
 import { appliesToMedium } from "@/lib/workflow/template";
 import { stageEnabledAction } from "../actions";
@@ -19,15 +20,18 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const user = await requirePermission("project.read");
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const data = await getProjectOverview(await getDb(), id);
+  const db = await getDb();
+  const data = await getProjectOverview(db, id);
   if (!data) notFound();
+  const questionnaire = await getQuestionnaire(db, id);
   const { project, stages, deadlines, names } = data;
   const locale = asLocale(await getLocale());
-  const [t, tMedium, tStatus, tRoles, format] = await Promise.all([
+  const [t, tMedium, tStatus, tRoles, tQ, format] = await Promise.all([
     getTranslations("projects"),
     getTranslations("medium"),
     getTranslations("projectStatus"),
     getTranslations("roles"),
+    getTranslations("questionnaire"),
     getFormatter(),
   ]);
   const enabled = stages.filter((s) => s.enabled);
@@ -55,6 +59,19 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           projectId={project.id}
           stages={enabled.map((s) => ({ key: s.key, state: s.state, title: s.def.title[locale] }))}
         />
+      </Card>
+
+      <Card className="flex flex-wrap items-center gap-4" data-testid="questionnaire-card">
+        <Link href={`/projects/${project.id}/questionnaire`} className="font-semibold text-primary underline">
+          {tQ("step")}: {tQ("title")}
+        </Link>
+        <span className="text-sm text-muted-foreground">
+          {tQ(questionnaire?.phase === "DETAILED" ? "phaseDETAILED" : "phaseINITIAL")} · {tQ("initialProgress")}{" "}
+          {questionnaire?.initial.percent ?? 0} % · {tQ("detailedProgress")} {questionnaire?.detailed.percent ?? 0} %
+        </span>
+        <Link href={`/projects/${project.id}/design-basis`} className="ml-auto text-sm text-primary underline">
+          {tQ("openDesignBasis")}
+        </Link>
       </Card>
 
       <div className="grid gap-6 md:grid-cols-3">

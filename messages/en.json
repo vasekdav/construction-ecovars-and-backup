@@ -96,7 +96,9 @@
     "UNKNOWN_DOCUMENT_KIND": "Unknown document type.",
     "UNKNOWN_CHECK": "Unknown condition.",
     "NO_LAYOUT_STEP": "This step does not hold a layout.",
-    "LAYOUT_EXISTS": "Concept v0 already exists."
+    "LAYOUT_EXISTS": "Concept v0 already exists.",
+    "INITIAL_INCOMPLETE": "Initial requirements are incomplete.",
+    "ALREADY_DETAILED": "The questionnaire is already in the detailed phase."
   },
   "common": {
     "save": "Save",
@@ -255,7 +257,59 @@
       "no_decision": "no decision recorded",
       "no_layout": "layout version missing",
       "no_drawing": "drawing link missing",
-      "pending_feature": "evaluated from phase {details}; not met until then"
+      "pending_feature": "evaluated from phase {details}; not met until then",
+      "questionnaire_initial_phase": "questionnaire is still in the initial phase",
+      "questionnaire_incomplete": "missing mandatory items: {details}"
     }
+  },
+  "questionnaire": {
+    "title": "Customer questionnaire",
+    "step": "Step 7",
+    "phase": "Phase",
+    "phaseINITIAL": "Initial requirements",
+    "phaseDETAILED": "Detailed requirements",
+    "initialProgress": "Initial requirements",
+    "detailedProgress": "Whole questionnaire (detailed)",
+    "advance": "Move to detailed requirements",
+    "advanceHint": "Possible once all mandatory initial items are filled in.",
+    "saveSection": "Save section",
+    "saved": "Section saved.",
+    "readOnly": "Read only: the questionnaire is filled in by OAM.",
+    "frozen": "Step 7 is closed; the questionnaire is frozen.",
+    "required": "required",
+    "detailedBadge": "detailed",
+    "yes": "Yes",
+    "no": "No",
+    "unset": "Not set",
+    "choose": "— choose —",
+    "lastSaved": "Last saved {date} ({name})",
+    "missing": "Missing mandatory items: {count}",
+    "designBasis": "Design Basis",
+    "openDesignBasis": "Show Design Basis",
+    "fictitious": "Enter fictitious data only (v1 must not contain confidential data).",
+    "medium": "Project medium: {medium} (questions depend on the medium)",
+    "unit": "unit"
+  },
+  "designBasis": {
+    "title": "Design Basis",
+    "description": "Structured inputs from the questionnaire. Quantities are stored in SI with the entered value and unit.",
+    "field": "Item",
+    "value": "Value",
+    "si": "SI",
+    "source": "Source (question)",
+    "empty": "Design Basis is empty: the questionnaire has no answers yet.",
+    "generatedFrom": "Generated from template {template}, updated {date}."
+  },
+  "qerrors": {
+    "invalid_number": "Invalid number.",
+    "out_of_range": "Value out of range.",
+    "negative": "Value must not be negative.",
+    "invalid_unit": "Invalid unit.",
+    "invalid_option": "Invalid option.",
+    "too_long": "Text too long.",
+    "invalid_boolean": "Invalid value.",
+    "invalid_date": "Invalid date.",
+    "below_absolute_zero": "Temperature below absolute zero.",
+    "unknown_question": "Unknown question."
   }
 }

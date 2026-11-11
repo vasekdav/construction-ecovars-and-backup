@@ -7,6 +7,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { hashPassword } from "../lib/auth/password";
 import { MIN_PASSWORD_LENGTH } from "../lib/auth/password-policy";
 import type { Role } from "../lib/auth/roles";
+import { saveAnswers } from "../lib/questionnaire/service";
 import {
   addDocumentLink,
   addTask,
@@ -127,6 +128,18 @@ async function seedDemoProject(db: Db) {
     documentDate: "2026-10-01",
   });
   await addTask(db, oam, { stageId: s2, title: "Vyžádat CES P&ID od ROC (demo)", assigneeUserId: roc.id, dueDate: "2026-12-01" });
+  // Partially filled questionnaire (fictitious values, initial phase only).
+  await saveAnswers(db, oam, {
+    projectId,
+    answers: {
+      "medium.purity": { input: "99,5", unit: "%" },
+      "medium.application": "process",
+      "consumption.q_avg": { input: "120", unit: "Nm3/h" },
+      "consumption.q_peak": { input: "200", unit: "Nm3/h" },
+      "consumption.criticality": "high",
+      "site.address": "Demo Město, Demo ulice 1 (fiktivní)",
+    },
+  });
   console.log(`Seeded demo project "${DEMO_PROJECT_NAME}"`);
 }
 
