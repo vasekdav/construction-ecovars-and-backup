@@ -38,7 +38,7 @@ export const DEMO_USERS: { email: string; name: string; roles: Role[] }[] = [
 ];
 
 async function main() {
-  const url = process.env.DATABASE_URL;
+  const url = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
   const password = process.env.SEED_DEMO_PASSWORD;
   const rulesOnly = process.env.SEED_RULES_ONLY === "true";
   if (!url) throw new Error("DATABASE_URL is not set");

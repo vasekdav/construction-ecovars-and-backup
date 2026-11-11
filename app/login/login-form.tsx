@@ -1,7 +1,6 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 import { Alert } from "@/components/ui/alert";
@@ -11,7 +10,6 @@ import { Label } from "@/components/ui/label";
 
 export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
   const t = useTranslations("login");
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -27,8 +25,9 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
     });
     setPending(false);
     if (res?.ok && !res.error) {
-      router.replace(callbackUrl);
-      router.refresh();
+      // Full page load: the client router may still hold the pre-login redirect of the
+      // callback page (e.g. "/" → "/login"), which would cause a redirect loop.
+      window.location.assign(callbackUrl);
       return;
     }
     setError(res?.error === "RATE_LIMITED" ? t("rateLimited") : t("error"));

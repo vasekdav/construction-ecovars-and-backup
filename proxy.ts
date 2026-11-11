@@ -27,7 +27,14 @@ export async function proxy(req: NextRequest) {
 
   if (isPublic(pathname)) return NextResponse.next();
 
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // NextAuth names the session cookie "__Secure-…" when the site runs on https. Derive it from
+  // the request protocol so that it matches how the cookie was set (on Vercel and locally),
+  // instead of guessing from NEXTAUTH_URL / VERCEL (a mismatch causes a login redirect loop).
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: req.nextUrl.protocol === "https:",
+  });
   if (token) return NextResponse.next();
 
   if (pathname.startsWith("/api/")) {
