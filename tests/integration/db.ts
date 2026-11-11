@@ -1,7 +1,8 @@
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { createDb, type Db } from "@/db/client";
 import standardsJson from "@/data/standards/candidates.json";
-import { loadCalcConfigFile, syncCalcConfigs } from "@/lib/calc/config-service";
+import { loadCalcConfigFile } from "@/lib/calc/config-file";
+import { syncCalcConfigs } from "@/lib/calc/config-service";
 import { loadRuleFiles } from "@/lib/rules/catalog";
 import { syncRules } from "@/lib/safety/rules-service";
 import { syncStandards, type StandardCandidate } from "@/lib/safety/standards-service";

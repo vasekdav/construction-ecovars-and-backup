@@ -1,6 +1,4 @@
 import { and, desc, eq, sql } from "drizzle-orm";
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import { z } from "zod";
 import type { Db, DbOrTx } from "@/db/client";
 import { calcConfigs } from "@/db/schema";
@@ -32,10 +30,6 @@ function toStored(row: typeof calcConfigs.$inferSelect): StoredCalcConfig {
     changeNote: row.changeNote,
     createdAt: row.createdAt,
   };
-}
-
-export function loadCalcConfigFile(file = path.join(process.cwd(), "data", "calc", "autonomy.json")): CalcConfig {
-  return calcConfigSchema.parse(JSON.parse(readFileSync(file, "utf8")));
 }
 
 export async function syncCalcConfigs(db: Db, configs: readonly CalcConfig[]): Promise<number> {

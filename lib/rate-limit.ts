@@ -64,3 +64,4 @@ export class RateLimiter {
 export const loginLimiter = new RateLimiter({ limit: 10, windowMs: 15 * 60_000 });
 export const apiLimiter = new RateLimiter({ limit: 300, windowMs: 60_000 });
 export const actionLimiter = new RateLimiter({ limit: 120, windowMs: 60_000 });
+export const exportLimiter = new RateLimiter({ limit: 20, windowMs: 60_000 });

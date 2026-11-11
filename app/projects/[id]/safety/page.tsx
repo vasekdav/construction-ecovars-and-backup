@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ExportLinks } from "@/components/export-links";
 import { notFound } from "next/navigation";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { ActionForm } from "@/components/action-form";
@@ -17,7 +18,7 @@ import { asLocale } from "@/lib/i18n-helpers";
 import { describe } from "@/lib/rules/expr";
 import { RESULTS, TBD, type RuleResult } from "@/lib/rules/rule";
 import { displayInput, INPUT_CATALOG } from "@/lib/safety/input-catalog";
-import { evaluateProject, listSnapshots } from "@/lib/safety/project";
+import { evaluateProject, listOverrides, listSnapshots } from "@/lib/safety/project";
 import { formatNumber, unitLabel } from "@/lib/units";
 import { userNames } from "@/lib/workflow/queries";
 import { overrideNoGoAction, revokeOverrideAction, snapshotAction } from "../../safety-actions";
@@ -42,16 +43,20 @@ export default async function SafetyReviewPage({
   const filter = (FILTERS as readonly string[]).includes(rawFilter ?? "") ? (rawFilter as Filter) : null;
   const locale = asLocale(await getLocale());
   const nf = locale === "cs" ? "cs-CZ" : "en-GB";
-  const [t, tRes, tSizing, format, snapshots] = await Promise.all([
+  const [t, tRes, tSizing, format, snapshots, allOverrides] = await Promise.all([
     getTranslations("safety"),
     getTranslations("results"),
     getTranslations("sizing"),
     getFormatter(),
     listSnapshots(db, id),
+    listOverrides(db, id),
   ]);
+  const applied = new Set(evaluation.results.flatMap((r) => (r.override ? [r.override.id] : [])));
+  const stale = allOverrides.filter((o) => !o.revokedAt && !applied.has(o.id));
   const names = await userNames(db, [
     ...evaluation.results.map((r) => r.override?.createdBy),
     ...snapshots.map((s) => s.evaluatedBy),
+    ...allOverrides.map((o) => o.createdBy),
   ]);
   const { project, results, counts } = evaluation;
   const shown = results.filter((r) =>
@@ -133,6 +138,19 @@ export default async function SafetyReviewPage({
           </li>
         </ul>
       </Card>
+
+      {stale.length > 0 && (
+        <Alert tone="error" data-testid="stale-overrides">
+          <div className="mb-1 font-semibold">{t("staleOverrides")}</div>
+          <ul className="list-disc pl-5">
+            {stale.map((o) => (
+              <li key={o.id}>
+                {o.ruleId} v{o.ruleVersion} · {names.get(o.createdBy)} · {fmtDT(o.createdAt)} – „{o.reason}“
+              </li>
+            ))}
+          </ul>
+        </Alert>
+      )}
 
       <div className="space-y-3" data-testid="rules-list">
         {shown.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
@@ -246,6 +264,8 @@ export default async function SafetyReviewPage({
           </details>
         ))}
       </div>
+
+      <ExportLinks projectId={project.id} />
 
       <Card>
         <CardTitle>{t("snapshots")}</CardTitle>

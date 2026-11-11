@@ -1,5 +1,15 @@
 # Changelog
 
+## Fáze 5: Export (2026-11-11)
+- Export „Design Basis & Safety Review“ ve formátech **PDF**, **Markdown** a **XLSX** (tabulka pravidel na samostatném listu). Všechny tři formáty vycházejí z jednoho společného modelu reportu, takže mají stejný obsah.
+- Obsah: verze aplikace (a commit, je-li k dispozici), ID exportu, datum, jméno exportujícího, banner „Podpora rozhodování…“, upozornění na fiktivní data, projekt, stav kroků a kdo přijal gate, stav dotazníku, Design Basis (zadaná hodnota, SI, zdroj), výsledek sizingu se zdrojem, autonomie s předpoklady a stavem konfigurace, výsledky všech pravidel s verzí, stavem DRAFT/VERIFIED, zdrojem, podmínkou, vstupy, parametry (TBD-VERIFY) a otiskem vstupů, standardy.
+- **Overridy jsou červeně** a rozlišené na „platí“, „neplatí (změnila se verze pravidla nebo vstupy)“ a „zrušen“. Neplatné overridy nově zobrazuje i Safety Review.
+- Stahování: `/projects/{id}/export/{pdf|md|xlsx}` s autorizací na serveru, rate limitem, `Cache-Control: no-store` a záznamem `export.generate` do audit logu (formát, verze pravidel a výsledky). Odkazy jsou na dashboardu a v Safety Review.
+- PDF používá přibalený font DejaVu Sans (čeština, O₂/N₂) a nedělí slova, aby se do identifikátorů a otisků nevkládaly pomlčky.
+- Nové závislosti `@react-pdf/renderer` a `exceljs` (předepsané v SPEC §9). Zranitelná tranzitivní závislost `uuid` v exceljs je přes `overrides` povýšena na opravenou verzi, runtime závislosti mají 0 zranitelností.
+- Oprava buildu: načítání konfigurace ze souboru (jen pro seed) bylo v importním grafu aplikace a způsobovalo varování a zbytečné trasování souborů.
+- Testy: 306 unit a integračních, 15 e2e.
+
 ## Fáze 4: Autonomie + import sizingu (2026-11-11)
 - `lib/calc/autonomy`: výpočet podle SPEC §6 (využitelný objem → expansion_ratio = ρ_liq / ρ_gas,normal → objem plynu → autonomie). Konzervativní varianta s Q_peak (pro R-CAP-01) a informativní s Q_avg. Hodnoty mimo fyzikální rozsah se odmítnou a chybějící hodnota dává NEVYHODNOCENO. Pokrytí 100 %.
 - Parametry výpočtu (`fill_max`, `heel_fraction`, `rho_liquid`, `rho_gas_normal`, definice normálních podmínek, zdroj) jsou konfigurace bez výchozích hodnot (`data/calc/autonomy.json`). Verzují se jako pravidla (úprava = nová verze DRAFT) a VERIFIED nastavuje jen Process Safety. Krok 5 vyžaduje, aby byly VERIFIED.

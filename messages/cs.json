@@ -382,7 +382,8 @@
     "designInputs": "Návrhový checklist (P&ID)",
     "questionnaire": "Zákaznický dotazník",
     "layoutGeometry": "Geometrie layoutu (kroky 3 a 9)",
-    "empty": "Žádná pravidla pro tento filtr."
+    "empty": "Žádná pravidla pro tento filtr.",
+    "staleOverrides": "Overridy, které už neplatí (změnila se verze pravidla nebo vstupy). Původní NO-GO znovu blokuje; je potřeba ho posoudit znovu."
   },
   "design": {
     "title": "Návrhový checklist (P&ID a zařízení)",
@@ -474,5 +475,10 @@
     "save": "Uložit jako novou verzi (DRAFT)",
     "verify": "Ověřit (VERIFIED)",
     "link": "Parametry výpočtu autonomie"
+  },
+  "export": {
+    "title": "Export: Design Basis & Safety Review",
+    "description": "Obsahuje verzi aplikace, verze a stav pravidel, datum, jméno exportujícího a všechny overridy (červeně). Každý export se zapíše do audit logu.",
+    "download": "Stáhnout {format}"
   }
 }

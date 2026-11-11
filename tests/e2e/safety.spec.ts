@@ -82,6 +82,13 @@ test("rules are versioned; only Process Safety verifies; other roles read only",
   await page.getByTestId("rule-verify-form").getByRole("button", { name: "Ověřit (VERIFIED)" }).click();
   await expect(page.getByTestId("rule-status")).toHaveText("VERIFIED");
 
+  // Overrides of the previous rule version no longer apply and are listed as such.
+  await page.goto("/projects");
+  await page.getByRole("link", { name: /E2E safety/ }).first().click();
+  await expect(page.getByTestId("project-name")).toBeVisible();
+  await page.goto(`${page.url()}/safety`);
+  await expect(page.getByTestId("stale-overrides")).toContainText("R-CTL-01");
+
   // A rule with TBD parameters cannot be verified.
   await page.goto("/rules/R-SD-01");
   await page.getByTestId("rule-verify-form").getByRole("button").click();

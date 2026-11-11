@@ -382,7 +382,8 @@
     "designInputs": "Design checklist (P&ID)",
     "questionnaire": "Customer questionnaire",
     "layoutGeometry": "Layout geometry (steps 3 and 9)",
-    "empty": "No rules for this filter."
+    "empty": "No rules for this filter.",
+    "staleOverrides": "Overrides that no longer apply (rule version or inputs changed). The NO-GO blocks again and must be reassessed."
   },
   "design": {
     "title": "Design checklist (P&ID and equipment)",
@@ -474,5 +475,10 @@
     "save": "Save as new version (DRAFT)",
     "verify": "Verify (VERIFIED)",
     "link": "Autonomy calculation parameters"
+  },
+  "export": {
+    "title": "Export: Design Basis & Safety Review",
+    "description": "Includes the app version, rule versions and status, date, the exporting user and all overrides (in red). Every export is recorded in the audit log.",
+    "download": "Download {format}"
   }
 }

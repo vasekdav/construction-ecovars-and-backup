@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ExportLinks } from "@/components/export-links";
 import { notFound } from "next/navigation";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { ActionForm } from "@/components/action-form";
@@ -170,6 +171,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </TBody>
         </Table>
       </Card>
+
+      <ExportLinks projectId={project.id} />
 
       <Card>
         <CardTitle>{t("optionalSteps")}</CardTitle>

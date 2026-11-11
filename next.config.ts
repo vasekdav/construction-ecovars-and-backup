@@ -30,6 +30,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Server-only export libraries (PDF / XLSX) are loaded from node_modules at runtime.
+  serverExternalPackages: ["@react-pdf/renderer", "exceljs"],
+  // Fonts used by the PDF export must be shipped with the serverless function.
+  outputFileTracingIncludes: { "/projects/[id]/export/[format]": ["./assets/fonts/**"] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

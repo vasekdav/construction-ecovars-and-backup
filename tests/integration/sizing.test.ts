@@ -4,13 +4,14 @@ import type { Db } from "@/db/client";
 import { projects, roleAssignments, stages, users } from "@/db/schema";
 import { ForbiddenError } from "@/lib/auth/rbac";
 import type { Role } from "@/lib/auth/roles";
-import { AUTONOMY_KEY, getCalcConfigHistory, getCurrentCalcConfig, syncCalcConfigs, loadCalcConfigFile, updateCalcConfig, verifyCalcConfig } from "@/lib/calc/config-service";
+import { AUTONOMY_KEY, getCalcConfigHistory, getCurrentCalcConfig, syncCalcConfigs, updateCalcConfig, verifyCalcConfig } from "@/lib/calc/config-service";
 import { saveAnswers } from "@/lib/questionnaire/service";
 import { FormValidationError } from "@/lib/safety/errors";
 import { evaluateProject, verificationStatus } from "@/lib/safety/project";
 import { getSizingHistory, projectAutonomy, recordSizingResult, sizingRuleInputs } from "@/lib/sizing/service";
 import { getStageDetail } from "@/lib/workflow/queries";
 import { createProject, type Actor } from "@/lib/workflow/service";
+import { loadCalcConfigFile } from "@/lib/calc/config-file";
 import { hasDb, setupTestDb, uniqueEmail } from "./db";
 
 /** A complete sizing record (fictitious; TEST VALUES ONLY). */

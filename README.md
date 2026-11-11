@@ -10,6 +10,7 @@ Webová aplikace pro řízení projektů záložních stanic O₂ / N₂ (LOX/LI
 - Otevřené otázky: [`docs/OPEN_QUESTIONS.md`](docs/OPEN_QUESTIONS.md)
 - Rozhodnutí (ADR): [`docs/DECISIONS.md`](docs/DECISIONS.md)
 - Changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- Akceptační kritéria v1: [`docs/ACCEPTANCE.md`](docs/ACCEPTANCE.md)
 
 ## Požadavky
 - Node.js 22+
@@ -58,7 +59,8 @@ lib/            doménová logika (auth, RBAC, audit, uživatelé; později rule
 db/             Drizzle schéma, SQL migrace, seed
 data/           startovní pravidla a šablona dotazníku (JSON, od fáze 2/3)
 messages/       překlady cs/en
-docs/           SPEC, plán, otevřené otázky, ADR
+docs/           SPEC, plán, otevřené otázky, ADR, akceptační kritéria
+assets/fonts/   DejaVu Sans pro PDF export (licence v adresáři)
 tests/          unit, integration, e2e
 ```
 

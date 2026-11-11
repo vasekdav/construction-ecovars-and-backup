@@ -37,3 +37,6 @@ Do zodpovězení aplikace pracuje s nejbezpečnějším předpokladem (sloupec �
 | 31 | Mají být parametry výpočtu autonomie závislé jen na médiu, nebo i na tlaku zásobníku (hustota kapaliny se s tlakem mění)? | Fáze 4 | Jen na médiu (jedna hodnota pro O₂ a jedna pro N₂). |
 | 32 | Má se autonomie počítat i ve stavu DRAFT parametrů (s viditelným označením), nebo až po VERIFIED? | Fáze 4 | Počítá se i v DRAFT, s označením; krok 5 vyžaduje VERIFIED (ADR-030). |
 | 33 | Formát předání výsledku AAE nástroje: stačí ruční formulář, nebo import z Excelu (fáze 6)? | Fáze 4 | Ruční formulář se zdrojem a revizí. |
+| 34 | Má každý export automaticky ukládat snapshot vyhodnocení (RuleEvaluation), nebo stačí audit log s verzemi a otisky v dokumentu? | Fáze 5 | Audit log + verze a otisky v dokumentu; snapshot ukládá OAM / Process Safety ručně. |
+| 35 | Kdo smí exportovat? | Fáze 5 | Všechny role s přístupem k projektu; každý export je v audit logu. |
+| 36 | Má být export vždy v češtině, nebo v jazyce uživatele? | Fáze 5 | V jazyce UI uživatele (výchozí čeština). |

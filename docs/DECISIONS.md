@@ -36,7 +36,7 @@ Pole `stages` v datech pravidla určuje, jehož gate NO-GO blokuje. Výchozí n�
 - krok 4: R-O2-01, R-O2-03, R-MAT-01, R-VAP-01, R-PSV-01, R-PSV-02, R-CTL-01, R-CTL-02, R-CTL-03, R-MON-01
 
 ## ADR-011 Politika `npm audit`
-CI blokuje každou zranitelnost od úrovně moderate v runtime závislostech a od úrovně high ve všech závislostech. K 2026-11-11 jsou známé dvě moderate zranitelnosti, obě jen ve vývojových nástrojích (esbuild v `drizzle-kit`, minimatch v `typescript-eslint`); oprava vyžaduje downgrade. Nejsou součástí produkčního bundle, sledujeme je přes Dependabot.
+CI blokuje každou zranitelnost od úrovně moderate v runtime závislostech a od úrovně high ve všech závislostech. K 2026-11-11 jsou známé dvě moderate zranitelnosti, obě jen ve vývojových nástrojích (esbuild v `drizzle-kit`, minimatch v `typescript-eslint`); oprava vyžaduje downgrade. Nejsou součástí produkčního bundle, sledujeme je přes Dependabot. Runtime závislosti mají 0 zranitelností (viz ADR-034 k `uuid`).
 
 ## ADR-012 Databázový driver
 `postgres` (postgres.js) přes `drizzle-orm/postgres-js`. Funguje lokálně i s Neonem (TCP, `prepare: false`).
@@ -102,3 +102,15 @@ Výsledek AAE nástroje se zadává ručně formulářem (formát předání je 
 
 ## ADR-032 Odesílání formulářů
 Formuláře napojené na server actions se odesílají přes `onSubmit` + `startTransition` (hook `useSubmit`), ne přes atribut `action`. React 19 totiž po každé form action resetuje nekontrolované vstupy, takže uživatel by po validační chybě přišel o vyplněná data. Formuláře mají `method="post"`, aby se data při nenačteném JS nikdy nedostala do URL.
+
+## ADR-033 Export „Design Basis & Safety Review“
+Jeden společný model reportu (`lib/export/report.ts`) s předformátovanými hodnotami a tři tenké renderery (Markdown, XLSX, PDF), takže formáty mají stejný obsah. Export běží na serveru (`/projects/{id}/export/{format}`) s autorizací, rate limitem a `Cache-Control: no-store`; každý export se zapíše do audit logu (ID exportu, formát, verze aplikace, `pravidlo@verze:výsledek`). Reprodukovatelnost zajišťují verze pravidel a otisk vstupů u každého výsledku. Jazyk exportu odpovídá jazyku UI uživatele.
+
+## ADR-034 Závislosti pro export
+`@react-pdf/renderer` (PDF na serveru) a `exceljs` (XLSX), obě předepsané v SPEC §9 a označené jako `serverExternalPackages`. `exceljs@4.4.0` závisí na `uuid@8`, který má moderate zranitelnost (GHSA-w5hq-g745-h8pq, týká se v3/v5/v6 s parametrem `buf`; exceljs používá jen v4). Přes `overrides` je povýšen na `uuid@11.1.1` (opravená verze s CommonJS buildem); funkčnost je ověřena testy XLSX. Override odstraníme, až exceljs aktualizuje závislost.
+
+## ADR-035 Font v PDF
+Standardní PDF fonty neobsahují českou diakritiku ani dolní indexy (O₂, N₂). Přibalen je DejaVu Sans (regular + bold) s licencí v `assets/fonts/DejaVu-LICENSE.txt` a přidán do `outputFileTracingIncludes` export route. Dělení slov je vypnuté, aby se do identifikátorů a otisků nevkládaly pomlčky.
+
+## ADR-036 Stavy overridu
+Override je **platí** (odpovídá aktuální verzi pravidla i otisku vstupů a potlačuje NO-GO), **neplatí** (nezrušený, ale změnila se verze pravidla nebo vstupy, takže NO-GO znovu blokuje) nebo **zrušen**. Neplatné overridy zobrazuje Safety Review i export, aby Process Safety věděla, co posoudit znovu.
