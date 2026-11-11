@@ -11,6 +11,16 @@ test("unauthenticated users are redirected to login", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Přihlášení" })).toBeVisible();
 });
 
+test("opening the site first and then signing in lands on the projects (no redirect loop)", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveURL(/\/login\?callbackUrl=%2F/);
+  await page.getByLabel("E-mail").fill("admin@demo.local");
+  await page.getByLabel("Heslo").fill(DEMO_PASSWORD);
+  await page.getByRole("button", { name: "Přihlásit" }).click();
+  await expect(page).toHaveURL(/\/projects$/);
+  await expect(page.getByTestId("current-user")).toHaveText("Demo Admin");
+});
+
 test("unauthenticated API calls get 401", async ({ request }) => {
   const res = await request.get("/api/anything");
   expect(res.status()).toBe(401);

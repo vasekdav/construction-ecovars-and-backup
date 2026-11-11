@@ -64,8 +64,17 @@ assets/fonts/   DejaVu Sans pro PDF export (licence v adresáři)
 tests/          unit, integration, e2e
 ```
 
-## Nasazení (Vercel + Neon), zatím nepřipojeno
-1. Připojit repo ve Vercelu, přidat Neon z Vercel Marketplace (nastaví `DATABASE_URL`).
-2. Ve Vercelu nastavit `NEXTAUTH_SECRET` a `NEXTAUTH_URL`.
-3. Spustit `npm run db:migrate` proti produkční DB.
-4. Demo seed v produkci je blokovaný (vyžaduje `ALLOW_DEMO_SEED=true`).
+## Nasazení (Vercel + Neon)
+
+Repo je napojené na Vercel; každý push na `main` se nasadí do produkce a každý PR dostane preview.
+Build na Vercelu (`npm run vercel-build`, viz `vercel.json`) při každém nasazení sám připraví databázi:
+migrace, import pravidel / standardů / parametrů výpočtu (DRAFT, bez hodnot) a, je-li nastaveno
+`SEED_DEMO_PASSWORD`, fiktivní demo účty. Všechny kroky jsou opakovatelné (nic nepřepíšou).
+
+Jednorázové nastavení ve Vercelu:
+1. **Storage → Create Database → Neon**, připojit k projektu (Production + Preview). Nastaví `DATABASE_URL` a `DATABASE_URL_UNPOOLED`.
+2. **Settings → Environment Variables:**
+   - `NEXTAUTH_SECRET`: náhodný řetězec, např. `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
+   - `SEED_DEMO_PASSWORD`: heslo pro demo účty (`admin@demo.local` …), min. 12 znaků. Po založení vlastních účtů lze proměnnou smazat.
+   - `NEXTAUTH_URL` **není potřeba**, adresu si NextAuth na Vercelu zjistí sám.
+3. **Deployments → Redeploy** (nebo merge do `main`).

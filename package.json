@@ -18,7 +18,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx db/migrate.ts",
     "db:seed": "tsx db/seed.ts",
-    "db:sync-rules": "SEED_RULES_ONLY=true tsx db/seed.ts"
+    "db:sync-rules": "SEED_RULES_ONLY=true tsx db/seed.ts",
+    "vercel-build": "node scripts/vercel-build.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "4.9.0",
