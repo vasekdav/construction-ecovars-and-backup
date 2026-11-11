@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "Backup Station Project Hub",
+    "subtitle": "Záložní stanice O₂ / N₂",
+    "disclaimer": "Podpora rozhodování, nenahrazuje inženýrské schválení.",
+    "demoData": "Pouze fiktivní data. Neukládejte důvěrná data Linde ani zákazníků."
+  },
+  "nav": {
+    "home": "Přehled",
+    "users": "Uživatelé",
+    "audit": "Audit log",
+    "logout": "Odhlásit"
+  },
+  "login": {
+    "title": "Přihlášení",
+    "email": "E-mail",
+    "password": "Heslo",
+    "submit": "Přihlásit",
+    "submitting": "Přihlašuji…",
+    "error": "Neplatný e-mail nebo heslo.",
+    "rateLimited": "Příliš mnoho pokusů o přihlášení. Zkuste to později."
+  },
+  "home": {
+    "welcome": "Vítejte, {name}",
+    "yourRoles": "Vaše role",
+    "noRoles": "Nemáte přiřazenou žádnou roli. Kontaktujte administrátora.",
+    "projectsComing": "Projekty a kroky 1 až 10 přibudou ve fázi 1."
+  },
+  "roles": {
+    "OAM": "OAM",
+    "OPS": "OPS",
+    "INVESTMENT": "Investment team",
+    "ROC": "ROC / Třinec",
+    "PROCESS_SAFETY": "Process Safety",
+    "SIZING": "Sizing responsible",
+    "ADMIN": "Admin"
+  },
+  "users": {
+    "title": "Uživatelé",
+    "create": "Nový uživatel",
+    "email": "E-mail",
+    "name": "Jméno",
+    "password": "Počáteční heslo",
+    "passwordHint": "Minimálně {min} znaků.",
+    "roles": "Role",
+    "active": "Aktivní",
+    "inactive": "Neaktivní",
+    "status": "Stav",
+    "actions": "Akce",
+    "save": "Uložit",
+    "saving": "Ukládám…",
+    "created": "Uživatel byl založen.",
+    "saved": "Změny byly uloženy.",
+    "newPassword": "Nové heslo",
+    "setPassword": "Nastavit heslo",
+    "passwordSet": "Heslo bylo nastaveno.",
+    "edit": "Upravit",
+    "you": "(vy)"
+  },
+  "audit": {
+    "title": "Audit log",
+    "description": "Záznamy jsou pouze přidávané (append-only), nelze je měnit ani mazat.",
+    "time": "Čas",
+    "actor": "Kdo",
+    "action": "Akce",
+    "entity": "Objekt",
+    "change": "Změna",
+    "system": "systém",
+    "empty": "Zatím žádné záznamy."
+  },
+  "forbidden": {
+    "title": "Přístup odepřen",
+    "body": "K této akci nemáte oprávnění. Pokus byl zaznamenán do audit logu.",
+    "back": "Zpět na přehled"
+  },
+  "errors": {
+    "validation": "Zkontrolujte vyplněné údaje.",
+    "forbidden": "K této akci nemáte oprávnění.",
+    "rateLimited": "Příliš mnoho požadavků. Zkuste to za chvíli.",
+    "EMAIL_TAKEN": "Uživatel s tímto e-mailem již existuje.",
+    "NOT_FOUND": "Uživatel nebyl nalezen.",
+    "SELF_LOCKOUT": "Nemůžete sami sobě odebrat roli Admin ani se deaktivovat.",
+    "unknown": "Nastala neočekávaná chyba."
+  }
+}

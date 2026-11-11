@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "Backup Station Project Hub",
+    "subtitle": "O₂ / N₂ backup stations",
+    "disclaimer": "Decision support only, does not replace engineering approval.",
+    "demoData": "Fictitious data only. Do not store confidential Linde or customer data."
+  },
+  "nav": {
+    "home": "Overview",
+    "users": "Users",
+    "audit": "Audit log",
+    "logout": "Sign out"
+  },
+  "login": {
+    "title": "Sign in",
+    "email": "E-mail",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "error": "Invalid e-mail or password.",
+    "rateLimited": "Too many sign-in attempts. Try again later."
+  },
+  "home": {
+    "welcome": "Welcome, {name}",
+    "yourRoles": "Your roles",
+    "noRoles": "You have no role assigned. Contact an administrator.",
+    "projectsComing": "Projects and steps 1 to 10 arrive in phase 1."
+  },
+  "roles": {
+    "OAM": "OAM",
+    "OPS": "OPS",
+    "INVESTMENT": "Investment team",
+    "ROC": "ROC / Třinec",
+    "PROCESS_SAFETY": "Process Safety",
+    "SIZING": "Sizing responsible",
+    "ADMIN": "Admin"
+  },
+  "users": {
+    "title": "Users",
+    "create": "New user",
+    "email": "E-mail",
+    "name": "Name",
+    "password": "Initial password",
+    "passwordHint": "At least {min} characters.",
+    "roles": "Roles",
+    "active": "Active",
+    "inactive": "Inactive",
+    "status": "Status",
+    "actions": "Actions",
+    "save": "Save",
+    "saving": "Saving…",
+    "created": "User created.",
+    "saved": "Changes saved.",
+    "newPassword": "New password",
+    "setPassword": "Set password",
+    "passwordSet": "Password set.",
+    "edit": "Edit",
+    "you": "(you)"
+  },
+  "audit": {
+    "title": "Audit log",
+    "description": "Entries are append-only and cannot be changed or deleted.",
+    "time": "Time",
+    "actor": "Who",
+    "action": "Action",
+    "entity": "Object",
+    "change": "Change",
+    "system": "system",
+    "empty": "No entries yet."
+  },
+  "forbidden": {
+    "title": "Access denied",
+    "body": "You do not have permission for this action. The attempt has been recorded in the audit log.",
+    "back": "Back to overview"
+  },
+  "errors": {
+    "validation": "Please check the entered values.",
+    "forbidden": "You do not have permission for this action.",
+    "rateLimited": "Too many requests. Try again shortly.",
+    "EMAIL_TAKEN": "A user with this e-mail already exists.",
+    "NOT_FOUND": "User not found.",
+    "SELF_LOCKOUT": "You cannot remove your own Admin role or deactivate yourself.",
+    "unknown": "An unexpected error occurred."
+  }
+}
