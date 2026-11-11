@@ -46,7 +46,8 @@ export type GateFailure =
   | "rules_not_evaluated"
   | "geometry_incomplete"
   | "unverified_calc"
-  | "no_sizing";
+  | "no_sizing"
+  | "no_rules";
 
 export interface ConditionResult {
   id: string;
@@ -116,7 +117,7 @@ function evaluateCondition(c: GateCondition, ctx: GateContext): ConditionResult 
     }
     case "rulesNoNoGo": {
       const r = ctx.rules;
-      if (!r) return { ...base, met: false, failure: "rules_not_evaluated", details: [] };
+      if (!r) return { ...base, met: false, failure: "no_rules" };
       if (r.noGo.length) return { ...base, met: false, failure: "rules_no_go", details: r.noGo };
       if (r.notEvaluated.length) return { ...base, met: false, failure: "rules_not_evaluated", details: r.notEvaluated };
       return { ...base, met: true };

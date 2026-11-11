@@ -15,7 +15,7 @@ import {
 } from "@/db/schema";
 import { writeAudit } from "@/lib/audit";
 import { questionnaireGateStatus } from "@/lib/questionnaire/status";
-import { evaluateProject, layoutGeometryStatus, verificationStatus } from "@/lib/safety/project";
+import { evaluateProject, layoutGeometryStatus, stageRuleStatus, verificationStatus } from "@/lib/safety/project";
 import { getLatestSizing } from "@/lib/sizing/service";
 import { assertCan, ForbiddenError } from "@/lib/auth/rbac";
 import type { Role } from "@/lib/auth/roles";
@@ -145,7 +145,7 @@ async function safetyGateContext(tx: DbOrTx, stage: Stage): Promise<Partial<Gate
   const out: Partial<GateContext> = {};
   if (types.has("rulesNoNoGo")) {
     const evaluation = await evaluateProject(tx, project.id);
-    out.rules = evaluation?.byStage[stage.key] ?? { noGo: [], notEvaluated: [] };
+    out.rules = stageRuleStatus(evaluation, stage.key);
   }
   if (types.has("standardsVerified")) out.verification = await verificationStatus(tx, project.medium);
   if (types.has("layoutGeometryComplete")) out.layoutGeometry = await layoutGeometryStatus(tx, project.id, project.medium);

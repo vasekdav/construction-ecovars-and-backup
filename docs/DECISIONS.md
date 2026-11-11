@@ -88,7 +88,7 @@ Override NO-GO smí jen Process Safety, s povinným zdůvodněním (min. 10 znak
 
 ## ADR-028 Gate napojené na pravidla
 - Krok 3: všechny povinné rozměry layoutu v0 vyplněny (`layoutGeometryComplete`).
-- Kroky 4, 8, 9: pravidla mapovaná na krok nemají blokující NO-GO **a ani NEVYHODNOCENO** (`rulesNoNoGo`). NEVYHODNOCENO blokuje, protože jinak by chybějící parametr gate propustil. WARNING neblokuje (otevřená otázka 25).
+- Kroky 4, 8, 9: pravidla mapovaná na krok nemají blokující NO-GO **a ani NEVYHODNOCENO** (`rulesNoNoGo`). NEVYHODNOCENO blokuje, protože jinak by chybějící parametr gate propustil. WARNING neblokuje (otevřená otázka 25). **Pokud na krok není mapované žádné platné pravidlo (např. pravidla nebyla naimportována), gate neprojde** (`no_rules`). Prázdný katalog nesmí nic propustit; zjištěno v CI, opraveno ve fázi 4.
 - Krok 5: všechny standardy a pravidla platné pro médium projektu jsou VERIFIED a seznam standardů není prázdný (`standardsVerified`).
 
 ## ADR-029 Standardy

@@ -7,6 +7,8 @@
 - Pravidla R-VAP-02, R-CAP-01 a R-ENV-01 dostávají vstupy ze sizingu a z výpočtu autonomie. Gate kroku 8 vyžaduje uložený výsledek sizingu. V šabloně procesu už nezbývá žádná podmínka „funkce z pozdější fáze“.
 - Stránka „Sizing a autonomie“ (banner, výsledek, výpočet krok po kroku, předpoklady, štítek DRAFT, aktuální výsledek a historie verzí) a správa parametrů výpočtu.
 - Oprava: formuláře si po validační chybě ponechají zadané hodnoty. React 19 je při odeslání přes `action` resetoval a uživatel by přišel o vyplněná data; týkalo se to dotazníku, checklistu, sizingu, pravidel i správy uživatelů.
+- Oprava (bezpečnost): gate „pravidla bez NO-GO“ prošla, když v DB nebyla žádná pravidla (prázdný katalog, např. bez `db:sync-rules`). Teď v takovém případě neprojde (`no_rules`). Chybu odhalilo CI na čisté databázi.
+- Testovací setup importuje referenční data (pravidla, standardy, konfiguraci výpočtu) v každém souboru, takže výsledek nezávisí na pořadí testů.
 - Nový typ otázky `url` (jen https) a jednotka hustoty.
 - Testy: 294 unit a integračních, 13 e2e.
 

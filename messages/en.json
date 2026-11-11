@@ -282,7 +282,8 @@
       "rules_not_evaluated": "not evaluated: {details}",
       "geometry_incomplete": "missing mandatory dimensions: {details}",
       "unverified_calc": "unverified calculation parameters: {details}",
-      "no_sizing": "no sizing result recorded"
+      "no_sizing": "no sizing result recorded",
+      "no_rules": "no rules for this step in the catalogue (run the rule import)"
     }
   },
   "questionnaire": {

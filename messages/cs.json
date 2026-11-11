@@ -282,7 +282,8 @@
       "rules_not_evaluated": "nevyhodnoceno: {details}",
       "geometry_incomplete": "chybí povinných rozměrů: {details}",
       "unverified_calc": "neověřené parametry výpočtu: {details}",
-      "no_sizing": "výsledek sizingu není uložen"
+      "no_sizing": "výsledek sizingu není uložen",
+      "no_rules": "katalog pravidel pro tento krok je prázdný (spusťte import pravidel)"
     }
   },
   "questionnaire": {

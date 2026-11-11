@@ -114,7 +114,8 @@ describe("evaluateGate", () => {
 
   it("rulesNoNoGo blocks on NO-GO and on NEVYHODNOCENO", () => {
     const c: GateCondition = { id: "r", type: "rulesNoNoGo", label: L };
-    expect(one(c, {})).toMatchObject({ met: false, failure: "rules_not_evaluated" });
+    expect(one(c, {})).toMatchObject({ met: false, failure: "no_rules" });
+    expect(one(c, { rules: null })).toMatchObject({ met: false, failure: "no_rules" });
     expect(one(c, { rules: { noGo: ["R-A"], notEvaluated: ["R-B"] } })).toMatchObject({ failure: "rules_no_go", details: ["R-A"] });
     expect(one(c, { rules: { noGo: [], notEvaluated: ["R-B"] } })).toMatchObject({ failure: "rules_not_evaluated", details: ["R-B"] });
     expect(one(c, { rules: { noGo: [], notEvaluated: [] } }).met).toBe(true);

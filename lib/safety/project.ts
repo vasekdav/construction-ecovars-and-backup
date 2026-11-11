@@ -113,6 +113,21 @@ export async function evaluateProject(db: DbOrTx, projectId: string): Promise<Pr
   return { project, medium: project.medium, layoutVersion, inputs, results, counts, byStage };
 }
 
+/**
+ * Rule status of one step for its gate. Returns null when no applicable rule
+ * is mapped to the step: an empty catalogue (e.g. rules not imported) must
+ * never let a rule-based gate pass.
+ */
+export function stageRuleStatus(
+  evaluation: Pick<ProjectEvaluation, "results" | "byStage"> | null,
+  stageKey: string,
+): { noGo: string[]; notEvaluated: string[] } | null {
+  if (!evaluation) return null;
+  const mapped = evaluation.results.filter((r) => r.rule.stages.includes(stageKey));
+  if (mapped.length === 0) return null;
+  return evaluation.byStage[stageKey] ?? { noGo: [], notEvaluated: [] };
+}
+
 /** Rules and standards applicable to the medium that are not VERIFIED (step 5 gate). */
 export async function verificationStatus(db: DbOrTx, medium: Medium) {
   const current = await listCurrentRules(db);
