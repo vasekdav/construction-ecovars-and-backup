@@ -171,10 +171,10 @@ function ReportDocument({ m }: { m: ReportModel }) {
         </Text>
         {m.overrides.length ? (
           <Table
-            head={[L.rule, L.status, L.reason, L.by, L.revokedCol]}
-            rows={m.overrides.map((o) => [`${o.ruleId} v${o.ruleVersion}`, o.stateLabel, o.reason, `${o.by}, ${o.at}`, o.revoked ?? "—"])}
-            widths={[14, 14, 36, 18, 18]}
-            redRows={m.overrides.map((_, i) => i)}
+            head={[L.rule, L.kind, L.status, L.reason, L.by, L.revokedCol]}
+            rows={m.overrides.map((o) => [`${o.ruleId} v${o.ruleVersion}`, o.kindLabel, o.stateLabel, o.reason, `${o.by}, ${o.at}`, o.revoked ?? "—"])}
+            widths={[12, 13, 15, 28, 16, 16]}
+            redRows={m.overrides.flatMap((o, i) => (o.kind === "override" ? [i] : []))}
           />
         ) : (
           <Text>{L.noOverrides}</Text>

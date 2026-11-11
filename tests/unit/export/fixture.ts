@@ -83,9 +83,10 @@ export function fixture(over: Partial<ReportModel> = {}): ReportModel {
       ],
     },
     overrides: [
-      { ruleId: "R-CTL-01", ruleVersion: 3, state: "applied", stateLabel: "OVERRIDE platí", reason: "Zpětný tok vyloučen (demo).", by: "Demo Process Safety", at: "11.11.26 11:00", revoked: null },
-      { ruleId: "R-PSV-01", ruleVersion: 1, state: "revoked", stateLabel: "OVERRIDE zrušen", reason: "Dočasně (demo).", by: "Demo Process Safety", at: "11.11.26 10:00", revoked: "Demo PS, 11.11.26 10:30: zrušeno" },
-      { ruleId: "R-PSV-02", ruleVersion: 1, state: "stale", stateLabel: "OVERRIDE neplatí (změnila se verze pravidla nebo vstupy)", reason: "Starý override (demo).", by: "Demo Process Safety", at: "11.11.26 09:00", revoked: null },
+      { kind: "override", kindLabel: "Override NO-GO", ruleId: "R-CTL-01", ruleVersion: 3, state: "applied", stateLabel: "OVERRIDE platí", reason: "Zpětný tok vyloučen (demo).", by: "Demo Process Safety", at: "11.11.26 11:00", revoked: null },
+      { kind: "override", kindLabel: "Override NO-GO", ruleId: "R-PSV-01", ruleVersion: 1, state: "revoked", stateLabel: "OVERRIDE zrušen", reason: "Dočasně (demo).", by: "Demo Process Safety", at: "11.11.26 10:00", revoked: "Demo PS, 11.11.26 10:30: zrušeno" },
+      { kind: "override", kindLabel: "Override NO-GO", ruleId: "R-PSV-02", ruleVersion: 1, state: "stale", stateLabel: "OVERRIDE neplatí (změnila se verze pravidla nebo vstupy)", reason: "Starý override (demo).", by: "Demo Process Safety", at: "11.11.26 09:00", revoked: null },
+      { kind: "acknowledgement", kindLabel: "Posouzení WARNING", ruleId: "R-ACC-01", ruleVersion: 1, state: "applied", stateLabel: "posouzení platí", reason: "Přístup ověřen na místě (demo).", by: "Demo OAM", at: "11.11.26 09:30", revoked: null },
     ],
     standards: [{ code: "EIGA Doc 04", title: "Požární rizika kyslíku", revision: "TBD-VERIFY", status: "DRAFT" }],
     ...over,

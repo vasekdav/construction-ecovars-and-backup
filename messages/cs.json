@@ -111,7 +111,9 @@
     "NOT_NO_GO": "Override je možný jen u výsledku NO-GO.",
     "ALREADY_OVERRIDDEN": "NO-GO už je přepsáno.",
     "NO_LAYOUT_VERSION": "Verze layoutu neexistuje.",
-    "required": "Povinná položka."
+    "required": "Povinná položka.",
+    "NOT_WARNING": "Posoudit lze jen výsledek WARNING.",
+    "ALREADY_ACKNOWLEDGED": "WARNING už je posouzeno."
   },
   "common": {
     "save": "Uložit",
@@ -283,7 +285,8 @@
       "geometry_incomplete": "chybí povinných rozměrů: {details}",
       "unverified_calc": "neověřené parametry výpočtu: {details}",
       "no_sizing": "výsledek sizingu není uložen",
-      "no_rules": "katalog pravidel pro tento krok je prázdný (spusťte import pravidel)"
+      "no_rules": "katalog pravidel pro tento krok je prázdný (spusťte import pravidel)",
+      "rules_warning_unacknowledged": "neposouzená WARNING: {details}"
     }
   },
   "questionnaire": {
@@ -312,7 +315,8 @@
     "openDesignBasis": "Zobrazit Design Basis",
     "fictitious": "Vyplňujte pouze fiktivní údaje (v1 nesmí obsahovat důvěrná data).",
     "medium": "Médium projektu: {medium} (otázky se zobrazují podle média)",
-    "unit": "jednotka"
+    "unit": "jednotka",
+    "fromPlan": "z plánu"
   },
   "designBasis": {
     "title": "Design Basis",
@@ -343,7 +347,8 @@
     "WARNING": "WARNING",
     "NO-GO": "NO-GO",
     "NOT_EVALUATED": "NEVYHODNOCENO",
-    "overridden": "NO-GO (override)"
+    "overridden": "NO-GO (override)",
+    "acknowledged": "WARNING (posouzeno)"
   },
   "safety": {
     "title": "Safety Review",
@@ -383,7 +388,14 @@
     "questionnaire": "Zákaznický dotazník",
     "layoutGeometry": "Geometrie layoutu (kroky 3 a 9)",
     "empty": "Žádná pravidla pro tento filtr.",
-    "staleOverrides": "Overridy, které už neplatí (změnila se verze pravidla nebo vstupy). Původní NO-GO znovu blokuje; je potřeba ho posoudit znovu."
+    "staleOverrides": "Overridy a posouzení, které už neplatí (změnila se verze pravidla nebo vstupy). Výsledek znovu blokuje a je potřeba ho posoudit znovu.",
+    "acknowledge": "Posoudit WARNING",
+    "acknowledgeReason": "Komentář k posouzení (min. 10 znaků)",
+    "acknowledgeSubmit": "Potvrdit posouzení",
+    "acknowledgedBy": "Posoudil {name}, {date} – „{reason}“",
+    "revokeAck": "Zrušit posouzení",
+    "kindOverride": "override NO-GO",
+    "kindAck": "posouzení WARNING"
   },
   "design": {
     "title": "Návrhový checklist (P&ID a zařízení)",
@@ -480,5 +492,35 @@
     "title": "Export: Design Basis & Safety Review",
     "description": "Obsahuje verzi aplikace, verze a stav pravidel, datum, jméno exportujícího a všechny overridy (červeně). Každý export se zapíše do audit logu.",
     "download": "Stáhnout {format}"
+  },
+  "plan": {
+    "title": "Plán (souřadnice) v{version}",
+    "description": "Objekty z plot planu v místních souřadnicích [m]. Vzdálenosti pro pravidla se počítají automaticky od hrany k hraně (tank a vaporizer k ostatním objektům). Objekt, který v plánu není, se nedopočítá.",
+    "type": "Typ",
+    "label": "Název",
+    "points": "Body (x, y; x, y; …) [m]",
+    "closed": "Uzavřený tvar",
+    "add": "Přidat objekt",
+    "remove": "Odebrat",
+    "save": "Uložit plán",
+    "invalidPoints": "Neplatné body (formát: x, y; x, y).",
+    "closedNeeds3": "Uzavřený tvar potřebuje alespoň 3 body.",
+    "derived": "Spočtené vzdálenosti",
+    "none": "Plán zatím neobsahuje tank nebo vaporizer a cílové objekty.",
+    "fromPlan": "z plánu",
+    "outside": "Mimo hranici pozemku: {list} (vzdálenost k hranici = 0).",
+    "pointsHint": "Obdélník zadejte čtyřmi rohy a zaškrtněte „Uzavřený tvar“. Hranice pozemku musí být uzavřená.",
+    "empty": "Plán je prázdný."
+  },
+  "objectTypes": {
+    "tank": "Tank",
+    "vaporizer": "Vaporizer",
+    "building": "Budova",
+    "public_road": "Veřejná komunikace",
+    "site_boundary": "Hranice pozemku",
+    "ignition_source": "Zdroj zapálení",
+    "low_point": "Jímka / šachta / prohlubeň",
+    "cooling_tower": "Chladicí věž / výdech",
+    "other": "Jiné"
   }
 }

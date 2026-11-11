@@ -118,7 +118,12 @@ describe("evaluateGate", () => {
     expect(one(c, { rules: null })).toMatchObject({ met: false, failure: "no_rules" });
     expect(one(c, { rules: { noGo: ["R-A"], notEvaluated: ["R-B"] } })).toMatchObject({ failure: "rules_no_go", details: ["R-A"] });
     expect(one(c, { rules: { noGo: [], notEvaluated: ["R-B"] } })).toMatchObject({ failure: "rules_not_evaluated", details: ["R-B"] });
+    expect(one(c, { rules: { noGo: [], notEvaluated: [], unacknowledgedWarnings: ["R-W"] } })).toMatchObject({
+      failure: "rules_warning_unacknowledged",
+      details: ["R-W"],
+    });
     expect(one(c, { rules: { noGo: [], notEvaluated: [] } }).met).toBe(true);
+    expect(one(c, { rules: { noGo: [], notEvaluated: [], unacknowledgedWarnings: [] } }).met).toBe(true);
   });
 
   it("layoutGeometryComplete", () => {

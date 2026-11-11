@@ -8,6 +8,7 @@ import type { Role } from "@/lib/auth/roles";
 import { loadRuleFiles } from "@/lib/rules/catalog";
 import { SafetyServiceError } from "@/lib/safety/errors";
 import {
+  acknowledgeWarning,
   evaluateProject,
   layoutGeometryStatus,
   listOverrides,
@@ -17,6 +18,7 @@ import {
   saveDesignInputs,
   saveEvaluationSnapshot,
   saveLayoutGeometry,
+  saveLayoutPlan,
   verificationStatus,
 } from "@/lib/safety/project";
 import { getRuleHistory, listCurrentRules, syncRules, updateRule, verifyRule } from "@/lib/safety/rules-service";
@@ -168,9 +170,98 @@ describe.skipIf(!hasDb)("rule engine + safety review (Postgres)", () => {
       },
     });
     const e = (await evaluateProject(db, pid))!;
-    expect(e.byStage["4"]).toEqual({ noGo: [], notEvaluated: [] });
+    expect(e.byStage["4"]).toEqual({ noGo: [], notEvaluated: [], unacknowledgedWarnings: [] });
     const gate = (await getStageDetail(db, pid, "4"))!.gate.results.find((r) => r.id === "pid_rules");
     expect(gate?.met).toBe(true);
+  });
+
+  it("WARNING must be acknowledged (Process Safety / OAM) before the step gate passes; acknowledgement lapses with inputs", async () => {
+    const pid = await project("N2");
+    // TEST VALUE ONLY – the hysteresis parameter is needed to evaluate R-CTL-02.
+    await updateRule(db, as("PROCESS_SAFETY"), {
+      ruleId: "R-CTL-02",
+      parameters: { switchover_hysteresis: { N2: { input: "0,5", unit: "bar(g)" }, O2: { input: "0,5", unit: "bar(g)" } } },
+      changeNote: "test: hodnota pro WARNING test",
+    });
+    await saveAnswers(db, as("OAM"), {
+      projectId: pid,
+      answers: { "pressure.source_type": "psa", "pressure.source_pressure": { input: "8", unit: "bar(g)" } },
+    });
+    // Switchover 7.8 + 0.5 > 8 bar(g) → WARNING
+    await saveDesignInputs(db, as("ROC"), { projectId: pid, answers: { "control.switchover_pressure": { input: "7,8", unit: "bar(g)" } } });
+    let e = (await evaluateProject(db, pid))!;
+    const ctl2 = () => e.results.find((r) => r.ruleId === "R-CTL-02")!;
+    expect(ctl2().result).toBe("WARNING");
+    expect(e.byStage["4"]?.unacknowledgedWarnings).toContain("R-CTL-02");
+
+    await expect(acknowledgeWarning(db, as("OPS"), { projectId: pid, ruleId: "R-CTL-02", reason: "Posouzeno, přijatelné." })).rejects.toThrow(
+      ForbiddenError,
+    );
+    await expect(acknowledgeWarning(db, as("OAM"), { projectId: pid, ruleId: "R-CTL-02", reason: "krátké" })).rejects.toThrow();
+    await expect(
+      acknowledgeWarning(db, as("OAM"), { projectId: pid, ruleId: "R-CTL-01", reason: "Není WARNING, nelze." }),
+    ).rejects.toThrow("NOT_WARNING");
+    const ackId = await acknowledgeWarning(db, as("OAM"), {
+      projectId: pid,
+      ruleId: "R-CTL-02",
+      reason: "Primární zdroj má rezervu, přepínání otestováno (demo).",
+    });
+    await expect(
+      acknowledgeWarning(db, as("PROCESS_SAFETY"), { projectId: pid, ruleId: "R-CTL-02", reason: "Podruhé posouzení stejného." }),
+    ).rejects.toThrow("ALREADY_ACKNOWLEDGED");
+    e = (await evaluateProject(db, pid))!;
+    expect(ctl2().acknowledgement?.id).toBe(ackId);
+    expect(e.byStage["4"]?.unacknowledgedWarnings).not.toContain("R-CTL-02");
+    expect(e.counts.acknowledged).toBe(1);
+
+    // Override revocation stays Process Safety only; an acknowledgement can be revoked by OAM.
+    await expect(revokeOverride(db, as("OPS"), { overrideId: ackId, reason: "x" })).rejects.toThrow(ForbiddenError);
+
+    // New inputs → the acknowledgement no longer applies.
+    await saveDesignInputs(db, as("ROC"), { projectId: pid, answers: { "control.switchover_pressure": { input: "7,9", unit: "bar(g)" } } });
+    e = (await evaluateProject(db, pid))!;
+    expect(ctl2()).toMatchObject({ result: "WARNING", acknowledgement: null });
+    expect(e.byStage["4"]?.unacknowledgedWarnings).toContain("R-CTL-02");
+
+    await revokeOverride(db, as("OAM"), { overrideId: ackId, reason: "Nahrazeno novým posouzením" });
+    expect((await listOverrides(db, pid)).find((o) => o.id === ackId)).toMatchObject({ kind: "acknowledgement" });
+    const [entry] = await db.select().from(auditLog).where(and(eq(auditLog.projectId, pid), eq(auditLog.action, "rule.acknowledge_revoke")));
+    expect(entry).toBeDefined();
+  });
+
+  it("plot plan: derived edge-to-edge distances override manual values and feed the rules and the step 3 gate", async () => {
+    const pid = await project("N2");
+    const s3 = (await getStageDetail(db, pid, "3"))!.stage.id;
+    await addLayoutVersion(db, as("OPS"), { stageId: s3, label: "v0", drawingUrl: "https://demo.sharepoint.com/v0" });
+    await saveLayoutGeometry(db, as("OPS"), {
+      projectId: pid,
+      version: 0,
+      answers: { "distances.dist_buildings": { input: "99", unit: "m" } },
+    });
+    const plan = {
+      objects: [
+        { id: "t", type: "tank", label: "Tank", points: [[0, 0], [3, 0], [3, 3], [0, 3]], closed: true },
+        { id: "b", type: "building", label: "Hala", points: [[10, 0], [20, 0], [20, 10], [10, 10]], closed: true },
+        { id: "s", type: "site_boundary", label: "Pozemek", points: [[-10, -10], [40, -10], [40, 40], [-10, 40]], closed: true },
+      ],
+    };
+    await expect(saveLayoutPlan(db, as("ROC"), { projectId: pid, version: 0, plan })).rejects.toThrow(ForbiddenError);
+    await expect(
+      saveLayoutPlan(db, as("OPS"), { projectId: pid, version: 0, plan: { objects: [{ ...plan.objects[2], closed: false }] } }),
+    ).rejects.toThrow();
+    await expect(saveLayoutPlan(db, as("OPS"), { projectId: pid, version: 5, plan })).rejects.toThrow("NO_LAYOUT_VERSION");
+    await saveLayoutPlan(db, as("OPS"), { projectId: pid, version: 0, plan });
+
+    const e = (await evaluateProject(db, pid))!;
+    expect(e.inputs["layout.dist_buildings"]).toBe(7); // derived from the plan, not the manual 99 m
+    expect(e.inputs["layout.dist_boundary"]).toBe(10);
+    expect(e.inputs["layout.dist_public_roads"]).toBeUndefined(); // no road in the plan → not derived
+    const before = (await layoutGeometryStatus(db, pid, "N2")).concept!;
+    await saveLayoutPlan(db, as("OPS"), { projectId: pid, version: 0, plan: { objects: [] } });
+    const after = (await layoutGeometryStatus(db, pid, "N2")).concept!;
+    expect(after).toBe(before + 1); // dist_boundary no longer derived (dist_buildings still has the manual value)
+    const [entry] = await db.select().from(auditLog).where(and(eq(auditLog.projectId, pid), eq(auditLog.action, "layout.plan")));
+    expect(entry).toBeDefined();
   });
 
   it("rejects invalid checklist values and freezes the checklist when step 4 is closed", async () => {

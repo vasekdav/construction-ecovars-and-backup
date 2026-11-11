@@ -93,17 +93,19 @@ export async function renderXlsx(m: ReportModel): Promise<Buffer> {
   r.autoFilter = { from: { row: headRow, column: 1 }, to: { row: headRow, column: 15 } };
 
   // Overrides (all red)
-  const o = wb.addWorksheet(L.overrides);
+  const o = wb.addWorksheet(L.overridesSheet);
   const oh = sheetTable(
     o,
-    [L.rule, L.version, L.status, L.reason, L.by, L.revokedCol],
-    m.overrides.map((x) => [x.ruleId, x.ruleVersion, x.stateLabel, x.reason, `${x.by}, ${x.at}`, x.revoked ?? "—"]),
-    [12, 8, 10, 60, 30, 40],
+    [L.rule, L.version, L.kind, L.status, L.reason, L.by, L.revokedCol],
+    m.overrides.map((x) => [x.ruleId, x.ruleVersion, x.kindLabel, x.stateLabel, x.reason, `${x.by}, ${x.at}`, x.revoked ?? "—"]),
+    [12, 8, 18, 30, 60, 30, 40],
   );
   for (let i = 0; i < m.overrides.length; i++) {
+    const ov = m.overrides[i]!;
+    if (ov.kind !== "override") continue; // only NO-GO overrides are red (SPEC §7.1)
     o.getRow(oh + 1 + i).eachCell((c) => {
       c.font = RED_FONT;
-      if (m.overrides[i]!.state === "applied") c.fill = RED_FILL;
+      if (ov.state === "applied") c.fill = RED_FILL;
     });
   }
 

@@ -16,6 +16,8 @@ export type SafetyErrorCode =
   | "INVALID_RULE"
   | "NOT_NO_GO"
   | "ALREADY_OVERRIDDEN"
+  | "NOT_WARNING"
+  | "ALREADY_ACKNOWLEDGED"
   | "STAGE_CLOSED"
   | "NO_LAYOUT_VERSION";
 

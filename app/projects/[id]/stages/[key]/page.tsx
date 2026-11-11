@@ -37,7 +37,11 @@ import {
   stageSettingsAction,
   transitionAction,
 } from "../../../actions";
-import { saveLayoutGeometryAction } from "../../../safety-actions";
+import { saveLayoutGeometryAction, saveLayoutPlanAction } from "../../../safety-actions";
+import { PlanEditor } from "@/components/plan/plan-editor";
+import { PlanPreview } from "@/components/plan/plan-preview";
+import { effectiveGeometry } from "@/lib/geometry/effective";
+import { formatNumber } from "@/lib/units";
 
 const REASON_TRANSITIONS: readonly Transition[] = ["block", "reopen", "return"];
 
@@ -81,7 +85,7 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
   if (!d || !d.stage.enabled) notFound();
   const { project, tpl, def, stage, gate, names } = d;
   const locale = asLocale(await getLocale());
-  const [t, tGate, tTr, tRoles, tCommon, tOutcome, tProjects, tQ, tGeo, tSafety, tSizing, format, users] = await Promise.all([
+  const [t, tGate, tTr, tRoles, tCommon, tOutcome, tProjects, tQ, tGeo, tSafety, tSizing, tPlan, format, users] = await Promise.all([
     getTranslations("stage"),
     getTranslations("gate"),
     getTranslations("transitions"),
@@ -93,6 +97,7 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
     getTranslations("geometry"),
     getTranslations("safety"),
     getTranslations("sizing"),
+    getTranslations("plan"),
     getFormatter(),
     listActiveUsers(db),
   ]);
@@ -114,8 +119,12 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
       : [...d.layouts].filter((l) => l.version >= 1).pop()
     : undefined;
   const geometryAnswers = (geometryLayout?.geometry as Answers | null) ?? {};
+  const effective = effectiveGeometry(geometryAnswers, geometryLayout?.plan);
+  const lockedGeometry = Object.fromEntries(
+    [...effective.derived].map(([qid, d]) => [qid, `${formatNumber(d.distance, 2, locale === "cs" ? "cs-CZ" : "en-GB")} m (${d.fromLabel} → ${d.toLabel})`]),
+  );
   const geometryMissing = geometryLayout
-    ? completeness(LAYOUT_GEOMETRY_FORM, { medium: project.medium, answers: geometryAnswers }, "detailed").missing.length
+    ? completeness(LAYOUT_GEOMETRY_FORM, { medium: project.medium, answers: effective.answers }, "detailed").missing.length
     : 0;
 
   return (
@@ -470,12 +479,54 @@ export default async function StagePage({ params }: { params: Promise<{ id: stri
                       readOnly={!editable}
                       action={saveLayoutGeometryAction}
                       hidden={{ version: String(geometryLayout.version) }}
+                      locked={lockedGeometry}
                     />
                   </div>
                 </details>
               ))}
             </div>
           )}
+        </Card>
+      )}
+
+      {def.layout && geometryLayout && (
+        <Card data-testid="plan-card">
+          <CardTitle>{tPlan("title", { version: geometryLayout.version })}</CardTitle>
+          <p className="mb-3 text-xs text-muted-foreground">{tPlan("description")}</p>
+          {geometryLayout.plan && geometryLayout.plan.objects.length > 0 && (
+            <div className="mb-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+              <PlanPreview plan={geometryLayout.plan} distances={effective.analysis?.distances ?? []} />
+              <div className="text-sm">
+                <div className="mb-1 font-semibold">{tPlan("derived")}</div>
+                {effective.analysis?.distances.length ? (
+                  <ul className="space-y-1" data-testid="plan-distances">
+                    {effective.analysis.distances.map((d) => (
+                      <li key={d.key}>
+                        <code className="text-xs">{d.key}</code>: <strong>{formatNumber(d.distance, 2, locale === "cs" ? "cs-CZ" : "en-GB")} m</strong>{" "}
+                        <span className="text-muted-foreground">
+                          ({d.fromLabel} → {d.toLabel})
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted-foreground">{tPlan("none")}</p>
+                )}
+                {effective.analysis && effective.analysis.outsideBoundary.length > 0 && (
+                  <Alert tone="error" className="mt-2">
+                    {tPlan("outside", { list: effective.analysis.outsideBoundary.join(", ") })}
+                  </Alert>
+                )}
+              </div>
+            </div>
+          )}
+          <PlanEditor
+            projectId={project.id}
+            version={geometryLayout.version}
+            plan={geometryLayout.plan ?? null}
+            readOnly={!editable}
+            action={saveLayoutPlanAction}
+          />
         </Card>
       )}
 

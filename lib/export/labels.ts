@@ -52,6 +52,13 @@ interface Labels {
   revoked: string;
   revokedCol: string;
   overrideState: Record<"applied" | "stale" | "revoked", string>;
+  ackState: Record<"applied" | "stale" | "revoked", string>;
+  kindOverride: string;
+  kindAck: string;
+  acknowledgedResult: string;
+  kind: string;
+  /** Excel limits sheet names to 31 characters. */
+  overridesSheet: string;
   reason: string;
   by: string;
   standards: string;
@@ -118,7 +125,7 @@ export const LABELS: Record<ExportLocale, Labels> = {
     message: "Zpráva",
     remediation: "Doporučená náprava",
     fingerprint: "Otisk vstupů",
-    overrides: "Overridy NO-GO",
+    overrides: "Overridy NO-GO a posouzení WARNING",
     noOverrides: "Žádné overridy.",
     active: "aktivní",
     revoked: "zrušen",
@@ -128,6 +135,16 @@ export const LABELS: Record<ExportLocale, Labels> = {
       stale: "OVERRIDE neplatí (změnila se verze pravidla nebo vstupy)",
       revoked: "OVERRIDE zrušen",
     },
+    ackState: {
+      applied: "posouzení platí",
+      stale: "posouzení neplatí (změnila se verze pravidla nebo vstupy)",
+      revoked: "posouzení zrušeno",
+    },
+    kindOverride: "Override NO-GO",
+    kindAck: "Posouzení WARNING",
+    acknowledgedResult: "WARNING (posouzeno)",
+    kind: "Typ",
+    overridesSheet: "Overridy a posouzení",
     reason: "Zdůvodnění",
     by: "Kdo, kdy",
     standards: "Standardy",
@@ -192,7 +209,7 @@ export const LABELS: Record<ExportLocale, Labels> = {
     message: "Message",
     remediation: "Recommended remediation",
     fingerprint: "Input fingerprint",
-    overrides: "NO-GO overrides",
+    overrides: "NO-GO overrides and WARNING reviews",
     noOverrides: "No overrides.",
     active: "active",
     revoked: "revoked",
@@ -202,6 +219,16 @@ export const LABELS: Record<ExportLocale, Labels> = {
       stale: "OVERRIDE no longer applies (rule version or inputs changed)",
       revoked: "OVERRIDE revoked",
     },
+    ackState: {
+      applied: "review applies",
+      stale: "review no longer applies (rule version or inputs changed)",
+      revoked: "review revoked",
+    },
+    kindOverride: "NO-GO override",
+    kindAck: "WARNING review",
+    acknowledgedResult: "WARNING (reviewed)",
+    kind: "Type",
+    overridesSheet: "Overrides and reviews",
     reason: "Justification",
     by: "Who, when",
     standards: "Standards",

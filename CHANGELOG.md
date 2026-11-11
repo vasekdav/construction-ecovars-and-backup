@@ -1,5 +1,13 @@
 # Changelog
 
+## Fáze 6 (část): Geometrie ze souřadnic + posouzení WARNING (2026-11-11)
+- **Plán v souřadnicích** u každé verze layoutu: objekty plot planu (tank, vaporizer, budovy, veřejné komunikace, hranice pozemku, zdroje zapálení, jímky, chladicí věže) jako body, lomené čáry nebo uzavřené tvary v místních souřadnicích [m].
+- Vzdálenosti pro R-SD-01, R-SD-02 a R-VAP-03 se počítají **od hrany k hraně** (nejkratší vzdálenost obrysů, překryv = 0). Spočtená hodnota má přednost před ruční a ve formuláři je zamčená („z plánu“). Typ objektu, který v plánu chybí, se nedopočítá. Stanice mimo hranici pozemku dává vzdálenost k hranici 0.
+- Editor plánu a náhled v SVG se zakreslenými nejkratšími vzdálenostmi v kroku 3 (v0) a 9 (vN); uložení plánu je v audit logu.
+- **Posouzení WARNING** (otevřená otázka 25): WARNING blokuje uzavření kroku, dokud ho Process Safety nebo OAM neposoudí s komentářem. Posouzení je vázané na verzi pravidla a otisk vstupů (při změně přestane platit) a lze ho zrušit. Zobrazuje se v Safety Review i v exportu, neplatná posouzení jsou uvedena spolu s neplatnými overridy.
+- Oprava: název listu XLSX nesmí mít víc než 31 znaků (Excel).
+- Testy: 321 unit a integračních, 16 e2e.
+
 ## Fáze 5: Export (2026-11-11)
 - Export „Design Basis & Safety Review“ ve formátech **PDF**, **Markdown** a **XLSX** (tabulka pravidel na samostatném listu). Všechny tři formáty vycházejí z jednoho společného modelu reportu, takže mají stejný obsah.
 - Obsah: verze aplikace (a commit, je-li k dispozici), ID exportu, datum, jméno exportujícího, banner „Podpora rozhodování…“, upozornění na fiktivní data, projekt, stav kroků a kdo přijal gate, stav dotazníku, Design Basis (zadaná hodnota, SI, zdroj), výsledek sizingu se zdrojem, autonomie s předpoklady a stavem konfigurace, výsledky všech pravidel s verzí, stavem DRAFT/VERIFIED, zdrojem, podmínkou, vstupy, parametry (TBD-VERIFY) a otiskem vstupů, standardy.

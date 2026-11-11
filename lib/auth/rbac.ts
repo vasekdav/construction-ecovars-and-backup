@@ -16,6 +16,7 @@ export const PERMISSIONS = {
   "rule.manage": ["ADMIN", "PROCESS_SAFETY"],
   "rule.verify": ["PROCESS_SAFETY"],
   "rule.override": ["PROCESS_SAFETY"],
+  "rule.acknowledge": ["PROCESS_SAFETY", "OAM"],
   "standard.verify": ["PROCESS_SAFETY"],
   "questionnaire.write": ["OAM"],
   "sizing.write": ["SIZING"],

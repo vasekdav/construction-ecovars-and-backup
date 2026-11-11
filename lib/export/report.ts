@@ -77,6 +77,8 @@ export interface ReportModel {
     }[];
   };
   overrides: {
+    kind: "override" | "acknowledgement";
+    kindLabel: string;
     ruleId: string;
     ruleVersion: number;
     /** applied = currently suppresses the NO-GO; stale = not revoked, but rule version or inputs changed. */
@@ -120,7 +122,9 @@ export async function buildReport(
     ...overrides.flatMap((o) => [o.createdBy, o.revokedBy]),
   ]);
 
-  const appliedOverrides = new Set((evaluation?.results ?? []).flatMap((e) => (e.override ? [e.override.id] : [])));
+  const appliedOverrides = new Set(
+    (evaluation?.results ?? []).flatMap((e) => [e.override?.id, e.acknowledgement?.id].filter((x): x is string => !!x)),
+  );
 
   // ---- Design Basis
   const designBasis: ReportModel["designBasis"] = [];
@@ -185,7 +189,12 @@ export async function buildReport(
       status: e.status,
       version: e.ruleVersion,
       result: e.result,
-      resultLabel: e.result === "NO-GO" && e.override ? `${L.results["NO-GO"]} (OVERRIDE)` : L.results[e.result],
+      resultLabel:
+        e.result === "NO-GO" && e.override
+          ? `${L.results["NO-GO"]} (OVERRIDE)`
+          : e.result === "WARNING" && e.acknowledgement
+            ? L.acknowledgedResult
+            : L.results[e.result],
       overridden: !!e.override,
       severity: L.results[e.severity],
       stages: e.rule.stages.join(", "),
@@ -213,6 +222,7 @@ export async function buildReport(
         { label: L.results.NOT_EVALUATED, value: c.NOT_EVALUATED },
         { label: L.results.GO, value: c.GO },
         { label: "OVERRIDE", value: c.overridden },
+        { label: L.acknowledgedResult, value: c.acknowledged },
         { label: "DRAFT", value: c.draft },
       ]
     : [];
@@ -259,10 +269,12 @@ export async function buildReport(
     overrides: overrides.map((o) => {
       const state = o.revokedAt ? "revoked" : appliedOverrides.has(o.id) ? "applied" : "stale";
       return {
+      kind: o.kind,
+      kindLabel: o.kind === "override" ? L.kindOverride : L.kindAck,
       ruleId: o.ruleId,
       ruleVersion: o.ruleVersion,
       state,
-      stateLabel: L.overrideState[state],
+      stateLabel: (o.kind === "override" ? L.overrideState : L.ackState)[state],
       reason: o.reason,
       by: names.get(o.createdBy) ?? "—",
       at: dt(o.createdAt),

@@ -28,7 +28,7 @@ Do zodpovězení aplikace pracuje s nejbezpečnějším předpokladem (sloupec �
 | 22 | Audit log ukládá změněné odpovědi dotazníku (před/po). Je to v pořádku pro reálná data (InfoSec)? | Fáze 2 | Ano pro fiktivní data ve v1. Před reálnými daty znovu posoudit. |
 | 23 | Jak převádět běžící projekty na novou verzi šablony procesu nebo dotazníku? | Fáze 2 | Projekt zůstává na své verzi. Migraci řešit při první změně šablony. |
 | 24 | R-O2-03: limit rychlosti v O₂ potrubí závisí na tlaku a materiálu. Stačí jedna hodnota na médium, nebo je potřeba tabulka (tlak × materiál)? | Fáze 3 | Jedna hodnota na médium; tabulka je rozšíření. |
-| 25 | Má WARNING před uzavřením kroku vyžadovat výslovné posouzení člověkem (potvrzení), nebo stačí zobrazení? | Fáze 3 | WARNING neblokuje, jen se zobrazuje. |
+| 25 | Má WARNING před uzavřením kroku vyžadovat výslovné posouzení člověkem (potvrzení), nebo stačí zobrazení? | Fáze 3 | **Rozhodnuto 2026-11-11:** vyžadovat posouzení (Process Safety nebo OAM), ADR-038. |
 | 26 | Pravidla layoutu blokují jen krok 9; krok 3 (koncept) vyžaduje jen vyplněné rozměry. Souhlas? | Fáze 3 | Ano (ADR-028). |
 | 27 | Je seznam standardů společný pro všechny projekty, nebo se má pro každý projekt vybírat? | Fáze 3 | Společný, filtrovaný podle média. |
 | 28 | Položky návrhového checklistu (ano/ne) potvrzuje kdokoli s procesní rolí. Mají vybrané položky (např. O₂ cleaning) potvrzovat jen konkrétní role? | Fáze 3 | Zatím kterákoli procesní role, s auditní stopou. |
@@ -40,3 +40,7 @@ Do zodpovězení aplikace pracuje s nejbezpečnějším předpokladem (sloupec �
 | 34 | Má každý export automaticky ukládat snapshot vyhodnocení (RuleEvaluation), nebo stačí audit log s verzemi a otisky v dokumentu? | Fáze 5 | Audit log + verze a otisky v dokumentu; snapshot ukládá OAM / Process Safety ručně. |
 | 35 | Kdo smí exportovat? | Fáze 5 | Všechny role s přístupem k projektu; každý export je v audit logu. |
 | 36 | Má být export vždy v češtině, nebo v jazyce uživatele? | Fáze 5 | V jazyce UI uživatele (výchozí čeština). |
+| 37 | Jaký souřadnicový systém použít pro plán: místní souřadnice z plot planu (teď), nebo S-JTSK / WGS84 z GIS zákazníka? | Fáze 6 | Místní souřadnice v metrech z plot planu. |
+| 38 | Měří se bezpečné vzdálenosti od obrysu zařízení (hrana–hrana), nebo od konkrétních bodů (např. plnicí přípojka, výstup pojistky)? | Fáze 6 | Hrana–hrana obrysů; konkrétní body lze zadat jako bodové objekty. |
+| 39 | Equipment & cost list: import bez cen (rozhodnuto), jaký je formát zdrojového Excelu? | Fáze 6 | Odloženo, čeká na vzorový (fiktivní) soubor. |
+| 40 | Entra ID SSO a SharePoint přes Graph: kdo u IT zaregistruje aplikaci (tenant ID, client ID, oprávnění)? | Fáze 6 | Odloženo. |

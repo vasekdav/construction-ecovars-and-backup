@@ -70,7 +70,7 @@
         { "id": "comments_closed", "type": "allTasksDone", "label": { "cs": "Všechny připomínky (úkoly) uzavřeny", "en": "All review comments (tasks) closed" } },
         { "id": "pid_dwg_link", "type": "documentLinks", "kinds": ["pid_dwg"], "requireVersion": true, "requireDate": true },
         { "id": "roc_confirmed", "type": "manualCheck", "roles": ["ROC"], "label": { "cs": "ROC / Třinec potvrdil dodání výkresu", "en": "ROC / Třinec confirmed drawing delivery" } },
-        { "id": "pid_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly P&ID (návrhový checklist) vyhodnoceny a bez NO-GO", "en": "P&ID checks (design checklist) evaluated without NO-GO" } }
+        { "id": "pid_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly P&ID vyhodnoceny, bez NO-GO a s posouzenými WARNING", "en": "P&ID checks evaluated, without NO-GO and with reviewed WARNINGs" } }
       ]
     },
     {
@@ -118,7 +118,7 @@
       "dependsOn": ["4", "5", "7"],
       "gate": [
         { "id": "sizing_result", "type": "sizingResultRecorded", "label": { "cs": "Vstupy sizingu uloženy, výsledek má zdroj (soubor + revize)", "en": "Sizing inputs stored, result has a source (file + revision)" } },
-        { "id": "sizing_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly sizingu vyhodnoceny a bez NO-GO", "en": "Sizing checks evaluated without NO-GO" } }
+        { "id": "sizing_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly sizingu vyhodnoceny, bez NO-GO a s posouzenými WARNING", "en": "Sizing checks evaluated, without NO-GO and with reviewed WARNINGs" } }
       ]
     },
     {
@@ -131,7 +131,7 @@
       "layout": "final",
       "gate": [
         { "id": "layout_final", "type": "layoutVersion", "which": "final", "requireDrawing": true },
-        { "id": "layout_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly přístupnosti a vzdáleností vyhodnoceny a bez NO-GO", "en": "Accessibility and distance checks evaluated without NO-GO" } }
+        { "id": "layout_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly přístupnosti a vzdáleností vyhodnoceny, bez NO-GO a s posouzenými WARNING", "en": "Accessibility and distance checks evaluated, without NO-GO and with reviewed WARNINGs" } }
       ]
     },
     {

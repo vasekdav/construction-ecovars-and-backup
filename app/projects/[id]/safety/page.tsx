@@ -21,9 +21,9 @@ import { displayInput, INPUT_CATALOG } from "@/lib/safety/input-catalog";
 import { evaluateProject, listOverrides, listSnapshots } from "@/lib/safety/project";
 import { formatNumber, unitLabel } from "@/lib/units";
 import { userNames } from "@/lib/workflow/queries";
-import { overrideNoGoAction, revokeOverrideAction, snapshotAction } from "../../safety-actions";
+import { acknowledgeWarningAction, overrideNoGoAction, revokeOverrideAction, snapshotAction } from "../../safety-actions";
 
-const FILTERS = [...RESULTS, "overridden"] as const;
+const FILTERS = [...RESULTS, "overridden", "acknowledged"] as const;
 type Filter = (typeof FILTERS)[number];
 
 export default async function SafetyReviewPage({
@@ -51,20 +51,31 @@ export default async function SafetyReviewPage({
     listSnapshots(db, id),
     listOverrides(db, id),
   ]);
-  const applied = new Set(evaluation.results.flatMap((r) => (r.override ? [r.override.id] : [])));
+  const applied = new Set(
+    evaluation.results.flatMap((r) => [r.override?.id, r.acknowledgement?.id].filter((x): x is string => !!x)),
+  );
   const stale = allOverrides.filter((o) => !o.revokedAt && !applied.has(o.id));
   const names = await userNames(db, [
     ...evaluation.results.map((r) => r.override?.createdBy),
+    ...evaluation.results.map((r) => r.acknowledgement?.createdBy),
     ...snapshots.map((s) => s.evaluatedBy),
     ...allOverrides.map((o) => o.createdBy),
   ]);
   const { project, results, counts } = evaluation;
+  const settled = (r: (typeof results)[number]) => (r.result === "NO-GO" && !!r.override) || (r.result === "WARNING" && !!r.acknowledgement);
   const shown = results.filter((r) =>
-    !filter ? true : filter === "overridden" ? r.result === "NO-GO" && !!r.override : r.result === filter && !(r.result === "NO-GO" && r.override),
+    !filter
+      ? true
+      : filter === "overridden"
+        ? r.result === "NO-GO" && !!r.override
+        : filter === "acknowledged"
+          ? r.result === "WARNING" && !!r.acknowledgement
+          : r.result === filter && !settled(r),
   );
   const order: Record<RuleResult, number> = { "NO-GO": 0, WARNING: 1, NOT_EVALUATED: 2, GO: 3 };
   shown.sort((a, b) => order[a.result] - order[b.result] || a.ruleId.localeCompare(b.ruleId));
   const mayOverride = can(user.roles, "rule.override");
+  const mayAcknowledge = can(user.roles, "rule.acknowledge");
   const fmtDT = (d: Date) => format.dateTime(d, { dateStyle: "short", timeStyle: "short" });
 
   const summary: [Filter, number][] = [
@@ -73,6 +84,7 @@ export default async function SafetyReviewPage({
     ["NOT_EVALUATED", counts.NOT_EVALUATED],
     ["GO", counts.GO],
     ["overridden", counts.overridden],
+    ["acknowledged", counts.acknowledged],
   ];
 
   return (
@@ -95,7 +107,11 @@ export default async function SafetyReviewPage({
               className="flex items-center gap-2 rounded border border-border px-3 py-2 hover:bg-muted"
               data-testid={`count-${k}`}
             >
-              <ResultBadge result={k === "overridden" ? "NO-GO" : k} overridden={k === "overridden"} />
+              <ResultBadge
+                result={k === "overridden" ? "NO-GO" : k === "acknowledged" ? "WARNING" : k}
+                overridden={k === "overridden"}
+                acknowledged={k === "acknowledged"}
+              />
               <span className="text-lg font-semibold">{n}</span>
             </Link>
           ))}
@@ -145,7 +161,8 @@ export default async function SafetyReviewPage({
           <ul className="list-disc pl-5">
             {stale.map((o) => (
               <li key={o.id}>
-                {o.ruleId} v{o.ruleVersion} · {names.get(o.createdBy)} · {fmtDT(o.createdAt)} – „{o.reason}“
+                {o.ruleId} v{o.ruleVersion} ({o.kind === "override" ? t("kindOverride") : t("kindAck")}) · {names.get(o.createdBy)} ·{" "}
+                {fmtDT(o.createdAt)} – „{o.reason}“
               </li>
             ))}
           </ul>
@@ -157,7 +174,7 @@ export default async function SafetyReviewPage({
         {shown.map((r) => (
           <details key={r.ruleId} className="rounded-lg border border-border bg-card shadow-sm" data-testid={`rule-${r.ruleId}`}>
             <summary className="flex cursor-pointer flex-wrap items-center gap-3 px-4 py-3">
-              <ResultBadge result={r.result} overridden={!!r.override} />
+              <ResultBadge result={r.result} overridden={!!r.override} acknowledged={!!r.acknowledgement} />
               <span className="font-mono text-sm font-semibold">{r.ruleId}</span>
               <span className="flex-1 text-sm">{r.rule.title[locale]}</span>
               {r.status === "DRAFT" ? (
@@ -250,6 +267,31 @@ export default async function SafetyReviewPage({
                   <input type="hidden" name="ruleId" value={r.ruleId} />
                   <Label htmlFor={`ov-${r.ruleId}`}>{t("overrideReason")}</Label>
                   <Textarea id={`ov-${r.ruleId}`} name="reason" required minLength={10} maxLength={2000} />
+                </ActionForm>
+              )}
+              {r.acknowledgement && (
+                <Alert tone="warning">
+                  {t("acknowledgedBy", {
+                    name: names.get(r.acknowledgement.createdBy) ?? "",
+                    date: fmtDT(r.acknowledgement.createdAt),
+                    reason: r.acknowledgement.reason,
+                  })}
+                </Alert>
+              )}
+              {mayAcknowledge && r.result === "WARNING" && !r.acknowledgement && (
+                <ActionForm action={acknowledgeWarningAction} submitLabel={t("acknowledgeSubmit")} successText="" testId={`ack-${r.ruleId}`}>
+                  <input type="hidden" name="projectId" value={project.id} />
+                  <input type="hidden" name="ruleId" value={r.ruleId} />
+                  <Label htmlFor={`ack-${r.ruleId}-reason`}>{t("acknowledgeReason")}</Label>
+                  <Textarea id={`ack-${r.ruleId}-reason`} name="reason" required minLength={10} maxLength={2000} />
+                </ActionForm>
+              )}
+              {mayAcknowledge && r.acknowledgement && (
+                <ActionForm action={revokeOverrideAction} submitLabel={t("revokeAck")} variant="outline" successText="">
+                  <input type="hidden" name="projectId" value={project.id} />
+                  <input type="hidden" name="overrideId" value={r.acknowledgement.id} />
+                  <Label htmlFor={`rva-${r.ruleId}`}>{t("revokeReason")}</Label>
+                  <Textarea id={`rva-${r.ruleId}`} name="reason" required maxLength={2000} />
                 </ActionForm>
               )}
               {mayOverride && r.override && (

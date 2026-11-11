@@ -26,6 +26,7 @@ describe("Markdown export", () => {
     expect(md).toContain('<span style="color:#b91c1c">**OVERRIDE neplatí (změnila se verze pravidla nebo vstupy)**</span>');
     expect(md).toContain('<span style="color:#b91c1c">**OVERRIDE zrušen**</span>');
     expect(md).toContain("Demo PS, 11.11.26 10:30: zrušeno");
+    expect(md).toContain("| R-ACC-01 v1 | Posouzení WARNING | posouzení platí |");
   });
 
   it("escapes table cells", () => {
@@ -40,7 +41,7 @@ describe("Markdown export", () => {
 
   it("renders English labels", () => {
     const en = renderMarkdown(fixture({ meta: { ...fixture().meta, locale: "en", disclaimer: "Decision support only, does not replace engineering approval." } }));
-    expect(en).toContain("## NO-GO overrides".replace("NO-GO overrides", '<span style="color:#b91c1c">**NO-GO overrides**</span>'));
+    expect(en).toContain('<span style="color:#b91c1c">**NO-GO overrides and WARNING reviews**</span>');
     expect(en).toContain("Decision support only");
   });
 });
@@ -50,7 +51,7 @@ describe("XLSX export", () => {
     const buf = await renderXlsx(fixture());
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(buf as unknown as ArrayBuffer);
-    expect(wb.worksheets.map((w) => w.name)).toEqual(["Souhrn", "Safety Review", "Overridy NO-GO", "Design Basis", "Stav kroků", "Standardy"]);
+    expect(wb.worksheets.map((w) => w.name)).toEqual(["Souhrn", "Safety Review", "Overridy a posouzení", "Design Basis", "Stav kroků", "Standardy"]);
 
     const summary = wb.getWorksheet("Souhrn")!;
     expect(summary.getCell("A2").value).toBe("Podpora rozhodování, nenahrazuje inženýrské schválení.");
@@ -66,10 +67,14 @@ describe("XLSX export", () => {
     expect((rules.getCell("A3").fill as ExcelJS.FillPattern | undefined)?.fgColor?.argb).not.toBe("FFFDE2E2");
     expect(rules.getCell("J3").value).toBe("min_dist_buildings = TBD-VERIFY");
 
-    const ov = wb.getWorksheet("Overridy NO-GO")!;
+    const ov = wb.getWorksheet("Overridy a posouzení")!;
     expect(ov.getCell("A2").font?.color?.argb).toBe("FFB91C1C");
-    expect(ov.getCell("C2").value).toBe("OVERRIDE platí");
-    expect(ov.getCell("C3").value).toBe("OVERRIDE zrušen");
+    expect(ov.getCell("C2").value).toBe("Override NO-GO");
+    expect(ov.getCell("D2").value).toBe("OVERRIDE platí");
+    expect(ov.getCell("D3").value).toBe("OVERRIDE zrušen");
+    // WARNING reviews are listed but not red
+    expect(ov.getCell("C5").value).toBe("Posouzení WARNING");
+    expect(ov.getCell("A5").font?.color?.argb).not.toBe("FFB91C1C");
     expect((ov.getCell("A2").fill as ExcelJS.FillPattern).fgColor?.argb).toBe("FFFDE2E2");
     expect((ov.getCell("A4").fill as ExcelJS.FillPattern | undefined)?.fgColor?.argb).not.toBe("FFFDE2E2");
     expect(ov.getCell("A4").font?.color?.argb).toBe("FFB91C1C");

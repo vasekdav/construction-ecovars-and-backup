@@ -88,7 +88,7 @@ Override NO-GO smí jen Process Safety, s povinným zdůvodněním (min. 10 znak
 
 ## ADR-028 Gate napojené na pravidla
 - Krok 3: všechny povinné rozměry layoutu v0 vyplněny (`layoutGeometryComplete`).
-- Kroky 4, 8, 9: pravidla mapovaná na krok nemají blokující NO-GO **a ani NEVYHODNOCENO** (`rulesNoNoGo`). NEVYHODNOCENO blokuje, protože jinak by chybějící parametr gate propustil. WARNING neblokuje (otevřená otázka 25). **Pokud na krok není mapované žádné platné pravidlo (např. pravidla nebyla naimportována), gate neprojde** (`no_rules`). Prázdný katalog nesmí nic propustit; zjištěno v CI, opraveno ve fázi 4.
+- Kroky 4, 8, 9: pravidla mapovaná na krok nemají blokující NO-GO, NEVYHODNOCENO ani **neposouzené WARNING** (`rulesNoNoGo`). NEVYHODNOCENO blokuje, protože jinak by chybějící parametr gate propustil. WARNING musí posoudit Process Safety nebo OAM (ADR-038). **Pokud na krok není mapované žádné platné pravidlo (např. pravidla nebyla naimportována), gate neprojde** (`no_rules`). Prázdný katalog nesmí nic propustit; zjištěno v CI, opraveno ve fázi 4.
 - Krok 5: všechny standardy a pravidla platné pro médium projektu jsou VERIFIED a seznam standardů není prázdný (`standardsVerified`).
 
 ## ADR-029 Standardy
@@ -114,3 +114,9 @@ Standardní PDF fonty neobsahují českou diakritiku ani dolní indexy (O₂, N�
 
 ## ADR-036 Stavy overridu
 Override je **platí** (odpovídá aktuální verzi pravidla i otisku vstupů a potlačuje NO-GO), **neplatí** (nezrušený, ale změnila se verze pravidla nebo vstupy, takže NO-GO znovu blokuje) nebo **zrušen**. Neplatné overridy zobrazuje Safety Review i export, aby Process Safety věděla, co posoudit znovu.
+
+## ADR-037 Geometrie ze souřadnic
+Každá verze layoutu může mít plán (`layout_versions.plan`) s objekty v místních souřadnicích [m]. Vzdálenosti se počítají od hrany k hraně (nejkratší vzdálenost obrysů; uzavřené tvary jsou plochy, takže překryv nebo vnoření dává 0; k hranici pozemku se měří k obrysu). Spočtené hodnoty se překrývají přes ruční odpovědi v jednom místě (`effectiveGeometry`), které používají pravidla, gate kroku 3, UI i export. Ruční hodnoty zůstávají uložené, ale nepoužijí se. Chybějící typ objektu se nedopočítá (nepřítomnost v plánu neznamená nepřítomnost na místě). Stanice mimo hranici pozemku dává vzdálenost k hranici 0.
+
+## ADR-038 Posouzení WARNING
+WARNING blokuje uzavření kroku, dokud ho Process Safety nebo OAM neposoudí s komentářem (min. 10 znaků). Technicky jde o stejný záznam jako override (`rule_overrides.kind = acknowledgement`): je vázaný na verzi pravidla a otisk vstupů a jde ho zrušit. NO-GO může přepsat jen Process Safety a jen overridy NO-GO jsou v exportu červeně.

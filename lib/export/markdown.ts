@@ -96,10 +96,11 @@ export function renderMarkdown(m: ReportModel): string {
   out.push(
     m.overrides.length
       ? table(
-          [L.rule, L.status, L.reason, L.by, L.revokedCol],
+          [L.rule, L.kind, L.status, L.reason, L.by, L.revokedCol],
           m.overrides.map((o) => [
             `${o.ruleId} v${o.ruleVersion}`,
-            red(o.stateLabel),
+            o.kind === "override" ? red(o.kindLabel) : o.kindLabel,
+            o.kind === "override" ? red(o.stateLabel) : o.stateLabel,
             o.reason,
             `${o.by}, ${o.at}`,
             o.revoked ?? "—",

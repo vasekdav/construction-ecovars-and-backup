@@ -11,13 +11,17 @@ describe("stageRuleStatus (gate safety)", () => {
   });
 
   it("returns null when no applicable rule is mapped to the step", () => {
-    expect(stageRuleStatus({ results: [result("R-A", ["9"])], byStage: { "9": { noGo: [], notEvaluated: [] } } }, "4")).toBeNull();
+    expect(stageRuleStatus({ results: [result("R-A", ["9"])], byStage: { "9": { noGo: [], notEvaluated: [], unacknowledgedWarnings: [] } } }, "4")).toBeNull();
   });
 
   it("returns the step status when rules are mapped", () => {
     expect(
-      stageRuleStatus({ results: [result("R-A", ["4"])], byStage: { "4": { noGo: ["R-A"], notEvaluated: [] } } }, "4"),
-    ).toEqual({ noGo: ["R-A"], notEvaluated: [] });
-    expect(stageRuleStatus({ results: [result("R-A", ["4"])], byStage: {} }, "4")).toEqual({ noGo: [], notEvaluated: [] });
+      stageRuleStatus({ results: [result("R-A", ["4"])], byStage: { "4": { noGo: ["R-A"], notEvaluated: [], unacknowledgedWarnings: [] } } }, "4"),
+    ).toEqual({ noGo: ["R-A"], notEvaluated: [], unacknowledgedWarnings: [] });
+    expect(stageRuleStatus({ results: [result("R-A", ["4"])], byStage: {} }, "4")).toEqual({
+      noGo: [],
+      notEvaluated: [],
+      unacknowledgedWarnings: [],
+    });
   });
 });

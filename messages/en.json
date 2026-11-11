@@ -111,7 +111,9 @@
     "NOT_NO_GO": "Override is only possible for a NO-GO result.",
     "ALREADY_OVERRIDDEN": "NO-GO is already overridden.",
     "NO_LAYOUT_VERSION": "Layout version does not exist.",
-    "required": "Required."
+    "required": "Required.",
+    "NOT_WARNING": "Only a WARNING result can be reviewed.",
+    "ALREADY_ACKNOWLEDGED": "The WARNING is already reviewed."
   },
   "common": {
     "save": "Save",
@@ -283,7 +285,8 @@
       "geometry_incomplete": "missing mandatory dimensions: {details}",
       "unverified_calc": "unverified calculation parameters: {details}",
       "no_sizing": "no sizing result recorded",
-      "no_rules": "no rules for this step in the catalogue (run the rule import)"
+      "no_rules": "no rules for this step in the catalogue (run the rule import)",
+      "rules_warning_unacknowledged": "unreviewed WARNING: {details}"
     }
   },
   "questionnaire": {
@@ -312,7 +315,8 @@
     "openDesignBasis": "Show Design Basis",
     "fictitious": "Enter fictitious data only (v1 must not contain confidential data).",
     "medium": "Project medium: {medium} (questions depend on the medium)",
-    "unit": "unit"
+    "unit": "unit",
+    "fromPlan": "from plan"
   },
   "designBasis": {
     "title": "Design Basis",
@@ -343,7 +347,8 @@
     "WARNING": "WARNING",
     "NO-GO": "NO-GO",
     "NOT_EVALUATED": "NOT EVALUATED",
-    "overridden": "NO-GO (override)"
+    "overridden": "NO-GO (override)",
+    "acknowledged": "WARNING (reviewed)"
   },
   "safety": {
     "title": "Safety Review",
@@ -383,7 +388,14 @@
     "questionnaire": "Customer questionnaire",
     "layoutGeometry": "Layout geometry (steps 3 and 9)",
     "empty": "No rules for this filter.",
-    "staleOverrides": "Overrides that no longer apply (rule version or inputs changed). The NO-GO blocks again and must be reassessed."
+    "staleOverrides": "Overrides and reviews that no longer apply (rule version or inputs changed). The result blocks again and must be reassessed.",
+    "acknowledge": "Review WARNING",
+    "acknowledgeReason": "Review comment (min. 10 characters)",
+    "acknowledgeSubmit": "Confirm review",
+    "acknowledgedBy": "Reviewed by {name}, {date} – “{reason}”",
+    "revokeAck": "Revoke review",
+    "kindOverride": "NO-GO override",
+    "kindAck": "WARNING review"
   },
   "design": {
     "title": "Design checklist (P&ID and equipment)",
@@ -480,5 +492,35 @@
     "title": "Export: Design Basis & Safety Review",
     "description": "Includes the app version, rule versions and status, date, the exporting user and all overrides (in red). Every export is recorded in the audit log.",
     "download": "Download {format}"
+  },
+  "plan": {
+    "title": "Plan (coordinates) v{version}",
+    "description": "Plot plan objects in local coordinates [m]. Distances for the rules are derived edge-to-edge (tank and vaporizer to the other objects). Objects missing from the plan are not derived.",
+    "type": "Type",
+    "label": "Name",
+    "points": "Points (x, y; x, y; …) [m]",
+    "closed": "Closed shape",
+    "add": "Add object",
+    "remove": "Remove",
+    "save": "Save plan",
+    "invalidPoints": "Invalid points (format: x, y; x, y).",
+    "closedNeeds3": "A closed shape needs at least 3 points.",
+    "derived": "Derived distances",
+    "none": "The plan has no tank or vaporizer and target objects yet.",
+    "fromPlan": "from plan",
+    "outside": "Outside the site boundary: {list} (distance to boundary = 0).",
+    "pointsHint": "Enter a rectangle as four corners and tick “Closed shape”. The site boundary must be closed.",
+    "empty": "The plan is empty."
+  },
+  "objectTypes": {
+    "tank": "Tank",
+    "vaporizer": "Vaporizer",
+    "building": "Building",
+    "public_road": "Public road",
+    "site_boundary": "Site boundary",
+    "ignition_source": "Ignition source",
+    "low_point": "Pit / shaft / depression",
+    "cooling_tower": "Cooling tower / exhaust",
+    "other": "Other"
   }
 }

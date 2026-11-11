@@ -11,7 +11,7 @@ export interface GateContext {
   /** Customer questionnaire status of the project (null = not started). */
   questionnaire?: { phase: "INITIAL" | "DETAILED"; missing: number } | null;
   /** Rule check status of this stage (rules whose `stages` include it). */
-  rules?: { noGo: string[]; notEvaluated: string[] } | null;
+  rules?: { noGo: string[]; notEvaluated: string[]; unacknowledgedWarnings?: string[] } | null;
   /** Rules and standards applicable to the project that are not VERIFIED. */
   verification?: {
     unverifiedRules: string[];
@@ -47,7 +47,8 @@ export type GateFailure =
   | "geometry_incomplete"
   | "unverified_calc"
   | "no_sizing"
-  | "no_rules";
+  | "no_rules"
+  | "rules_warning_unacknowledged";
 
 export interface ConditionResult {
   id: string;
@@ -120,6 +121,9 @@ function evaluateCondition(c: GateCondition, ctx: GateContext): ConditionResult 
       if (!r) return { ...base, met: false, failure: "no_rules" };
       if (r.noGo.length) return { ...base, met: false, failure: "rules_no_go", details: r.noGo };
       if (r.notEvaluated.length) return { ...base, met: false, failure: "rules_not_evaluated", details: r.notEvaluated };
+      if (r.unacknowledgedWarnings?.length) {
+        return { ...base, met: false, failure: "rules_warning_unacknowledged", details: r.unacknowledgedWarnings };
+      }
       return { ...base, met: true };
     }
     case "layoutGeometryComplete": {

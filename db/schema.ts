@@ -18,6 +18,7 @@ import { ROLES } from "../lib/auth/roles";
 import type { Answers } from "../lib/questionnaire/answers";
 import type { DesignBasis } from "../lib/questionnaire/design-basis";
 import type { CalcConfig } from "../lib/calc/config";
+import type { Plan } from "../lib/geometry";
 import type { Rule } from "../lib/rules/rule";
 import { MEDIA } from "../lib/workflow/template";
 import { DECISION_OUTCOMES, PROJECT_STATUSES, STAGE_STATES } from "../lib/workflow/types";
@@ -221,6 +222,8 @@ export const layoutVersions = pgTable(
     drawingUrl: text("drawing_url"),
     /** Geometric inputs for rule checks (phase 3). */
     geometry: jsonb("geometry"),
+    /** Plot plan objects in local site coordinates [m] (phase 6); distances are derived from it. */
+    plan: jsonb("plan").$type<Plan>(),
     createdBy: uuid("created_by")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
@@ -310,10 +313,14 @@ export const designInputs = pgTable("design_inputs", {
  * version and to the fingerprint of inputs + parameters: when anything the
  * result depends on changes, the override no longer applies.
  */
+export const overrideKindEnum = pgEnum("override_kind", ["override", "acknowledgement"]);
+
 export const ruleOverrides = pgTable(
   "rule_overrides",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    /** override = NO-GO overridden by Process Safety; acknowledgement = WARNING reviewed by a person. */
+    kind: overrideKindEnum("kind").notNull().default("override"),
     projectId: uuid("project_id")
       .notNull()
       .references(() => projects.id, { onDelete: "cascade" }),

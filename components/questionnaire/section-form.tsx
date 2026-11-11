@@ -171,6 +171,7 @@ export function QuestionnaireSectionForm({
   hidden = {},
   submitLabel,
   successText,
+  locked = {},
 }: {
   projectId: string;
   /** One section, or several rendered in one form with headings. */
@@ -184,6 +185,8 @@ export function QuestionnaireSectionForm({
   hidden?: Record<string, string>;
   submitLabel?: string;
   successText?: string;
+  /** Read-only values (e.g. distances derived from the plan): question id → display text. */
+  locked?: Record<string, string>;
 }) {
   const t = useTranslations("questionnaire");
   const [state, formAction, pending] = useActionState(action, null);
@@ -205,7 +208,16 @@ export function QuestionnaireSectionForm({
             {sections.length > 1 && <h3 className="border-b border-border pb-1 font-semibold">{sec.title[locale]}</h3>}
             {sec.questions
               .filter((q) => isVisible(q, { medium, answers: live }))
-              .map((q) => (
+              .map((q) =>
+                locked[q.id] !== undefined ? (
+                  <div key={q.id} className="space-y-1" data-testid={`question-${q.id}`} data-locked="true">
+                    <div className="text-sm font-medium">{q.label[locale]}</div>
+                    <div className="text-sm">
+                      <span className="font-semibold">{locked[q.id]}</span>{" "}
+                      <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{t("fromPlan")}</span>
+                    </div>
+                  </div>
+                ) : (
                 <Field
                   key={q.id}
                   q={q}
@@ -214,7 +226,8 @@ export function QuestionnaireSectionForm({
                   error={errors?.[q.id]?.[0]}
                   onLiveChange={(v) => setLive((prev) => ({ ...prev, [q.id]: v }))}
                 />
-              ))}
+                ),
+              )}
           </div>
         ))}
       </fieldset>
