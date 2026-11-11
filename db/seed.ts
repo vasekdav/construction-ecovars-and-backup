@@ -3,12 +3,21 @@
  * Password comes from SEED_DEMO_PASSWORD; nothing secret is stored in git.
  * Idempotent: existing accounts are left untouched.
  */
-import { sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { hashPassword } from "../lib/auth/password";
 import { MIN_PASSWORD_LENGTH } from "../lib/auth/password-policy";
 import type { Role } from "../lib/auth/roles";
-import { createDb } from "./client";
-import { auditLog, roleAssignments, users } from "./schema";
+import {
+  addDocumentLink,
+  addTask,
+  confirmCheck,
+  createProject,
+  transitionStage,
+  updateStageSettings,
+  type Actor,
+} from "../lib/workflow/service";
+import { createDb, type Db } from "./client";
+import { auditLog, projects, roleAssignments, stages, users } from "./schema";
 
 export const DEMO_USERS: { email: string; name: string; roles: Role[] }[] = [
   { email: "admin@demo.local", name: "Demo Admin", roles: ["ADMIN"] },
@@ -57,9 +66,68 @@ async function main() {
         console.log(`Seeded ${u.email}`);
       });
     }
+    await seedDemoProject(db);
   } finally {
     await close();
   }
+}
+
+export const DEMO_PROJECT_NAME = "Demo Zákazník, LOX 20 m³";
+
+async function actorFor(db: Db, email: string): Promise<Actor> {
+  const rows = await db
+    .select({ id: users.id, role: roleAssignments.role })
+    .from(users)
+    .innerJoin(roleAssignments, eq(roleAssignments.userId, users.id))
+    .where(sql`lower(${users.email}) = ${email}`);
+  if (!rows.length) throw new Error(`Demo user ${email} missing`);
+  return { id: rows[0]!.id, roles: rows.map((r) => r.role) };
+}
+
+/** Fictitious demo project, built through the regular services (so it is audited). */
+async function seedDemoProject(db: Db) {
+  const [existing] = await db.select({ id: projects.id }).from(projects).where(eq(projects.name, DEMO_PROJECT_NAME));
+  if (existing) return;
+  const oam = await actorFor(db, "oam@demo.local");
+  const roc = await actorFor(db, "roc@demo.local");
+  const projectId = await createProject(db, oam, {
+    name: DEMO_PROJECT_NAME,
+    customer: "Demo Zákazník s.r.o.",
+    location: "Demo Město (fiktivní)",
+    medium: "O2",
+  });
+  const stageId = async (key: string) => {
+    const [s] = await db
+      .select({ id: stages.id })
+      .from(stages)
+      .where(and(eq(stages.projectId, projectId), eq(stages.key, key)));
+    return s!.id;
+  };
+  const s1 = await stageId("1");
+  await transitionStage(db, oam, { stageId: s1, transition: "start" });
+  await addDocumentLink(db, oam, {
+    stageId: s1,
+    kind: "sharepoint_site",
+    title: "Demo SharePoint site",
+    url: "https://demo.sharepoint.com/sites/demo-backup-lox20",
+  });
+  await confirmCheck(db, oam, { stageId: s1, checkId: "permissions_match_roles", confirmed: true });
+  await transitionStage(db, oam, { stageId: s1, transition: "submit" });
+  await transitionStage(db, oam, { stageId: s1, transition: "close" });
+
+  const s2 = await stageId("2");
+  await transitionStage(db, oam, { stageId: s2, transition: "start" });
+  await updateStageSettings(db, oam, { stageId: s2, dueDate: "2026-12-15" });
+  await addDocumentLink(db, oam, {
+    stageId: s2,
+    kind: "pid_ref_lox_dubi",
+    title: "Referenční P&ID LOX (demo)",
+    url: "https://demo.sharepoint.com/sites/demo-backup-lox20/pid-lox.pdf",
+    version: "A",
+    documentDate: "2026-10-01",
+  });
+  await addTask(db, oam, { stageId: s2, title: "Vyžádat CES P&ID od ROC (demo)", assigneeUserId: roc.id, dueDate: "2026-12-01" });
+  console.log(`Seeded demo project "${DEMO_PROJECT_NAME}"`);
 }
 
 main().catch((err) => {

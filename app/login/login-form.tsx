@@ -35,7 +35,8 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    // method="post": if JS fails to load, credentials must never end up in the URL.
+    <form onSubmit={onSubmit} method="post" className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">{t("email")}</Label>
         <Input id="email" name="email" type="email" autoComplete="username" required />

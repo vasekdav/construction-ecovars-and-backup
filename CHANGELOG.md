@@ -1,5 +1,18 @@
 # Changelog
 
+## Fáze 1: Workflow (2026-11-11)
+- Šablona procesu jako data (`data/process/default.json`): kroky 1–10 s nezměněným číslováním, Definition of Done, vlastníci, gate podmínky, typy dokumentů a schválený graf závislostí `1 → 2 → {4, 5, 7} → 8 → {3, 9} → 6 → 10`. Validace šablony (unikátnost, reference, cykly).
+- Doporučené kroky navíc H1 (HAZID/HAZOP), C1 (O₂ cleaning, jen O₂), P1 (povolení), F1 (FAT/SAT), O1 (OPS handover): v šabloně, výchozí stav vypnuto, zapíná OAM.
+- Stavový automat kroku (NEZAHÁJENO → ROZPRACOVÁNO → K REVIZI → UZAVŘENO, BLOKOVÁNO s povinným důvodem, odblokování do předchozího stavu, znovuotevření s důvodem).
+- Deklarativní gate: odkazy na dokumenty (s verzí / datem), ruční potvrzení rolí, úkoly uzavřeny, odpovědná osoba, rozhodnutí se zdůvodněním, verze layoutu. Podmínky z pozdějších fází (dotazník, pravidla, sizing) se do té doby tváří jako nesplněné.
+- Krok nelze uzavřít bez splněné gate a uzavřených předchozích kroků. Každý zamítnutý pokus se loguje (`stage.close_rejected`), úspěšné uzavření ukládá snapshot vyhodnocení gate.
+- RBAC na úrovni kroků: vlastník kroku a OAM pracují na kroku, gate přijímá, vrací a znovu otevírá jen OAM, uzavřený krok je zmrazený.
+- Projekty (zakládá OAM), kroky, úkoly a připomínky, odkazy na SharePoint (jen https, nikdy soubory; jiný host je označen), komentáře, rozhodnutí (krok 10), verze layoutu v0 (krok 3) a v1…vN (krok 9), nastavení kroku (termín, odpovědná osoba).
+- Dashboard projektu: stavová osa (semafor), nejbližší termíny, kdo na koho čeká, přehled kroků, kroky navíc. Detail kroku: gate s odškrtnutím, akce, úkoly, dokumenty, layout, rozhodnutí, nastavení, komentáře, historie z audit logu.
+- Demo projekt „Demo Zákazník, LOX 20 m³“ v seedu (krok 1 uzavřen, krok 2 rozpracován), vytvořený přes běžné služby, takže je auditovaný.
+- Opravy: přihlašovací formulář při nenačteném JS už neodešle heslo v URL (`method="post"`); `vercel.json` s presetem Next.js.
+- Testy: 94 unit a integračních (pokrytí čisté logiky workflow ≥ 90 %), 8 e2e.
+
 ## Fáze 0: Základ (2026-11-11)
 - Kostra Next.js 16 (App Router, TS strict), Tailwind 4, UI komponenty ve stylu shadcn, next-intl (`cs` výchozí, `en` připraveno).
 - Postgres + Drizzle ORM, SQL migrace v `db/migrations`, migrační a seed skript.

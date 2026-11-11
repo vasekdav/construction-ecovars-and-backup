@@ -36,11 +36,12 @@ export async function requirePermission(permission: Permission): Promise<Current
   return user;
 }
 
-export async function logForbidden(userId: string, permission: Permission): Promise<void> {
+export async function logForbidden(userId: string, permission: string, projectId?: string): Promise<void> {
   await writeAudit(await getDb(), {
     actorUserId: userId,
     action: "security.forbidden",
     entityType: "permission",
     entityId: permission,
+    projectId: projectId ?? null,
   });
 }

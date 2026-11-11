@@ -30,7 +30,11 @@ export function can(roles: readonly Role[], permission: Permission): boolean {
 }
 
 export class ForbiddenError extends Error {
-  constructor(public readonly permission: Permission) {
+  /** A global permission or a stage-level action such as `stage.close:4`. */
+  constructor(
+    public readonly permission: string,
+    public readonly projectId?: string,
+  ) {
     super(`Forbidden: missing permission ${permission}`);
     this.name = "ForbiddenError";
   }

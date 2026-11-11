@@ -46,3 +46,21 @@ Komponenty ve stylu shadcn/ui jsou psané ručně v `components/ui` (CLI shadcn 
 
 ## ADR-014 Odepřený přístup
 Stránky bez oprávnění přesměrují na `/forbidden` a pokus zalogují. Experimentální `forbidden()` z Next.js nepoužíváme. Server actions vrací chybu `forbidden` a pokus také logují.
+
+## ADR-015 Deklarativní gate a funkce z pozdějších fází
+Gate podmínky jsou data šablony (`documentLinks`, `manualCheck`, `allTasksDone`, `ownerAssigned`, `decisionRecorded`, `layoutVersion`, `pendingFeature`), vyhodnocuje je čistá funkce `evaluateGate`. Podmínky, jejichž funkce vznikne později (dotazník: fáze 2, pravidla a standardy: fáze 3, sizing: fáze 4), mají typ `pendingFeature` a jsou **vždy nesplněné**. Kroky 3, 5, 7, 8 a 9 proto do příslušné fáze nejde uzavřít. Je to záměrně nejbezpečnější varianta.
+
+## ADR-016 Oprávnění na úrovni kroku
+Na kroku pracují (zahájit, předat k revizi, blokovat, úkoly, odkazy, layout, rozhodnutí) jeho vlastnické role ze šablony a OAM. Gate přijímá, krok vrací a znovu otevírá jen OAM (SPEC §2). Ruční potvrzení v gate smí udělat jen role uvedená u podmínky (např. ROC u kroku 4, Process Safety u kroku 5). Admin spravuje uživatele, šablony a pravidla, ale procesní akce nedělá. Uzavřený krok je zmrazený. Znovuotevření vyžaduje důvod a nemaže auditní stopu; navazující uzavřené kroky se automaticky neotevírají (otevřená otázka 18).
+
+## ADR-017 Logování zamítnutých přechodů
+Přechod probíhá v transakci se zámkem řádku kroku. Zamítnutý pokus (neprošlá gate, otevřené závislosti, chybějící důvod) se zapisuje do audit logu **mimo** transakci, aby záznam přežil. Úspěšné uzavření ukládá snapshot výsledků gate.
+
+## ADR-018 Kroky navíc a závislosti
+Vypnuté kroky (a kroky neplatné pro médium, např. C1 u N₂) se v závislostech ignorují. Zapnuté kroky se do grafu řadí takto: H1 po 4 a 9, C1 po 4, P1 po 9; krok 10 čeká na zapnuté H1, C1 a P1; F1 následuje po 10 a O1 po 10 a F1. Kroky navíc lze přepnout jen ve stavu NEZAHÁJENO.
+
+## ADR-019 Odkazy na dokumenty
+Ukládají se jen odkazy s protokolem `https` (validace na serveru). Odkaz mimo `*.sharepoint.com` se uloží, ale v UI je označen „není SharePoint“. Gate počítá odkazy připojené ke konkrétnímu kroku.
+
+## ADR-020 Ochrana přihlašovacího formuláře
+Formulář má `method="post"`, aby se při nenačteném JavaScriptu přihlašovací údaje nikdy neodeslaly v URL.

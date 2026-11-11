@@ -18,3 +18,9 @@ Do zodpovězení aplikace pracuje s nejbezpečnějším předpokladem (sloupec �
 | 12 | Mají být role globální, nebo přiřazené per projekt (např. OPS jen na svých projektech)? | SPEC §2, §4 | v1: globální role. Schéma připraví volitelné `project_id` ve fázi 1. |
 | 13 | Kdo smí číst globální audit log? | Plán | Admin a Process Safety. Historie projektu bude viditelná všem rolím s přístupem k projektu. |
 | 14 | Kdy a pod jakým účtem připojit Vercel + Neon? | Plán | Do připojení: lokálně + CI. |
+| 15 | Gate kroku 6 „vlastník údržby jmenován“: stačí jako „odpovědná osoba kroku“ v nastavení kroku? | Fáze 1 | Ano, podmínka `ownerAssigned`. |
+| 16 | Gate kroku 4 „všechny připomínky uzavřeny“: evidovat připomínky k P&ID jako úkoly kroku? | Fáze 1 | Ano, podmínka `allTasksDone`. |
+| 17 | Má Admin smět provádět procesní akce (např. za nepřítomného OAM)? | Fáze 1 | Ne (ADR-016). Admin může přidat roli OAM jinému uživateli. |
+| 18 | Má znovuotevření uzavřeného kroku automaticky znovu otevřít i navazující uzavřené kroky? | Fáze 1 | Ne, jen se zaloguje. Navazující kroky zůstávají uzavřené. |
+| 19 | Zařazení kroků navíc do grafu závislostí (ADR-018). | Fáze 1 | Podle ADR-018. |
+| 20 | Kdo smí zakládat projekty? SPEC: OAM. Teď smí i Admin, ale vlastníkem musí být uživatel s rolí OAM. | Fáze 1 | Ponecháno. |

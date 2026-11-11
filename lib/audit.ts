@@ -10,6 +10,7 @@ export interface AuditEntryInput {
   before?: unknown;
   after?: unknown;
   reason?: string | null;
+  projectId?: string | null;
 }
 
 /** Append one audit entry. Call inside the same transaction as the change. */
@@ -22,6 +23,7 @@ export async function writeAudit(db: DbOrTx, entry: AuditEntryInput): Promise<vo
     before: entry.before ?? null,
     after: entry.after ?? null,
     reason: entry.reason ?? null,
+    projectId: entry.projectId ?? null,
   });
 }
 

@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef } from "react";
-import { Alert } from "@/components/ui/alert";
+import { ActionMessage as SharedActionMessage } from "@/components/action-message";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,19 +12,8 @@ import { ROLES, type Role } from "@/lib/auth/roles";
 import { createUserAction, setPasswordAction, updateUserAction } from "./actions";
 
 function ActionMessage({ state }: { state: ActionState }) {
-  const tUsers = useTranslations("users");
-  const tErr = useTranslations("errors");
-  if (!state) return null;
-  if (state.ok) return <Alert tone="success">{tUsers(state.message as "created")}</Alert>;
-  const known = ["validation", "forbidden", "rateLimited", "EMAIL_TAKEN", "NOT_FOUND", "SELF_LOCKOUT"];
-  const key = (known.includes(state.error) ? state.error : "unknown") as "unknown";
-  const fields = state.fieldErrors ? Object.keys(state.fieldErrors).filter((k) => state.fieldErrors?.[k]?.length) : [];
-  return (
-    <Alert tone="error">
-      {tErr(key)}
-      {fields.length > 0 && <span> ({fields.join(", ")})</span>}
-    </Alert>
-  );
+  const t = useTranslations("users");
+  return <SharedActionMessage state={state} successText={state?.ok ? t(state.message as "created") : undefined} />;
 }
 
 function RoleCheckboxes({ selected, idPrefix }: { selected: readonly Role[]; idPrefix: string }) {

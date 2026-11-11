@@ -38,7 +38,10 @@ export async function guardedAction(
     if (err instanceof z.ZodError) {
       return { ok: false, error: "validation", fieldErrors: z.flattenError(err).fieldErrors as FieldErrors };
     }
-    if (err instanceof ForbiddenError) return { ok: false, error: "forbidden" };
+    if (err instanceof ForbiddenError) {
+      await logForbidden(user.id, err.permission, err.projectId);
+      return { ok: false, error: "forbidden" };
+    }
     if (err instanceof DomainError) return { ok: false, error: err.code };
     if (err instanceof Error && "code" in err && typeof err.code === "string" && err.name.endsWith("ServiceError")) {
       return { ok: false, error: err.code };
