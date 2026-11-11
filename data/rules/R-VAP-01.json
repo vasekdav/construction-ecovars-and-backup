@@ -1,0 +1,66 @@
+{
+  "id": "R-VAP-01",
+  "version": 1,
+  "category": "Vaporizer",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Ochrana proti nízké teplotě na výstupu odpařovače",
+    "en": "Low-temperature protection at vaporizer outlet"
+  },
+  "inputs": [
+    {
+      "key": "design.downstream_material_cold_ok",
+      "label": {
+        "cs": "Navazující potrubí snese studený plyn",
+        "en": "Downstream piping tolerates cold gas"
+      }
+    },
+    {
+      "key": "design.low_temp_protection",
+      "label": {
+        "cs": "Ochrana proti nízké teplotě na výstupu",
+        "en": "Low-temperature protection at outlet"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "or",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.downstream_material_cold_ok"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.low_temp_protection"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Navazující potrubí nesnese studený plyn a výstup odpařovače nemá ochranu proti nízké teplotě.",
+    "en": "Downstream piping does not tolerate cold gas and the vaporizer outlet lacks low-temperature protection."
+  },
+  "remediation": {
+    "cs": "Doplnit detekci nízké teploty s uzavřením nebo změnit materiál navazujícího potrubí.",
+    "en": "Add low-temperature detection with shut-off or change the downstream material."
+  },
+  "source": {
+    "document": "Interní standard (kandidát: MS-47393 / MS-79511)",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

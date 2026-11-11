@@ -1,0 +1,100 @@
+{
+  "id": "R-VAP-03",
+  "version": 1,
+  "category": "Vaporizer",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Okolí odpařovače",
+    "en": "Vaporizer surroundings"
+  },
+  "inputs": [
+    {
+      "key": "db.coolingTowersNearby",
+      "label": {
+        "cs": "Chladicí věže v okolí (dotazník)",
+        "en": "Cooling towers nearby (questionnaire)"
+      }
+    },
+    {
+      "key": "layout.dist_vap_cooling_towers",
+      "label": {
+        "cs": "Vzdálenost vaporizeru od chladicích věží",
+        "en": "Vaporizer distance to cooling towers"
+      }
+    },
+    {
+      "key": "layout.vap_airflow_obstructed",
+      "label": {
+        "cs": "Proudění k vaporizeru omezeno",
+        "en": "Vaporizer airflow obstructed"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "key": "min_dist_cooling_towers",
+      "label": {
+        "cs": "Min. vzdálenost od chladicích věží",
+        "en": "Min. distance to cooling towers"
+      },
+      "dimension": "length",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    }
+  ],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "or",
+        "args": [
+          {
+            "op": "isFalse",
+            "value": {
+              "input": "db.coolingTowersNearby"
+            }
+          },
+          {
+            "op": "gte",
+            "left": {
+              "input": "layout.dist_vap_cooling_towers"
+            },
+            "right": {
+              "param": "min_dist_cooling_towers"
+            }
+          }
+        ]
+      },
+      {
+        "op": "isFalse",
+        "value": {
+          "input": "layout.vap_airflow_obstructed"
+        }
+      }
+    ]
+  },
+  "severity": "WARNING",
+  "message": {
+    "cs": "V okolí odpařovače jsou chladicí věže, výdechy vlhkého vzduchu nebo překážky proudění, které zhoršují výkon nebo způsobují námrazu.",
+    "en": "Cooling towers, humid exhausts or airflow obstructions near the vaporizer may reduce performance or cause icing."
+  },
+  "remediation": {
+    "cs": "Posoudit umístění odpařovače, případně ho přemístit.",
+    "en": "Review the vaporizer location and relocate if needed."
+  },
+  "source": {
+    "document": "Interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "9"
+  ]
+}

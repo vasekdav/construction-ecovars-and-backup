@@ -1,0 +1,68 @@
+{
+  "id": "R-O2-02",
+  "version": 1,
+  "category": "O2 service",
+  "appliesTo": [
+    "O2"
+  ],
+  "title": {
+    "cs": "Nehořlavý povrch v zóně úniku",
+    "en": "Non-combustible surface in the spill zone"
+  },
+  "inputs": [
+    {
+      "key": "layout.combustibles_in_spill_zone",
+      "label": {
+        "cs": "Hořlavý materiál v zóně úniku",
+        "en": "Combustibles in spill zone"
+      }
+    },
+    {
+      "key": "layout.surface_under_filling",
+      "label": {
+        "cs": "Povrch pod napouštěním a vaporizerem",
+        "en": "Surface below filling and vaporizer"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "in",
+        "value": {
+          "input": "layout.surface_under_filling"
+        },
+        "values": [
+          "concrete"
+        ]
+      },
+      {
+        "op": "isFalse",
+        "value": {
+          "input": "layout.combustibles_in_spill_zone"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Plocha pod napouštěním a vaporizerem není nehořlavá (beton) nebo je v zóně úniku asfalt, olej, mazivo či jiný hořlavý materiál.",
+    "en": "Surface below filling and vaporizer is not non-combustible (concrete) or combustibles are present in the spill zone."
+  },
+  "remediation": {
+    "cs": "Zajistit betonovou plochu a odstranit hořlavé materiály ze zóny úniku.",
+    "en": "Provide a concrete pad and remove combustibles from the spill zone."
+  },
+  "source": {
+    "document": "EIGA Doc 04 (kandidát) + interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "9"
+  ]
+}

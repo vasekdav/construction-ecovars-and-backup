@@ -1,0 +1,65 @@
+{
+  "id": "R-O2-01",
+  "version": 1,
+  "category": "O2 service",
+  "appliesTo": [
+    "O2"
+  ],
+  "title": {
+    "cs": "O₂ cleaning a materiálová kompatibilita",
+    "en": "O₂ cleaning and material compatibility"
+  },
+  "inputs": [
+    {
+      "key": "design.o2_cleaning_documented",
+      "label": {
+        "cs": "O₂ cleaning doložen",
+        "en": "O₂ cleaning documented"
+      }
+    },
+    {
+      "key": "design.o2_material_compatibility",
+      "label": {
+        "cs": "Materiálová kompatibilita pro O₂",
+        "en": "O₂ material compatibility"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.o2_cleaning_documented"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.o2_material_compatibility"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Některé smáčené díly nemají doložený O₂ cleaning nebo materiálovou kompatibilitu pro O₂ servis.",
+    "en": "Some wetted parts lack documented O₂ cleaning or material compatibility for O₂ service."
+  },
+  "remediation": {
+    "cs": "Doložit O₂ cleaning a kompatibilitu všech smáčených dílů.",
+    "en": "Document O₂ cleaning and compatibility of all wetted parts."
+  },
+  "source": {
+    "document": "EIGA Doc 33 (kandidát) + interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

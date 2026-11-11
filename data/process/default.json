@@ -1,0 +1,210 @@
+{
+  "key": "o2n2-backup",
+  "version": 1,
+  "title": { "cs": "Záložní stanice O₂ / N₂", "en": "O₂ / N₂ backup station" },
+  "documentKinds": [
+    { "key": "sharepoint_site", "title": { "cs": "SharePoint site projektu", "en": "Project SharePoint site" } },
+    { "key": "pid_ref_lox_dubi", "title": { "cs": "Referenční P&ID LOX (Dubí)", "en": "Reference P&ID LOX (Dubí)" } },
+    { "key": "pid_ref_minigan_kladno", "title": { "cs": "Referenční P&ID Minigan (Kladno)", "en": "Reference P&ID Minigan (Kladno)" } },
+    { "key": "pid_ref_psa_liberec", "title": { "cs": "Referenční P&ID PSA (Liberec)", "en": "Reference P&ID PSA (Liberec)" } },
+    { "key": "pid_ces_standard", "title": { "cs": "Standardní CES P&ID", "en": "Standard CES P&ID" } },
+    { "key": "plot_plan", "title": { "cs": "Plot plan (výkres)", "en": "Plot plan (drawing)" } },
+    { "key": "pid_dwg", "title": { "cs": "P&ID v DWG", "en": "P&ID in DWG" } },
+    { "key": "standards_list", "title": { "cs": "Seznam norem a standardů", "en": "List of standards" } },
+    { "key": "equipment_cost_list", "title": { "cs": "Equipment & cost list (zdrojový soubor)", "en": "Equipment & cost list (source file)" } },
+    { "key": "customer_checklist", "title": { "cs": "Zákaznický checklist", "en": "Customer checklist" } },
+    { "key": "sizing_file", "title": { "cs": "AAE sizing (soubor)", "en": "AAE sizing (file)" } },
+    { "key": "layout_drawing", "title": { "cs": "Layout (výkres)", "en": "Layout (drawing)" } },
+    { "key": "hazop_report", "title": { "cs": "HAZID/HAZOP zpráva", "en": "HAZID/HAZOP report" } },
+    { "key": "o2_cleaning_spec", "title": { "cs": "Specifikace O₂ cleaningu", "en": "O₂ cleaning specification" } },
+    { "key": "permit", "title": { "cs": "Povolení / legislativní posouzení", "en": "Permit / legal review" } },
+    { "key": "fat_sat_protocol", "title": { "cs": "Protokol FAT/SAT / commissioning", "en": "FAT/SAT / commissioning protocol" } },
+    { "key": "handover_protocol", "title": { "cs": "Předávací protokol OPS", "en": "OPS handover protocol" } },
+    { "key": "other", "title": { "cs": "Jiný dokument", "en": "Other document" } }
+  ],
+  "stages": [
+    {
+      "key": "1",
+      "number": 1,
+      "title": { "cs": "Set up SharePoint", "en": "Set up SharePoint" },
+      "definitionOfDone": { "cs": "Hlavní site + struktura složek + oprávnění.", "en": "Main site + folder structure + permissions." },
+      "ownerRoles": ["OAM"],
+      "dependsOn": [],
+      "gate": [
+        { "id": "sharepoint_link", "type": "documentLinks", "kinds": ["sharepoint_site"], "requireVersion": false, "requireDate": false },
+        { "id": "permissions_match_roles", "type": "manualCheck", "roles": ["OAM"], "label": { "cs": "Oprávnění na SharePointu odpovídají rolím", "en": "SharePoint permissions match the roles" } }
+      ]
+    },
+    {
+      "key": "2",
+      "number": 2,
+      "title": { "cs": "Collect PID references", "en": "Collect PID references" },
+      "definitionOfDone": { "cs": "Složka vstupů; referenční P&ID LOX (Dubí), Minigan (Kladno), PSA (Liberec); standardní CES P&ID.", "en": "Input folder; reference P&IDs LOX (Dubí), Minigan (Kladno), PSA (Liberec); standard CES P&ID." },
+      "ownerRoles": ["OAM"],
+      "dependsOn": ["1"],
+      "gate": [
+        { "id": "pid_references", "type": "documentLinks", "kinds": ["pid_ref_lox_dubi", "pid_ref_minigan_kladno", "pid_ref_psa_liberec", "pid_ces_standard"], "requireVersion": true, "requireDate": true }
+      ]
+    },
+    {
+      "key": "3",
+      "number": 3,
+      "title": { "cs": "Plot Plan (fyzické rozmístění)", "en": "Plot plan (physical arrangement)" },
+      "definitionOfDone": { "cs": "Plot plan: tank, vaporizery, čerpadla, armatury, potrubí, příjezdové cesty, bezpečné vzdálenosti.", "en": "Plot plan: tank, vaporizers, pumps, valves, piping, access roads, safety distances." },
+      "ownerRoles": ["OPS", "OAM"],
+      "dependsOn": ["8"],
+      "layout": "concept",
+      "gate": [
+        { "id": "layout_concept", "type": "layoutVersion", "which": "concept", "requireDrawing": true },
+        { "id": "layout_dimensions", "type": "layoutGeometryComplete", "which": "concept", "label": { "cs": "Vyplněné rozměry pro kontrolu pravidel (layout v0)", "en": "Dimensions for rule checks filled in (layout v0)" } }
+      ]
+    },
+    {
+      "key": "4",
+      "number": 4,
+      "title": { "cs": "Redraw P&IDs", "en": "Redraw P&IDs" },
+      "definitionOfDone": { "cs": "P&ID v DWG, zapracované všechny připomínky.", "en": "P&ID in DWG, all comments incorporated." },
+      "ownerRoles": ["ROC"],
+      "dependsOn": ["2"],
+      "gate": [
+        { "id": "comments_closed", "type": "allTasksDone", "label": { "cs": "Všechny připomínky (úkoly) uzavřeny", "en": "All review comments (tasks) closed" } },
+        { "id": "pid_dwg_link", "type": "documentLinks", "kinds": ["pid_dwg"], "requireVersion": true, "requireDate": true },
+        { "id": "roc_confirmed", "type": "manualCheck", "roles": ["ROC"], "label": { "cs": "ROC / Třinec potvrdil dodání výkresu", "en": "ROC / Třinec confirmed drawing delivery" } },
+        { "id": "pid_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly P&ID vyhodnoceny, bez NO-GO a s posouzenými WARNING", "en": "P&ID checks evaluated, without NO-GO and with reviewed WARNINGs" } }
+      ]
+    },
+    {
+      "key": "5",
+      "number": 5,
+      "title": { "cs": "Process Safety Standard", "en": "Process Safety Standard" },
+      "definitionOfDone": { "cs": "Seznam norem a standardů pro O₂ a N₂ zálohy.", "en": "List of standards for O₂ and N₂ backups." },
+      "ownerRoles": ["PROCESS_SAFETY"],
+      "dependsOn": ["2"],
+      "gate": [
+        { "id": "standards_verified", "type": "standardsVerified", "label": { "cs": "Každý standard a pravidlo použité v projektu má stav VERIFIED", "en": "Every standard and rule used in the project is VERIFIED" } },
+        { "id": "reviewer_approved", "type": "manualCheck", "roles": ["PROCESS_SAFETY"], "label": { "cs": "Process Safety reviewer schválil seznam", "en": "Process Safety reviewer approved the list" } }
+      ]
+    },
+    {
+      "key": "6",
+      "number": 6,
+      "title": { "cs": "Equipment & Cost List", "en": "Equipment & Cost List" },
+      "definitionOfDone": { "cs": "Zdrojový soubor (mechanika, elektro, MaR, project management) s cenami. Ceny se v aplikaci neukládají.", "en": "Source file (mechanical, electrical, I&C, project management) with prices. Prices are not stored in the app." },
+      "ownerRoles": ["INVESTMENT"],
+      "dependsOn": ["3", "9"],
+      "gate": [
+        { "id": "cost_list_link", "type": "documentLinks", "kinds": ["equipment_cost_list"], "requireVersion": false, "requireDate": true },
+        { "id": "maintenance_owner", "type": "ownerAssigned", "label": { "cs": "Jmenován vlastník údržby (odpovědná osoba kroku)", "en": "Maintenance owner named (step responsible person)" } }
+      ]
+    },
+    {
+      "key": "7",
+      "number": 7,
+      "title": { "cs": "Customer Checklist", "en": "Customer Checklist" },
+      "definitionOfDone": { "cs": "Vyplněný zákaznický dotazník (počáteční i detailní požadavky).", "en": "Completed customer questionnaire (initial and detailed requirements)." },
+      "ownerRoles": ["OAM"],
+      "dependsOn": ["2"],
+      "gate": [
+        { "id": "questionnaire_complete", "type": "questionnaireComplete", "label": { "cs": "Dotazník v detailní fázi a všechny povinné položky vyplněny", "en": "Questionnaire in detailed phase with all mandatory items filled in" } },
+        { "id": "oam_confirmed", "type": "manualCheck", "roles": ["OAM"], "label": { "cs": "OAM potvrdil dotazník", "en": "OAM confirmed the questionnaire" } }
+      ]
+    },
+    {
+      "key": "8",
+      "number": 8,
+      "title": { "cs": "Backup Sizing & Layout", "en": "Backup Sizing & Layout" },
+      "definitionOfDone": { "cs": "Velikost odpařovače podle požadované kapacity zálohy.", "en": "Vaporizer size according to the required backup capacity." },
+      "ownerRoles": ["SIZING"],
+      "dependsOn": ["4", "5", "7"],
+      "gate": [
+        { "id": "sizing_result", "type": "sizingResultRecorded", "label": { "cs": "Vstupy sizingu uloženy, výsledek má zdroj (soubor + revize)", "en": "Sizing inputs stored, result has a source (file + revision)" } },
+        { "id": "sizing_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly sizingu vyhodnoceny, bez NO-GO a s posouzenými WARNING", "en": "Sizing checks evaluated, without NO-GO and with reviewed WARNINGs" } }
+      ]
+    },
+    {
+      "key": "9",
+      "number": 9,
+      "title": { "cs": "Layout (optimalizace)", "en": "Layout (optimisation)" },
+      "definitionOfDone": { "cs": "Layout bez kolizí (zdi, chladicí věže), přístup k armaturám.", "en": "Layout without clashes (walls, cooling towers), access to valves." },
+      "ownerRoles": ["OPS"],
+      "dependsOn": ["8"],
+      "layout": "final",
+      "gate": [
+        { "id": "layout_final", "type": "layoutVersion", "which": "final", "requireDrawing": true },
+        { "id": "layout_rules", "type": "rulesNoNoGo", "label": { "cs": "Kontroly přístupnosti a vzdáleností vyhodnoceny, bez NO-GO a s posouzenými WARNING", "en": "Accessibility and distance checks evaluated, without NO-GO and with reviewed WARNINGs" } }
+      ]
+    },
+    {
+      "key": "10",
+      "number": 10,
+      "title": { "cs": "Further technical & economic considerations", "en": "Further technical & economic considerations" },
+      "definitionOfDone": { "cs": "Economizer, trendy spotřeby, parní odpařovače (Ferox, Linde Engineering).", "en": "Economizer, consumption trends, steam vaporizers (Ferox, Linde Engineering)." },
+      "ownerRoles": ["OAM", "INVESTMENT"],
+      "dependsOn": ["6", "H1", "C1", "P1"],
+      "gate": [
+        { "id": "decision_recorded", "type": "decisionRecorded", "label": { "cs": "Rozhodnutí zapsáno (ano / ne / odloženo) a zdůvodněno", "en": "Decision recorded (yes / no / deferred) with rationale" } }
+      ]
+    },
+    {
+      "key": "H1",
+      "optional": true,
+      "title": { "cs": "HAZID / HAZOP review", "en": "HAZID / HAZOP review" },
+      "definitionOfDone": { "cs": "HAZID/HAZOP review před uzavřením návrhu, akce uzavřeny.", "en": "HAZID/HAZOP review before design freeze, actions closed." },
+      "ownerRoles": ["PROCESS_SAFETY"],
+      "dependsOn": ["4", "9"],
+      "gate": [
+        { "id": "hazop_report", "type": "documentLinks", "kinds": ["hazop_report"], "requireVersion": true, "requireDate": true },
+        { "id": "hazop_actions", "type": "allTasksDone", "label": { "cs": "Všechny akce z HAZOP uzavřeny", "en": "All HAZOP actions closed" } }
+      ]
+    },
+    {
+      "key": "C1",
+      "optional": true,
+      "title": { "cs": "Specifikace O₂ cleaningu", "en": "O₂ cleaning specification" },
+      "definitionOfDone": { "cs": "Specifikace čištění pro O₂ servis (jen O₂ projekty).", "en": "Cleaning specification for O₂ service (O₂ projects only)." },
+      "ownerRoles": ["PROCESS_SAFETY", "OAM"],
+      "dependsOn": ["4"],
+      "media": ["O2"],
+      "gate": [
+        { "id": "cleaning_spec", "type": "documentLinks", "kinds": ["o2_cleaning_spec"], "requireVersion": true, "requireDate": true },
+        { "id": "cleaning_approved", "type": "manualCheck", "roles": ["PROCESS_SAFETY"], "label": { "cs": "Process Safety schválil specifikaci", "en": "Process Safety approved the specification" } }
+      ]
+    },
+    {
+      "key": "P1",
+      "optional": true,
+      "title": { "cs": "Povolení a legislativa", "en": "Permits and legislation" },
+      "definitionOfDone": { "cs": "Povolovací a legislativní kontrola.", "en": "Permit and legal review." },
+      "ownerRoles": ["OAM"],
+      "dependsOn": ["9"],
+      "gate": [
+        { "id": "permit_link", "type": "documentLinks", "kinds": ["permit"], "requireVersion": false, "requireDate": true },
+        { "id": "permit_confirmed", "type": "manualCheck", "roles": ["OAM"], "label": { "cs": "Povolení zajištěna nebo nejsou potřeba", "en": "Permits obtained or not required" } }
+      ]
+    },
+    {
+      "key": "F1",
+      "optional": true,
+      "title": { "cs": "FAT / SAT a commissioning", "en": "FAT / SAT and commissioning" },
+      "definitionOfDone": { "cs": "FAT/SAT a uvedení do provozu.", "en": "FAT/SAT and commissioning." },
+      "ownerRoles": ["OPS", "OAM"],
+      "dependsOn": ["10"],
+      "gate": [
+        { "id": "fat_sat_protocol", "type": "documentLinks", "kinds": ["fat_sat_protocol"], "requireVersion": false, "requireDate": true },
+        { "id": "commissioning_tasks", "type": "allTasksDone", "label": { "cs": "Všechny body commissioningu uzavřeny", "en": "All commissioning items closed" } }
+      ]
+    },
+    {
+      "key": "O1",
+      "optional": true,
+      "title": { "cs": "Předání do provozu (OPS handover)", "en": "OPS handover" },
+      "definitionOfDone": { "cs": "Stanice předána provozu.", "en": "Station handed over to operations." },
+      "ownerRoles": ["OPS"],
+      "dependsOn": ["10", "F1"],
+      "gate": [
+        { "id": "handover_protocol", "type": "documentLinks", "kinds": ["handover_protocol"], "requireVersion": false, "requireDate": true },
+        { "id": "ops_accepted", "type": "manualCheck", "roles": ["OPS"], "label": { "cs": "OPS převzal stanici", "en": "OPS accepted the station" } }
+      ]
+    }
+  ]
+}

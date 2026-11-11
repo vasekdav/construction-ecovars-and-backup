@@ -1,0 +1,58 @@
+{
+  "id": "R-CAP-01",
+  "version": 1,
+  "category": "Kapacita",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Autonomie zálohy",
+    "en": "Backup autonomy"
+  },
+  "inputs": [
+    {
+      "key": "calc.autonomy",
+      "label": {
+        "cs": "Vypočtená autonomie zálohy",
+        "en": "Calculated backup autonomy"
+      }
+    },
+    {
+      "key": "db.requiredAutonomy",
+      "label": {
+        "cs": "Požadovaná autonomie (dotazník)",
+        "en": "Required autonomy (questionnaire)"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "gte",
+    "left": {
+      "input": "calc.autonomy"
+    },
+    "right": {
+      "input": "db.requiredAutonomy"
+    }
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Vypočtená autonomie zálohy je menší než požadovaná autonomie z dotazníku.",
+    "en": "Calculated backup autonomy is below the required autonomy from the questionnaire."
+  },
+  "remediation": {
+    "cs": "Zvětšit zásobník nebo upravit požadavky na autonomii se zákazníkem.",
+    "en": "Increase the tank size or agree on autonomy requirements with the customer."
+  },
+  "source": {
+    "document": "SPEC §6 (výpočet autonomie)",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "8"
+  ]
+}

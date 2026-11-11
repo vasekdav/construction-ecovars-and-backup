@@ -1,0 +1,48 @@
+{
+  "id": "R-CTL-01",
+  "version": 1,
+  "category": "Řízení",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Zpětná armatura na napojení",
+    "en": "Check valve at tie-in"
+  },
+  "inputs": [
+    {
+      "key": "design.check_valve_at_tie_in",
+      "label": {
+        "cs": "Zpětná armatura na napojení",
+        "en": "Check valve at tie-in"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "isTrue",
+    "value": {
+      "input": "design.check_valve_at_tie_in"
+    }
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Napojení na zákazníka nemá zpětnou armaturu; zákaznický plyn může téct zpět do zálohy.",
+    "en": "Tie-in lacks a check valve; customer gas may flow back into the backup."
+  },
+  "remediation": {
+    "cs": "Doplnit zpětnou armaturu na napojení.",
+    "en": "Add a check valve at the tie-in."
+  },
+  "source": {
+    "document": "Interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

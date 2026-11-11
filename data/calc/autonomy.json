@@ -1,0 +1,82 @@
+{
+  "key": "autonomy",
+  "version": 1,
+  "title": {
+    "cs": "Výpočet autonomie zálohy",
+    "en": "Backup autonomy calculation"
+  },
+  "description": {
+    "cs": "Parametry výpočtu podle SPEC §6. Hodnoty doplní a ověří Process Safety; bez nich je autonomie NEVYHODNOCENO.",
+    "en": "Calculation parameters per SPEC §6. Process Safety supplies and verifies the values; without them autonomy is NOT EVALUATED."
+  },
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "parameters": [
+    {
+      "key": "fill_max",
+      "label": {
+        "cs": "Maximální plnění zásobníku",
+        "en": "Maximum tank fill"
+      },
+      "dimension": "fraction",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    },
+    {
+      "key": "heel_fraction",
+      "label": {
+        "cs": "Podíl zbytkové kapaliny (heel)",
+        "en": "Heel fraction"
+      },
+      "dimension": "fraction",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    },
+    {
+      "key": "rho_liquid",
+      "label": {
+        "cs": "Hustota kapaliny",
+        "en": "Liquid density"
+      },
+      "dimension": "density",
+      "values": {
+        "O2": null,
+        "N2": null
+      },
+      "note": {
+        "cs": "Pro výpočet expansion_ratio = ρ_liq / ρ_gas,normal.",
+        "en": "For expansion_ratio = ρ_liq / ρ_gas,normal."
+      }
+    },
+    {
+      "key": "rho_gas_normal",
+      "label": {
+        "cs": "Hustota plynu za normálních podmínek",
+        "en": "Gas density at normal conditions"
+      },
+      "dimension": "density",
+      "values": {
+        "O2": null,
+        "N2": null
+      },
+      "note": {
+        "cs": "Musí odpovídat definici normálních podmínek níže.",
+        "en": "Must match the definition of normal conditions below."
+      }
+    }
+  ],
+  "normalConditions": "TBD-VERIFY",
+  "source": {
+    "document": "TBD-VERIFY",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null
+}

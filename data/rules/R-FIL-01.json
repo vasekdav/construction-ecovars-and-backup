@@ -1,0 +1,105 @@
+{
+  "id": "R-FIL-01",
+  "version": 1,
+  "category": "Napouštění",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Místo vykládky cisterny",
+    "en": "Tanker unloading location"
+  },
+  "inputs": [
+    {
+      "key": "layout.earthing_available",
+      "label": {
+        "cs": "Uzemnění cisterny",
+        "en": "Tanker earthing"
+      }
+    },
+    {
+      "key": "layout.hose_reach_ok",
+      "label": {
+        "cs": "Dosah hadice",
+        "en": "Hose reach"
+      }
+    },
+    {
+      "key": "layout.tanker_access_verified",
+      "label": {
+        "cs": "Příjezd a otáčení cisterny ověřeny",
+        "en": "Tanker access verified"
+      }
+    },
+    {
+      "key": "layout.tanker_over_underground_utilities",
+      "label": {
+        "cs": "Cisterna nad podzemním vedením",
+        "en": "Tanker over underground utilities"
+      }
+    },
+    {
+      "key": "layout.tanker_under_piping",
+      "label": {
+        "cs": "Cisterna pod potrubím",
+        "en": "Tanker under piping"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "layout.tanker_access_verified"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "layout.earthing_available"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "layout.hose_reach_ok"
+        }
+      },
+      {
+        "op": "isFalse",
+        "value": {
+          "input": "layout.tanker_under_piping"
+        }
+      },
+      {
+        "op": "isFalse",
+        "value": {
+          "input": "layout.tanker_over_underground_utilities"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Místo vykládky nesplňuje podmínky: příjezd a otáčení, uzemnění, dosah hadice, cisterna mimo zónu pod potrubím a nad podzemním vedením.",
+    "en": "Unloading location fails: access and turning, earthing, hose reach, tanker away from piping and underground utilities."
+  },
+  "remediation": {
+    "cs": "Upravit místo vykládky a ověřit příjezd.",
+    "en": "Adjust the unloading location and verify access."
+  },
+  "source": {
+    "document": "Interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "9"
+  ]
+}

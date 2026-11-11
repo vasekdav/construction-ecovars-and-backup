@@ -1,0 +1,66 @@
+{
+  "id": "R-CTL-03",
+  "version": 1,
+  "category": "Řízení",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Nouzová izolace",
+    "en": "Emergency isolation"
+  },
+  "inputs": [
+    {
+      "key": "design.esd_accessible",
+      "label": {
+        "cs": "Nouzová izolace přístupná mimo rizikovou zónu",
+        "en": "Emergency isolation accessible outside hazard zone"
+      }
+    },
+    {
+      "key": "design.esd_defined",
+      "label": {
+        "cs": "Nouzová izolace definována",
+        "en": "Emergency isolation defined"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.esd_defined"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.esd_accessible"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Není definována nouzová izolace (ESD / ruční uzávěr) nebo není přístupná bez vstupu do rizikové zóny.",
+    "en": "Emergency isolation is not defined or not accessible without entering the hazard zone."
+  },
+  "remediation": {
+    "cs": "Definovat ESD / ruční uzávěr a umístit ovládání mimo rizikovou zónu.",
+    "en": "Define ESD / manual isolation and place controls outside the hazard zone."
+  },
+  "source": {
+    "document": "Interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

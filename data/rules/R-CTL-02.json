@@ -1,0 +1,79 @@
+{
+  "id": "R-CTL-02",
+  "version": 1,
+  "category": "Řízení",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Přepínací tlak zálohy",
+    "en": "Backup switchover pressure"
+  },
+  "inputs": [
+    {
+      "key": "db.sourcePressure",
+      "label": {
+        "cs": "Provozní tlak primárního zdroje (dotazník)",
+        "en": "Primary source operating pressure (questionnaire)"
+      }
+    },
+    {
+      "key": "design.switchover_pressure",
+      "label": {
+        "cs": "Přepínací tlak zálohy",
+        "en": "Switchover pressure"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "key": "switchover_hysteresis",
+      "label": {
+        "cs": "Hystereze přepínání",
+        "en": "Switchover hysteresis"
+      },
+      "dimension": "pressure_gauge",
+      "values": {
+        "O2": null,
+        "N2": null
+      }
+    }
+  ],
+  "condition": {
+    "op": "lte",
+    "left": {
+      "op": "add",
+      "args": [
+        {
+          "input": "design.switchover_pressure"
+        },
+        {
+          "param": "switchover_hysteresis"
+        }
+      ]
+    },
+    "right": {
+      "input": "db.sourcePressure"
+    }
+  },
+  "severity": "WARNING",
+  "message": {
+    "cs": "Přepínací tlak zálohy není dostatečně pod provozním tlakem primárního zdroje (s hysterezí); záloha by mohla mít přednost.",
+    "en": "Switchover pressure is not sufficiently below the primary source pressure (with hysteresis); the backup could take precedence."
+  },
+  "remediation": {
+    "cs": "Snížit přepínací tlak tak, aby primární zdroj měl přednost.",
+    "en": "Lower the switchover pressure so that the primary source has priority."
+  },
+  "source": {
+    "document": "Interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

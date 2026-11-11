@@ -1,0 +1,66 @@
+{
+  "id": "R-ACC-02",
+  "version": 1,
+  "category": "Přístupnost",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Úniková cesta",
+    "en": "Escape route"
+  },
+  "inputs": [
+    {
+      "key": "layout.escape_route_clear",
+      "label": {
+        "cs": "Úniková cesta volná",
+        "en": "Escape route clear"
+      }
+    },
+    {
+      "key": "layout.escape_route_outside_release_zone",
+      "label": {
+        "cs": "Úniková cesta mimo zónu úniku",
+        "en": "Escape route outside release zone"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "layout.escape_route_clear"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "layout.escape_route_outside_release_zone"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Úniková cesta z prostoru stanice je blokována nebo vede zónou možného úniku.",
+    "en": "Escape route is blocked or leads through the release zone."
+  },
+  "remediation": {
+    "cs": "Zajistit volnou únikovou cestu mimo zónu úniku.",
+    "en": "Provide a clear escape route away from the release zone."
+  },
+  "source": {
+    "document": "Interní standard + stavební / požární legislativa ČR (kandidát)",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "9"
+  ]
+}

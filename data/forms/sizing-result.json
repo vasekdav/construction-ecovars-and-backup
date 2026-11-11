@@ -1,0 +1,195 @@
+{
+  "key": "sizing-result",
+  "version": 1,
+  "title": {
+    "cs": "Výsledek sizingu (AAE nástroj)",
+    "en": "Sizing result (AAE tool)"
+  },
+  "sections": [
+    {
+      "id": "source",
+      "title": {
+        "cs": "Zdroj výsledku",
+        "en": "Result source"
+      },
+      "questions": [
+        {
+          "id": "source.file_name",
+          "type": "text",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Název souboru AAE nástroje",
+            "en": "AAE tool file name"
+          }
+        },
+        {
+          "id": "source.file_revision",
+          "type": "text",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Revize souboru",
+            "en": "File revision"
+          }
+        },
+        {
+          "id": "source.author",
+          "type": "text",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Autor výpočtu",
+            "en": "Calculation author"
+          }
+        },
+        {
+          "id": "source.date",
+          "type": "date",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Datum výpočtu",
+            "en": "Calculation date"
+          }
+        },
+        {
+          "id": "source.link",
+          "type": "url",
+          "required": false,
+          "phase": "initial",
+          "label": {
+            "cs": "Odkaz na soubor (SharePoint, https)",
+            "en": "Link to the file (SharePoint, https)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "inputs",
+      "title": {
+        "cs": "Vstupy sizingu",
+        "en": "Sizing inputs"
+      },
+      "questions": [
+        {
+          "id": "inputs.tank_volume",
+          "type": "quantity",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Geometrický objem zásobníku V_tank",
+            "en": "Tank geometric volume V_tank"
+          },
+          "dimension": "volume",
+          "units": [
+            "m3",
+            "l"
+          ],
+          "defaultUnit": "m3",
+          "nonNegative": true
+        },
+        {
+          "id": "inputs.design_flow",
+          "type": "quantity",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Návrhový průtok použitý v sizingu",
+            "en": "Design flow used in sizing"
+          },
+          "dimension": "normal_volume_flow",
+          "units": [
+            "Nm3/h",
+            "Nm3/min"
+          ],
+          "defaultUnit": "Nm3/h",
+          "nonNegative": true
+        },
+        {
+          "id": "inputs.design_ambient_min_temp",
+          "type": "quantity",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Minimální teplota okolí použitá v sizingu",
+            "en": "Minimum ambient temperature used in sizing"
+          },
+          "dimension": "temperature",
+          "units": [
+            "°C",
+            "K"
+          ],
+          "defaultUnit": "°C"
+        },
+        {
+          "id": "inputs.icing_considered",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Je v sizingu zohledněna degradace námrazou?",
+            "en": "Is icing degradation considered in sizing?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "result",
+      "title": {
+        "cs": "Výsledek",
+        "en": "Result"
+      },
+      "questions": [
+        {
+          "id": "result.capacity_after_icing",
+          "type": "quantity",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Kapacita odpařovače po degradaci námrazou při min. teplotě",
+            "en": "Vaporizer capacity after icing at minimum temperature"
+          },
+          "dimension": "normal_volume_flow",
+          "units": [
+            "Nm3/h",
+            "Nm3/min"
+          ],
+          "defaultUnit": "Nm3/h",
+          "nonNegative": true
+        },
+        {
+          "id": "result.vaporizer_type",
+          "type": "text",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Typ odpařovače / modulu",
+            "en": "Vaporizer / module type"
+          }
+        },
+        {
+          "id": "result.module_count",
+          "type": "number",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Počet modulů",
+            "en": "Number of modules"
+          },
+          "min": 1
+        },
+        {
+          "id": "result.notes",
+          "type": "textarea",
+          "required": false,
+          "phase": "initial",
+          "label": {
+            "cs": "Poznámky",
+            "en": "Notes"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,348 @@
+{
+  "key": "layout-geometry",
+  "version": 1,
+  "title": {
+    "cs": "Rozměry a uspořádání pro kontrolu pravidel",
+    "en": "Dimensions and arrangement for rule checks"
+  },
+  "sections": [
+    {
+      "id": "distances",
+      "title": {
+        "cs": "Vzdálenosti (tank a vaporizer)",
+        "en": "Distances (tank and vaporizer)"
+      },
+      "questions": [
+        {
+          "id": "distances.dist_buildings",
+          "type": "quantity",
+          "dimension": "length",
+          "units": [
+            "m"
+          ],
+          "defaultUnit": "m",
+          "nonNegative": true,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejmenší vzdálenost od budov",
+            "en": "Minimum distance to buildings"
+          }
+        },
+        {
+          "id": "distances.dist_public_roads",
+          "type": "quantity",
+          "dimension": "length",
+          "units": [
+            "m"
+          ],
+          "defaultUnit": "m",
+          "nonNegative": true,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejmenší vzdálenost od veřejných komunikací",
+            "en": "Minimum distance to public roads"
+          }
+        },
+        {
+          "id": "distances.dist_boundary",
+          "type": "quantity",
+          "dimension": "length",
+          "units": [
+            "m"
+          ],
+          "defaultUnit": "m",
+          "nonNegative": true,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejmenší vzdálenost od hranice pozemku",
+            "en": "Minimum distance to site boundary"
+          }
+        },
+        {
+          "id": "distances.dist_ignition_sources",
+          "type": "quantity",
+          "dimension": "length",
+          "units": [
+            "m"
+          ],
+          "defaultUnit": "m",
+          "nonNegative": true,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejmenší vzdálenost od zdrojů zapálení",
+            "en": "Minimum distance to ignition sources"
+          }
+        },
+        {
+          "id": "distances.dist_low_points",
+          "type": "quantity",
+          "dimension": "length",
+          "units": [
+            "m"
+          ],
+          "defaultUnit": "m",
+          "nonNegative": true,
+          "required": false,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejmenší vzdálenost od jímek, šachet, sklepů a prohlubní",
+            "en": "Minimum distance to pits, shafts, basements and depressions"
+          }
+        },
+        {
+          "id": "distances.dist_vap_cooling_towers",
+          "type": "quantity",
+          "dimension": "length",
+          "units": [
+            "m"
+          ],
+          "defaultUnit": "m",
+          "nonNegative": true,
+          "required": false,
+          "phase": "initial",
+          "label": {
+            "cs": "Vzdálenost vaporizeru od chladicích věží / výdechů vlhkého vzduchu",
+            "en": "Vaporizer distance to cooling towers / humid exhausts"
+          }
+        },
+        {
+          "id": "distances.vap_airflow_obstructed",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Je proudění vzduchu k vaporizeru omezeno překážkami?",
+            "en": "Is airflow to the vaporizer obstructed?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surfaces",
+      "title": {
+        "cs": "Povrch v zóně úniku (O₂)",
+        "en": "Surface in the spill zone (O₂)"
+      },
+      "questions": [
+        {
+          "id": "surfaces.surface_under_filling",
+          "type": "select",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Povrch pod napouštěním a vaporizerem",
+            "en": "Surface below filling point and vaporizer"
+          },
+          "options": [
+            {
+              "value": "concrete",
+              "label": {
+                "cs": "Beton",
+                "en": "Concrete"
+              }
+            },
+            {
+              "value": "asphalt",
+              "label": {
+                "cs": "Asfalt",
+                "en": "Asphalt"
+              }
+            },
+            {
+              "value": "gravel",
+              "label": {
+                "cs": "Štěrk",
+                "en": "Gravel"
+              }
+            },
+            {
+              "value": "other",
+              "label": {
+                "cs": "Jiné",
+                "en": "Other"
+              }
+            }
+          ],
+          "showIf": {
+            "medium": [
+              "O2"
+            ]
+          }
+        },
+        {
+          "id": "surfaces.combustibles_in_spill_zone",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Je v zóně úniku asfalt, olej, mazivo nebo jiný hořlavý materiál?",
+            "en": "Asphalt, oil, grease or other combustibles in the spill zone?"
+          },
+          "showIf": {
+            "medium": [
+              "O2"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "filling",
+      "title": {
+        "cs": "Napouštění z cisterny",
+        "en": "Tanker filling"
+      },
+      "questions": [
+        {
+          "id": "filling.tanker_access_verified",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Příjezd a otáčení cisterny ověřeny",
+            "en": "Tanker access and turning verified"
+          }
+        },
+        {
+          "id": "filling.earthing_available",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Uzemnění cisterny k dispozici",
+            "en": "Tanker earthing available"
+          }
+        },
+        {
+          "id": "filling.hose_reach_ok",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Hadice dosáhne na plnicí přípojku",
+            "en": "Hose reaches the filling connection"
+          }
+        },
+        {
+          "id": "filling.tanker_under_piping",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Stojí cisterna pod potrubím?",
+            "en": "Is the tanker parked under piping?"
+          }
+        },
+        {
+          "id": "filling.tanker_over_underground_utilities",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Stojí cisterna nad podzemním vedením?",
+            "en": "Is the tanker parked over underground utilities?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "access",
+      "title": {
+        "cs": "Přístupnost a únik",
+        "en": "Access and escape"
+      },
+      "questions": [
+        {
+          "id": "access.min_access_width",
+          "type": "quantity",
+          "dimension": "length",
+          "units": [
+            "m",
+            "mm"
+          ],
+          "defaultUnit": "m",
+          "nonNegative": true,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejmenší šířka přístupu k armaturám a instrumentům",
+            "en": "Minimum access width to valves and instruments"
+          }
+        },
+        {
+          "id": "access.access_blocked",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Je přístup k některé armatuře blokován zdí nebo zařízením?",
+            "en": "Is access to any valve blocked by a wall or equipment?"
+          }
+        },
+        {
+          "id": "access.escape_route_clear",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Úniková cesta ze stanice je volná",
+            "en": "Escape route from the station is clear"
+          }
+        },
+        {
+          "id": "access.escape_route_outside_release_zone",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Úniková cesta vede mimo zónu možného úniku",
+            "en": "Escape route leads away from the release zone"
+          }
+        }
+      ]
+    },
+    {
+      "id": "signage",
+      "title": {
+        "cs": "Označení a ochrana",
+        "en": "Signage and protection"
+      },
+      "questions": [
+        {
+          "id": "signage.signage_ok",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Značení odpovídá požadavkům lokality",
+            "en": "Signage meets site requirements"
+          }
+        },
+        {
+          "id": "signage.fencing_ok",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Oplocení odpovídá požadavkům lokality",
+            "en": "Fencing meets site requirements"
+          }
+        },
+        {
+          "id": "signage.impact_protection_ok",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Ochrana proti nárazu vozidel odpovídá požadavkům lokality",
+            "en": "Vehicle impact protection meets site requirements"
+          }
+        }
+      ]
+    }
+  ]
+}

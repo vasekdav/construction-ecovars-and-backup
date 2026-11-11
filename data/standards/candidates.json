@@ -1,0 +1,145 @@
+{
+  "note": "Kandidáti ze SPEC §7.3. Nepřebírat jako hotový výčet; revizi a platnost ověří Process Safety.",
+  "standards": [
+    {
+      "code": "EIGA Doc 04",
+      "title": {
+        "cs": "Požární rizika kyslíku",
+        "en": "Fire hazards of oxygen"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2"
+      ]
+    },
+    {
+      "code": "EIGA Doc 13",
+      "title": {
+        "cs": "Kyslíkové potrubní systémy",
+        "en": "Oxygen pipeline systems"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2"
+      ]
+    },
+    {
+      "code": "EIGA Doc 33",
+      "title": {
+        "cs": "Čištění zařízení pro kyslík",
+        "en": "Cleaning of equipment for oxygen service"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2"
+      ]
+    },
+    {
+      "code": "EIGA Doc 44",
+      "title": {
+        "cs": "Rizika inertních plynů",
+        "en": "Hazards of inert gases"
+      },
+      "revision": null,
+      "appliesTo": [
+        "N2"
+      ]
+    },
+    {
+      "code": "EIGA Doc 75",
+      "title": {
+        "cs": "Určování bezpečných vzdáleností",
+        "en": "Determination of safety distances"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2",
+        "N2"
+      ]
+    },
+    {
+      "code": "ASME B31.3",
+      "title": {
+        "cs": "Procesní potrubí",
+        "en": "Process piping"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2",
+        "N2"
+      ]
+    },
+    {
+      "code": "CGA P-56",
+      "title": {
+        "cs": "Kryogenní odpařovače (odkazováno v AAE nástroji)",
+        "en": "Cryogenic vaporizers (referenced in AAE tool)"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2",
+        "N2"
+      ]
+    },
+    {
+      "code": "MS-47393",
+      "title": {
+        "cs": "Interní standard (používán v AAE nástroji, ověřit relevanci)",
+        "en": "Internal standard (used in AAE tool, verify relevance)"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2",
+        "N2"
+      ]
+    },
+    {
+      "code": "MS-79511",
+      "title": {
+        "cs": "Interní standard (používán v AAE nástroji, ověřit relevanci)",
+        "en": "Internal standard (used in AAE tool, verify relevance)"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2",
+        "N2"
+      ]
+    },
+    {
+      "code": "PED 2014/68/EU",
+      "title": {
+        "cs": "Směrnice o tlakových zařízeních",
+        "en": "Pressure Equipment Directive"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2",
+        "N2"
+      ]
+    },
+    {
+      "code": "ČSN EN – kryogenní nádoby a materiály",
+      "title": {
+        "cs": "Konkrétní čísla doplní Process Safety",
+        "en": "Specific numbers to be supplied by Process Safety"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2",
+        "N2"
+      ]
+    },
+    {
+      "code": "Legislativa ČR – stavební a požární",
+      "title": {
+        "cs": "Doplní Process Safety / legal",
+        "en": "To be supplied by Process Safety / legal"
+      },
+      "revision": null,
+      "appliesTo": [
+        "O2",
+        "N2"
+      ]
+    }
+  ]
+}

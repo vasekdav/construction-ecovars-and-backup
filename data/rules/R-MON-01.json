@@ -1,0 +1,79 @@
+{
+  "id": "R-MON-01",
+  "version": 1,
+  "category": "Monitoring",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Alarmy na telemetrii",
+    "en": "Alarms to telemetry"
+  },
+  "inputs": [
+    {
+      "key": "db.alarmContact",
+      "label": {
+        "cs": "Kontakt pro alarmy (dotazník)",
+        "en": "Alarm contact (questionnaire)"
+      }
+    },
+    {
+      "key": "db.telemetryAvailable",
+      "label": {
+        "cs": "Telemetrie k dispozici (dotazník)",
+        "en": "Telemetry available (questionnaire)"
+      }
+    },
+    {
+      "key": "design.level_pressure_alarms_to_telemetry",
+      "label": {
+        "cs": "Alarmy hladiny a tlaku na telemetrii",
+        "en": "Level and pressure alarms to telemetry"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "db.telemetryAvailable"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.level_pressure_alarms_to_telemetry"
+        }
+      },
+      {
+        "op": "exists",
+        "value": {
+          "input": "db.alarmContact"
+        }
+      }
+    ]
+  },
+  "severity": "WARNING",
+  "message": {
+    "cs": "Alarmy hladiny a tlaku nejsou přenášeny na telemetrii nebo chybí kontakt odpovědné osoby.",
+    "en": "Level and pressure alarms are not transmitted to telemetry or the responsible contact is missing."
+  },
+  "remediation": {
+    "cs": "Zajistit přenos alarmů a určit odpovědnou osobu.",
+    "en": "Ensure alarm transmission and name a responsible person."
+  },
+  "source": {
+    "document": "Interní standard",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

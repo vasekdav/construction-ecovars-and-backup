@@ -1,0 +1,76 @@
+{
+  "id": "R-ENV-01",
+  "version": 1,
+  "category": "Prostředí",
+  "appliesTo": [
+    "O2",
+    "N2"
+  ],
+  "title": {
+    "cs": "Návrhová teplota a námraza",
+    "en": "Design temperature and icing"
+  },
+  "inputs": [
+    {
+      "key": "db.designTempMin",
+      "label": {
+        "cs": "Min. návrhová teplota lokality (dotazník)",
+        "en": "Site minimum design temperature (questionnaire)"
+      }
+    },
+    {
+      "key": "sizing.design_ambient_min_temp",
+      "label": {
+        "cs": "Min. teplota okolí použitá v sizingu",
+        "en": "Minimum ambient temperature used in sizing"
+      }
+    },
+    {
+      "key": "sizing.icing_considered",
+      "label": {
+        "cs": "Námraza zohledněna v sizingu",
+        "en": "Icing considered in sizing"
+      }
+    }
+  ],
+  "parameters": [],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "lte",
+        "left": {
+          "input": "sizing.design_ambient_min_temp"
+        },
+        "right": {
+          "input": "db.designTempMin"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "sizing.icing_considered"
+        }
+      }
+    ]
+  },
+  "severity": "WARNING",
+  "message": {
+    "cs": "Návrhová teplota okolí v sizingu nebo podmínky námrazy neodpovídají lokalitě z dotazníku.",
+    "en": "Ambient design temperature in sizing or icing conditions do not match the site from the questionnaire."
+  },
+  "remediation": {
+    "cs": "Přepočítat sizing pro minimální teplotu lokality a podmínky námrazy.",
+    "en": "Re-run sizing for the site minimum temperature and icing conditions."
+  },
+  "source": {
+    "document": "AAE sizing nástroj",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "8"
+  ]
+}

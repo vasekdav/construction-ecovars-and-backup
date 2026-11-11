@@ -1,0 +1,84 @@
+{
+  "id": "R-O2-03",
+  "version": 1,
+  "category": "O2 service",
+  "appliesTo": [
+    "O2"
+  ],
+  "title": {
+    "cs": "Rychlosti a materiál O₂ potrubí",
+    "en": "O₂ pipe velocities and material"
+  },
+  "inputs": [
+    {
+      "key": "design.o2_max_velocity",
+      "label": {
+        "cs": "Nejvyšší rychlost v O₂ potrubí",
+        "en": "Maximum O₂ velocity"
+      }
+    },
+    {
+      "key": "design.o2_pipe_material_ok",
+      "label": {
+        "cs": "Materiál O₂ potrubí dle tabulky limitů",
+        "en": "O₂ pipe material per limits table"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "key": "o2_max_velocity_limit",
+      "label": {
+        "cs": "Limit rychlosti v O₂ potrubí",
+        "en": "O₂ velocity limit"
+      },
+      "dimension": "velocity",
+      "values": {
+        "O2": null
+      },
+      "note": {
+        "cs": "Limit závisí na tlaku a materiálu; v1 má jednu hodnotu na pravidlo (viz OPEN_QUESTIONS).",
+        "en": "The limit depends on pressure and material; v1 holds one value per rule (see OPEN_QUESTIONS)."
+      }
+    }
+  ],
+  "condition": {
+    "op": "and",
+    "args": [
+      {
+        "op": "lte",
+        "left": {
+          "input": "design.o2_max_velocity"
+        },
+        "right": {
+          "param": "o2_max_velocity_limit"
+        }
+      },
+      {
+        "op": "isTrue",
+        "value": {
+          "input": "design.o2_pipe_material_ok"
+        }
+      }
+    ]
+  },
+  "severity": "NO-GO",
+  "message": {
+    "cs": "Rychlost v O₂ potrubí nebo materiál potrubí neodpovídá tabulce limitů pro dané médium, tlak a materiál.",
+    "en": "O₂ velocity or pipe material does not comply with the limits table for medium, pressure and material."
+  },
+  "remediation": {
+    "cs": "Upravit dimenzi nebo materiál potrubí podle tabulky limitů.",
+    "en": "Adjust pipe size or material per the limits table."
+  },
+  "source": {
+    "document": "EIGA Doc 13 + interní standard (tabulka limitů rychlostí)",
+    "clause": "TBD-VERIFY"
+  },
+  "status": "DRAFT",
+  "verifiedBy": null,
+  "verifiedAt": null,
+  "stages": [
+    "4"
+  ]
+}

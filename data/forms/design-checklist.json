@@ -1,0 +1,275 @@
+{
+  "key": "design-review",
+  "version": 1,
+  "title": {
+    "cs": "Návrhový checklist (P&ID a zařízení)",
+    "en": "Design checklist (P&ID and equipment)"
+  },
+  "sections": [
+    {
+      "id": "o2",
+      "title": {
+        "cs": "O₂ servis",
+        "en": "O₂ service"
+      },
+      "questions": [
+        {
+          "id": "o2.o2_cleaning_documented",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Všechny smáčené díly mají doložený O₂ cleaning",
+            "en": "All wetted parts have documented O₂ cleaning"
+          },
+          "showIf": {
+            "medium": [
+              "O2"
+            ]
+          }
+        },
+        {
+          "id": "o2.o2_material_compatibility",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Materiálová kompatibilita pro O₂ servis doložena",
+            "en": "Material compatibility for O₂ service documented"
+          },
+          "showIf": {
+            "medium": [
+              "O2"
+            ]
+          }
+        },
+        {
+          "id": "o2.o2_max_velocity",
+          "type": "quantity",
+          "dimension": "velocity",
+          "units": [
+            "m/s"
+          ],
+          "defaultUnit": "m/s",
+          "nonNegative": true,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejvyšší rychlost v O₂ potrubí",
+            "en": "Maximum velocity in O₂ piping"
+          },
+          "showIf": {
+            "medium": [
+              "O2"
+            ]
+          }
+        },
+        {
+          "id": "o2.o2_pipe_material_ok",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Materiál O₂ potrubí odpovídá tabulce limitů pro tlak a materiál",
+            "en": "O₂ pipe material complies with the limits table for pressure and material"
+          },
+          "showIf": {
+            "medium": [
+              "O2"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "materials",
+      "title": {
+        "cs": "Materiály a nízká teplota",
+        "en": "Materials and low temperature"
+      },
+      "questions": [
+        {
+          "id": "materials.materials_suitable_min_temp",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Díly ve styku s kryogenní kapalinou / studeným plynem jsou z materiálu vhodného pro minimální teplotu",
+            "en": "Parts in contact with cryogenic liquid / cold gas are suitable for the minimum temperature"
+          }
+        },
+        {
+          "id": "materials.carbon_steel_below_min_temp",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Je někde použita uhlíková ocel pod její minimální návrhovou teplotou?",
+            "en": "Is carbon steel used anywhere below its minimum design temperature?"
+          }
+        },
+        {
+          "id": "materials.downstream_material_cold_ok",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Navazující potrubí za odpařovačem snese studený plyn",
+            "en": "Downstream piping after the vaporizer tolerates cold gas"
+          }
+        },
+        {
+          "id": "materials.low_temp_protection",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Výstup odpařovače má ochranu proti nízké teplotě (detekce a uzavření)",
+            "en": "Vaporizer outlet has low-temperature protection (detection and shut-off)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "relief",
+      "title": {
+        "cs": "Pojistná zařízení",
+        "en": "Relief devices"
+      },
+      "questions": [
+        {
+          "id": "relief.psv_on_all_trapped_sections",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Každý uzavíratelný úsek, kde může uvíznout kapalina, má pojistné zařízení",
+            "en": "Every section that can trap liquid has a relief device"
+          }
+        },
+        {
+          "id": "relief.psv_max_set_pressure",
+          "type": "quantity",
+          "dimension": "pressure_gauge",
+          "units": [
+            "bar(g)",
+            "kPa(g)",
+            "MPa(g)"
+          ],
+          "defaultUnit": "bar(g)",
+          "nonNegative": false,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejvyšší nastavovací tlak pojistek (set pressure)",
+            "en": "Highest relief set pressure"
+          }
+        },
+        {
+          "id": "relief.mawp_min",
+          "type": "quantity",
+          "dimension": "pressure_gauge",
+          "units": [
+            "bar(g)",
+            "kPa(g)",
+            "MPa(g)"
+          ],
+          "defaultUnit": "bar(g)",
+          "nonNegative": false,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Nejnižší MAWP chráněných úseků",
+            "en": "Lowest MAWP of protected sections"
+          }
+        },
+        {
+          "id": "relief.vent_discharge_safe",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Výstupy pojistek a odfuků vedou na bezpečné místo (O₂: mimo zdroje zapálení a nasávání vzduchu; N₂: mimo prostory s pobytem osob)",
+            "en": "Relief and vent outlets discharge to a safe location (O₂: away from ignition sources and air intakes; N₂: away from occupied areas)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "title": {
+        "cs": "Řízení a izolace",
+        "en": "Control and isolation"
+      },
+      "questions": [
+        {
+          "id": "control.check_valve_at_tie_in",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Napojení na zákazníka má zpětnou armaturu",
+            "en": "Tie-in to the customer has a check valve"
+          }
+        },
+        {
+          "id": "control.switchover_pressure",
+          "type": "quantity",
+          "dimension": "pressure_gauge",
+          "units": [
+            "bar(g)",
+            "kPa(g)",
+            "MPa(g)"
+          ],
+          "defaultUnit": "bar(g)",
+          "nonNegative": false,
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Přepínací tlak zálohy",
+            "en": "Backup switchover pressure"
+          }
+        },
+        {
+          "id": "control.esd_defined",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Je definována nouzová izolace (ESD / ruční uzávěr)",
+            "en": "Emergency isolation (ESD / manual valve) is defined"
+          }
+        },
+        {
+          "id": "control.esd_accessible",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Ovládání nouzové izolace je přístupné bez vstupu do rizikové zóny",
+            "en": "Emergency isolation is accessible without entering the hazard zone"
+          }
+        }
+      ]
+    },
+    {
+      "id": "monitoring",
+      "title": {
+        "cs": "Monitoring",
+        "en": "Monitoring"
+      },
+      "questions": [
+        {
+          "id": "monitoring.level_pressure_alarms_to_telemetry",
+          "type": "boolean",
+          "required": true,
+          "phase": "initial",
+          "label": {
+            "cs": "Alarmy hladiny a tlaku jsou přenášeny na telemetrii",
+            "en": "Level and pressure alarms are transmitted to telemetry"
+          }
+        }
+      ]
+    }
+  ]
+}
