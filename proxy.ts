@@ -12,8 +12,31 @@ function isPublic(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
+/** Required server configuration; checked on every request so a misconfigured deployment explains itself. */
+function missingConfig(): string[] {
+  const missing: string[] = [];
+  if (!process.env.NEXTAUTH_SECRET) missing.push("NEXTAUTH_SECRET");
+  if (!process.env.DATABASE_URL) missing.push("DATABASE_URL");
+  return missing;
+}
+
+function configErrorPage(missing: string[]): NextResponse {
+  // Only variable names are shown, never values.
+  const items = missing.map((m) => `<li><code>${m}</code></li>`).join("");
+  const html = `<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Aplikace není nastavená</title></head>
+<body style="font-family:system-ui,sans-serif;max-width:40rem;margin:4rem auto;padding:0 1rem;color:#0f172a">
+<h1 style="font-size:1.4rem">Aplikace není nastavená</h1>
+<p>Chybí povinné proměnné prostředí:</p><ul>${items}</ul>
+<p>Ve Vercelu: <strong>Storage → Neon → Connect</strong> (nastaví <code>DATABASE_URL</code>) a <strong>Settings → Environment Variables</strong> (<code>NEXTAUTH_SECRET</code>). Potom <strong>Deployments → Redeploy</strong>. Postup je v README.</p>
+</body></html>`;
+  return new NextResponse(html, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+}
+
 export async function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
+
+  const missing = missingConfig();
+  if (missing.length) return configErrorPage(missing);
 
   if (pathname.startsWith("/api/")) {
     const rl = apiLimiter.consume(clientIp(req));

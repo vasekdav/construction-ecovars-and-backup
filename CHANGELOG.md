@@ -5,6 +5,7 @@
 - Na Vercelu stačí připojit Neon a nastavit `NEXTAUTH_SECRET` (a volitelně `SEED_DEMO_PASSWORD`); `NEXTAUTH_URL` není potřeba.
 - Oprava: smyčka přesměrování po přihlášení, když uživatel nejdřív otevřel hlavní adresu (klientský router použil uložené přesměrování na `/login`). Po přihlášení se teď stránka načte celá znovu. Přidán e2e test.
 - Middleware určuje název cookie session podle protokolu požadavku, aby odpovídal tomu, jak ji nastavil NextAuth.
+- Když chybí `NEXTAUTH_SECRET` nebo `DATABASE_URL`, aplikace místo obecné chyby serveru zobrazí stránku „Aplikace není nastavená“ s názvy chybějících proměnných (hodnoty nikdy).
 
 ## Fáze 6 (část): Geometrie ze souřadnic + posouzení WARNING (2026-11-11)
 - **Plán v souřadnicích** u každé verze layoutu: objekty plot planu (tank, vaporizer, budovy, veřejné komunikace, hranice pozemku, zdroje zapálení, jímky, chladicí věže) jako body, lomené čáry nebo uzavřené tvary v místních souřadnicích [m].
