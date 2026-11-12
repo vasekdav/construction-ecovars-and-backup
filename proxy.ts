@@ -1,5 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse, type NextRequest } from "next/server";
+import { authMode } from "@/lib/auth/mode";
 import { apiLimiter } from "@/lib/rate-limit";
 
 const PUBLIC_PATHS = ["/login", "/api/auth"];
@@ -15,7 +16,7 @@ function isPublic(pathname: string): boolean {
 /** Required server configuration; checked on every request so a misconfigured deployment explains itself. */
 function missingConfig(): string[] {
   const missing: string[] = [];
-  if (!process.env.NEXTAUTH_SECRET) missing.push("NEXTAUTH_SECRET");
+  if (authMode() === "password" && !process.env.NEXTAUTH_SECRET) missing.push("NEXTAUTH_SECRET");
   if (!process.env.DATABASE_URL) missing.push("DATABASE_URL");
   return missing;
 }
@@ -27,7 +28,7 @@ function configErrorPage(missing: string[]): NextResponse {
 <body style="font-family:system-ui,sans-serif;max-width:40rem;margin:4rem auto;padding:0 1rem;color:#0f172a">
 <h1 style="font-size:1.4rem">Aplikace není nastavená</h1>
 <p>Chybí povinné proměnné prostředí:</p><ul>${items}</ul>
-<p>Ve Vercelu: <strong>Storage → Neon → Connect</strong> (nastaví <code>DATABASE_URL</code>) a <strong>Settings → Environment Variables</strong> (<code>NEXTAUTH_SECRET</code>). Potom <strong>Deployments → Redeploy</strong>. Postup je v README.</p>
+<p>Ve Vercelu: <strong>Settings → Environment Variables</strong>. <code>DATABASE_URL</code> je connection string databáze Postgres (např. z neon.tech)${missing.includes("NEXTAUTH_SECRET") ? ", <code>NEXTAUTH_SECRET</code> je libovolný dlouhý náhodný text" : ""}. Potom <strong>Deployments → Redeploy</strong>. Postup je v README.</p>
 </body></html>`;
   return new NextResponse(html, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
 }
@@ -47,6 +48,9 @@ export async function proxy(req: NextRequest) {
       });
     }
   }
+
+  // Open mode (ADR-039): no sign-in, every request is the shared user.
+  if (authMode() === "open") return NextResponse.next();
 
   if (isPublic(pathname)) return NextResponse.next();
 

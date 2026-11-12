@@ -10,7 +10,9 @@
 | 6 | Autonomie se spočítá a zobrazí s předpoklady; při nedostatku vyhodí NO-GO R-CAP-01. | splněno | `tests/unit/calc/autonomy.test.ts`, `tests/integration/sizing.test.ts`, e2e `sizing.spec.ts` |
 | 7 | Export PDF/MD/XLSX obsahuje výsledky, zdroje pravidel, verze a overridy. | splněno | `tests/unit/export/renderers.test.ts`, `tests/integration/export.test.ts`, e2e `export.spec.ts` |
 | 8 | Pro každé pravidlo test GO, NO-GO/WARNING a NEVYHODNOCENO; pokrytí `lib/rules` a `lib/units` ≥ 90 %. | splněno | `starter-rules.test.ts`; prahy pokrytí ve `vitest.config.ts` (rules 97–100 %, units 100 %) |
-| 9 | CI zelené, preview na Vercelu funguje, `.env.example` a README s postupem spuštění. | částečně | CI zelené, `.env.example` a README jsou. **Vercel**: projekt je připojený, ale pro běh je potřeba nastavit `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL` a spustit migrace (ADR-003); z této session neověřitelné. |
+| 9 | CI zelené, preview na Vercelu funguje, `.env.example` a README s postupem spuštění. | částečně | CI zelené, `.env.example` a README jsou. **Vercel**: build projde; pro běh je potřeba nastavit `DATABASE_URL` (migrace spustí build sám, v režimu bez přihlášení nic dalšího není potřeba); z této session neověřitelné. |
 | 10 | Banner „podpora rozhodování, nenahrazuje inženýrské schválení“ je u každé obrazovky s výsledkem pravidel. | splněno | Safety Review, dashboard, detail kroků s pravidlovou gate, sizing; export; e2e `safety.spec.ts`, `sizing.spec.ts`, `export.spec.ts` |
+
+Kritérium 5 (override jen Process Safety) a RBAC obecně jsou vynucené v režimu `AUTH_MODE=password`. Ve výchozím režimu bez přihlášení (ADR-039) má sdílený uživatel všechny role, takže tato omezení prakticky neplatí; režim je jen pro fiktivní data (otevřená otázka 41).
 
 Bezpečnostní pravidla jsou data bez vymyšlených hodnot: všech 21 pravidel je ve stavu DRAFT, parametry a kapitoly zdrojů jsou `TBD-VERIFY` a parametry výpočtu autonomie nemají výchozí hodnoty. Hodnoty doplní a ověří Process Safety (otevřené otázky 4, 24, 31).

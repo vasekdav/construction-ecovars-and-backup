@@ -44,3 +44,4 @@ Do zodpovězení aplikace pracuje s nejbezpečnějším předpokladem (sloupec �
 | 38 | Měří se bezpečné vzdálenosti od obrysu zařízení (hrana–hrana), nebo od konkrétních bodů (např. plnicí přípojka, výstup pojistky)? | Fáze 6 | Hrana–hrana obrysů; konkrétní body lze zadat jako bodové objekty. |
 | 39 | Equipment & cost list: import bez cen (rozhodnuto), jaký je formát zdrojového Excelu? | Fáze 6 | Odloženo, čeká na vzorový (fiktivní) soubor. |
 | 40 | Entra ID SSO a SharePoint přes Graph: kdo u IT zaregistruje aplikaci (tenant ID, client ID, oprávnění)? | Fáze 6 | Odloženo. |
+| 41 | Kdy a kdo přepne nasazení do režimu s přihlášením (`AUTH_MODE=password`)? V režimu bez přihlášení má každý s odkazem všechny role včetně Process Safety. | Nasazení | Nejpozději před vložením prvních reálných dat (ADR-039). |

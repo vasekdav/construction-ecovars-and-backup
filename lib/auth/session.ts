@@ -2,7 +2,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { getDb } from "@/db/client";
 import { writeAudit } from "@/lib/audit";
+import { authMode } from "./mode";
 import { authOptions } from "./options";
+import { ensureSharedUser } from "./shared-user";
 import { can, type Permission } from "./rbac";
 import { getUserWithRoles, type UserWithRoles } from "@/lib/users/service";
 
@@ -13,6 +15,11 @@ export type CurrentUser = UserWithRoles;
  * deactivation and role changes take effect immediately.
  */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
+  if (authMode() === "open") {
+    // Open mode (ADR-039): everybody is the shared user with all roles.
+    const db = await getDb();
+    return getUserWithRoles(db, await ensureSharedUser(db));
+  }
   const session = await getServerSession(authOptions);
   const uid = session?.user?.id;
   if (!uid) return null;

@@ -3,7 +3,9 @@
     "title": "Backup Station Project Hub",
     "subtitle": "Záložní stanice O₂ / N₂",
     "disclaimer": "Podpora rozhodování, nenahrazuje inženýrské schválení.",
-    "demoData": "Pouze fiktivní data. Neukládejte důvěrná data Linde ani zákazníků."
+    "demoData": "Pouze fiktivní data. Neukládejte důvěrná data Linde ani zákazníků.",
+    "openMode": "bez přihlášení",
+    "openModeNote": "Bez přihlášení: všichni pracují pod jedním sdíleným účtem se všemi rolemi."
   },
   "nav": {
     "home": "Přehled",
