@@ -1,5 +1,12 @@
 # Changelog
 
+## Režim bez přihlášení (2026-11-12)
+- Aplikace ve výchozím stavu běží **bez přihlášení** (ADR-039): všichni pracují pod jedním sdíleným uživatelem se všemi rolemi, který se založí sám při prvním použití. Hlavička ukazuje „bez přihlášení“, pruh s upozorněním to vysvětluje, `/login` přesměruje na projekty.
+- Na Vercelu stačí nastavit `DATABASE_URL` (jakýkoli Postgres, např. z neon.tech nebo z Vercel Storage → Marketplace). `NEXTAUTH_SECRET` je potřeba jen v režimu s heslem.
+- Přihlašování heslem a správa účtů zůstávají a zapnou se nastavením `AUTH_MODE=password` (+ `NEXTAUTH_SECRET`). Sdílený uživatel se heslem přihlásit nemůže.
+- Node.js 22.x v `engines` (dřív `>=22`, Vercel varoval).
+- Testy: 327 unit a integračních, 18 e2e (nově e2e v obou režimech, druhý testovací server bez `NEXTAUTH_SECRET`).
+
 ## Nasazení na Vercel (2026-11-11)
 - Build na Vercelu (`scripts/vercel-build.mjs`) sám připraví databázi: migrace (se zámkem proti souběžným buildům, přes přímé připojení Neonu), import pravidel, standardů a parametrů výpočtu a volitelně demo účty (`SEED_DEMO_PASSWORD`). Vše je opakovatelné.
 - Na Vercelu stačí připojit Neon a nastavit `NEXTAUTH_SECRET` (a volitelně `SEED_DEMO_PASSWORD`); `NEXTAUTH_URL` není potřeba.

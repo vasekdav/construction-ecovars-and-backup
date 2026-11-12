@@ -3,7 +3,9 @@
     "title": "Backup Station Project Hub",
     "subtitle": "O₂ / N₂ backup stations",
     "disclaimer": "Decision support only, does not replace engineering approval.",
-    "demoData": "Fictitious data only. Do not store confidential Linde or customer data."
+    "demoData": "Fictitious data only. Do not store confidential Linde or customer data.",
+    "openMode": "no sign-in",
+    "openModeNote": "No sign-in: everybody works as one shared account with all roles."
   },
   "nav": {
     "home": "Overview",

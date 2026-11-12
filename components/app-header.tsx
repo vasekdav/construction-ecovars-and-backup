@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/auth/session";
+import { authMode } from "@/lib/auth/mode";
 import { can } from "@/lib/auth/rbac";
 import { SignOutButton } from "./sign-out-button";
 
@@ -22,11 +23,19 @@ export async function AppHeader() {
             <span className="ml-auto opacity-80" data-testid="current-user">
               {user.name}
             </span>
-            <SignOutButton label={t("logout")} />
+            {authMode() === "password" ? (
+              <SignOutButton label={t("logout")} />
+            ) : (
+              <span className="rounded bg-white/15 px-2 py-0.5 text-xs" data-testid="open-mode">
+                {tApp("openMode")}
+              </span>
+            )}
           </nav>
         )}
       </div>
-      <div className="bg-warn/90 px-4 py-1 text-center text-xs text-white">{tApp("demoData")}</div>
+      <div className="bg-warn/90 px-4 py-1 text-center text-xs text-white">
+        {tApp("demoData")} {authMode() === "open" && tApp("openModeNote")}
+      </div>
     </header>
   );
 }

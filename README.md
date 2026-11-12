@@ -26,7 +26,7 @@ Webová aplikace pro řízení projektů záložních stanic O₂ / N₂ (LOX/LI
    ```bash
    docker run -d --name hub-db -e POSTGRES_USER=hub -e POSTGRES_PASSWORD=hub -e POSTGRES_DB=hub_dev -p 5432:5432 postgres:16
    ```
-3. Proměnné prostředí: zkopírujte `.env.example` do `.env.local` a doplňte `NEXTAUTH_SECRET` (`openssl rand -base64 32`) a `SEED_DEMO_PASSWORD` (min. 12 znaků).
+3. Proměnné prostředí: zkopírujte `.env.example` do `.env.local`. Bez dalšího nastavení aplikace běží bez přihlášení (ADR-039). Pro přihlašování heslem nastavte `AUTH_MODE=password` a doplňte `NEXTAUTH_SECRET` (`openssl rand -base64 32`) a `SEED_DEMO_PASSWORD` (min. 12 znaků).
 4. Migrace a demo data (skripty čtou proměnné z prostředí):
    ```bash
    set -a && . ./.env.local && set +a && npm run db:migrate && npm run db:seed
@@ -35,7 +35,7 @@ Webová aplikace pro řízení projektů záložních stanic O₂ / N₂ (LOX/LI
    ```bash
    npm run dev
    ```
-   Přihlášení: `admin@demo.local` (nebo `oam@`, `ops@`, `investment@`, `roc@`, `safety@`, `sizing@demo.local`) s heslem ze `SEED_DEMO_PASSWORD`.
+   V režimu `AUTH_MODE=password` přihlášení: `admin@demo.local` (nebo `oam@`, `ops@`, `investment@`, `roc@`, `safety@`, `sizing@demo.local`) s heslem ze `SEED_DEMO_PASSWORD`.
 
 ## Testy
 
@@ -64,17 +64,35 @@ assets/fonts/   DejaVu Sans pro PDF export (licence v adresáři)
 tests/          unit, integration, e2e
 ```
 
-## Nasazení (Vercel + Neon)
+## Nasazení (Vercel)
 
 Repo je napojené na Vercel; každý push na `main` se nasadí do produkce a každý PR dostane preview.
 Build na Vercelu (`npm run vercel-build`, viz `vercel.json`) při každém nasazení sám připraví databázi:
 migrace, import pravidel / standardů / parametrů výpočtu (DRAFT, bez hodnot) a, je-li nastaveno
 `SEED_DEMO_PASSWORD`, fiktivní demo účty. Všechny kroky jsou opakovatelné (nic nepřepíšou).
 
-Jednorázové nastavení ve Vercelu:
-1. **Storage → Create Database → Neon**, připojit k projektu (Production + Preview). Nastaví `DATABASE_URL` a `DATABASE_URL_UNPOOLED`.
-2. **Settings → Environment Variables:**
-   - `NEXTAUTH_SECRET`: náhodný řetězec, např. `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
-   - `SEED_DEMO_PASSWORD`: heslo pro demo účty (`admin@demo.local` …), min. 12 znaků. Po založení vlastních účtů lze proměnnou smazat.
-   - `NEXTAUTH_URL` **není potřeba**, adresu si NextAuth na Vercelu zjistí sám.
-3. **Deployments → Redeploy** (nebo merge do `main`).
+Aplikace ve výchozím stavu běží **bez přihlášení** (ADR-039): všichni pracují pod jedním sdíleným
+uživatelem se všemi rolemi. Ve Vercelu je proto potřeba jediná proměnná, `DATABASE_URL`.
+
+Jednorázové nastavení:
+1. **Databáze Postgres.** Kterákoli z možností:
+   - **Storage → Create Database** a vybrat Postgres z nabídky Marketplace (Neon, Supabase, Prisma Postgres …),
+     připojit k projektu pro Production i Preview. Proměnnou `DATABASE_URL` nastaví Vercel sám
+     (u některých poskytovatelů se jmenuje jinak, např. `POSTGRES_URL`; pak ji zkopírujte do `DATABASE_URL`).
+   - Nebo bezplatný účet přímo na neon.tech: založit projekt, zkopírovat *connection string*
+     (`postgresql://…?sslmode=require`) a vložit ho ve Vercelu do **Settings → Environment Variables**
+     jako `DATABASE_URL` (Production + Preview).
+   - Volitelně `DATABASE_URL_UNPOOLED`: přímé (ne-poolované) připojení, použije se pro migrace.
+2. **Deployments → Redeploy** (nebo merge do `main`).
+
+**Pozor:** bez přihlášení může kdokoli s odkazem cokoli měnit, včetně stavu pravidel a overridů.
+Proto jen fiktivní data. Deployment Protection ve Vercelu nezapínejte, pokud nechcete, aby se
+návštěvníci přihlašovali k Vercelu.
+
+Přechod na přihlašování heslem (před prací s reálnými daty): v **Settings → Environment Variables** nastavit
+- `AUTH_MODE` = `password`,
+- `NEXTAUTH_SECRET`: náhodný řetězec (min. 32 znaků), např. `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`,
+- `SEED_DEMO_PASSWORD`: heslo pro demo účty (`admin@demo.local` …), min. 12 znaků. Po založení vlastních účtů lze proměnnou smazat.
+- `NEXTAUTH_URL` **není potřeba**, adresu si NextAuth na Vercelu zjistí sám.
+
+Pak Redeploy. Účty a role pak spravuje admin, sdílený uživatel se přihlásit nemůže.

@@ -120,3 +120,6 @@ Každá verze layoutu může mít plán (`layout_versions.plan`) s objekty v mí
 
 ## ADR-038 Posouzení WARNING
 WARNING blokuje uzavření kroku, dokud ho Process Safety nebo OAM neposoudí s komentářem (min. 10 znaků). Technicky jde o stejný záznam jako override (`rule_overrides.kind = acknowledgement`): je vázaný na verzi pravidla a otisk vstupů a jde ho zrušit. NO-GO může přepsat jen Process Safety a jen overridy NO-GO jsou v exportu červeně.
+
+## ADR-039 Režim bez přihlášení
+Na přání vlastníka produktu aplikace ve výchozím stavu běží bez přihlášení (`AUTH_MODE` nenastaveno nebo `open`). Každý požadavek patří jednomu sdílenému uživateli (`shared-access@local.invalid`), který se založí při prvním použití se všemi rolemi a zápisem do audit logu. Jeho hash hesla není platný scrypt hash, takže se jím nelze přihlásit, ani když se později zapne režim s heslem. Audit log zůstává, ale všechny záznamy mají stejného autora. RBAC i omezení VERIFIED / override na Process Safety v kódu dál platí, v tomto režimu je ale má každý návštěvník. UI to ukazuje v hlavičce a v pruhu s upozorněním. Režim je přípustný jen s fiktivními daty (SPEC §7). Před prací s reálnými daty se nastaví `AUTH_MODE=password` a `NEXTAUTH_SECRET`; kód přihlašování, správa účtů a e2e testy v režimu s heslem zůstávají beze změny. `NEXTAUTH_SECRET` je povinné jen v režimu s heslem.
